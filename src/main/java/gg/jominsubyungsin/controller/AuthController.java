@@ -189,4 +189,5 @@ public class AuthController {
     response.setResult(true);
     return response;
   }
+
 }
