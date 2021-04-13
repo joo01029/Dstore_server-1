@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -53,40 +54,52 @@ public class UserServiceImpl implements UserService{
   }
 
   @Override
-  public boolean userUpdate(UserUpdateDto userUpdateDto) {
-    return userRepository.findByEmailAndPassword(userUpdateDto.getEmail(),userUpdateDto.getPassword())
-            .map(found-> {
-              found.setPassword(Optional.ofNullable(userUpdateDto.getChangePassword()).orElse(found.getPassword()));
-              found.setName(Optional.ofNullable(userUpdateDto.getChangeName()).orElse(found.getName()));
-              userRepository.save(found);
+  public boolean userUpdate(UserUpdateDto userUpdateDto) throws HttpServerErrorException {
+    try {
+      return userRepository.findByEmailAndPassword(userUpdateDto.getEmail(), userUpdateDto.getPassword())
+              .map(found -> {
+                found.setPassword(Optional.ofNullable(userUpdateDto.getChangePassword()).orElse(found.getPassword()));
+                found.setName(Optional.ofNullable(userUpdateDto.getChangeName()).orElse(found.getName()));
+                userRepository.save(found);
 
-              return true;
-            }).orElse(false);
-
+                return true;
+              }).orElse(false);
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
 
   }
 
   @Override
   @Transactional
   public boolean userUpdateIntroduce(UserDto userDto) {
-    return userRepository.findByEmail(userDto.getEmail())
-            .map(found-> {
-              found.setIntroduce(userDto.getIntroduce());
-              userRepository.save(found);
+    try {
+      return userRepository.findByEmail(userDto.getEmail())
+              .map(found -> {
+                found.setIntroduce(userDto.getIntroduce());
+                userRepository.save(found);
 
-              return true;
-            }).orElse(false);
-
+                return true;
+              }).orElse(false);
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
 
   }
 
   @Override
   @Transactional
   public boolean userDelete(UserDto userDto) {
-    Optional<UserEntitiy> findUser = userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
-
+    Optional<UserEntitiy> findUser;
+    try {
+      findUser = userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
+    }catch (Exception e){
+      throw e;
+    }
     if(findUser.isEmpty()){
-      return false;
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
     }
 
     try{

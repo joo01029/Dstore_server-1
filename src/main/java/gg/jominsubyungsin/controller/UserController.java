@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,15 +37,14 @@ public class UserController {
 
     userDto.setEmail(subject);
 
-    boolean setIntruduceResult = userService.userUpdateIntroduce(userDto);
-
+    boolean setIntruduceResult;
+    try {
+      setIntruduceResult = userService.userUpdateIntroduce(userDto);
+    }catch (HttpServerErrorException e){
+      throw e;
+    }
     if(!setIntruduceResult){
-      response.setHttpStatus(HttpStatus.BAD_REQUEST);
-      response.setStatus(HttpStatus.BAD_REQUEST.value());
-      response.setMessage("자기 소개 변경 실패");
-      response.setResult(false);
-
-      return response;
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 이메일");
     }
 
     response.setHttpStatus(HttpStatus.OK);
@@ -57,35 +58,27 @@ public class UserController {
   public Response userUpdate (@RequestBody UserUpdateDto userUpdateDto){
     Response response = new Response();
 
+    String hashNowPassword;
+    String hashChangePassword;
 
-
-    String hashNowPassword = securityService.hashPassword(userUpdateDto.getPassword());
-    String hashChangePassword =
-            userUpdateDto.getChangePassword() != null ? securityService.hashPassword(userUpdateDto.getChangePassword()):null;
-
-
-
-    if(null == hashNowPassword){
-      response.setResult(false);
-      response.setMessage("비밀번호 암호화 실패");
-      response.setHttpStatus(HttpStatus.VARIANT_ALSO_NEGOTIATES);
-      response.setStatus(HttpStatus.VARIANT_ALSO_NEGOTIATES.value());
-
-      return response;
+    try {
+      hashNowPassword = securityService.hashPassword(userUpdateDto.getPassword());
+      hashChangePassword = userUpdateDto.getChangePassword() != null ? securityService.hashPassword(userUpdateDto.getChangePassword()) : null;
+    }catch (HttpServerErrorException e){
+      throw e;
     }
 
     userUpdateDto.setPassword(hashNowPassword);
     userUpdateDto.setChangePassword(hashChangePassword);
 
-    boolean userUpdateResult = userService.userUpdate(userUpdateDto);
-
+    boolean userUpdateResult;
+    try {
+      userUpdateResult = userService.userUpdate(userUpdateDto);
+    }catch (HttpServerErrorException e){
+      throw e;
+    }
     if(!userUpdateResult){
-      response.setResult(false);
-      response.setHttpStatus(HttpStatus.BAD_REQUEST);
-      response.setStatus(HttpStatus.BAD_REQUEST.value());
-      response.setMessage("유저 업데이트 실패");
-
-      return response;
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일 또는 비밀번호가 틀림");
     }
 
     response.setResult(true);
@@ -101,28 +94,20 @@ public class UserController {
   public Response userDelete(@RequestBody UserDto userDto){
     Response response = new Response();
 
-    String hashPassword = securityService.hashPassword(userDto.getPassword());
-
-    if(hashPassword == null){
-      response.setMessage("비밀번호 암호화 실패");
-      response.setResult(false);
-      response.setHttpStatus(HttpStatus.BAD_REQUEST);
-      response.setStatus(HttpStatus.BAD_REQUEST.value());
-
-      return response;
+    try {
+      String hashPassword = securityService.hashPassword(userDto.getPassword());
+      userDto.setPassword(hashPassword);
+    }catch (HttpServerErrorException e){
+      throw e;
     }
 
-    userDto.setPassword(hashPassword);
-
-    boolean userDeleteReuslt = userService.userDelete(userDto);
-
-    if(!userDeleteReuslt){
-      response.setMessage("유저 삭제 실패");
-      response.setResult(false);
-      response.setHttpStatus(HttpStatus.BAD_REQUEST);
-      response.setStatus(HttpStatus.BAD_REQUEST.value());
-
-      return response;
+    try {
+      boolean userDeleteReuslt = userService.userDelete(userDto);
+    }catch (HttpClientErrorException e){
+      throw e;
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
 
     response.setMessage("유저 삭제 성공");

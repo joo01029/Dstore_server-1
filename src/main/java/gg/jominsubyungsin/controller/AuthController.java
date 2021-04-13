@@ -40,9 +40,8 @@ public class AuthController {
     try{
       String hashPassword = securityService.hashPassword(userDto.getPassword());
       userDto.setPassword(hashPassword);
-    }catch (Exception e){
-      e.printStackTrace();
-      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "비밀번호 암호화 오류");
+    }catch (HttpServerErrorException e){
+      throw e;
     }
 
     try {
@@ -70,9 +69,8 @@ public class AuthController {
     try {
       String hashPassword = securityService.hashPassword(userDto.getPassword());
       userDto.setPassword(hashPassword);
-    }catch (Exception e){
-      e.printStackTrace();
-      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "비밀번호 암호화 에러");
+    }catch (HttpServerErrorException e){
+      throw e;
     }
 
     UserEntitiy findUserResponse;
@@ -80,6 +78,8 @@ public class AuthController {
       findUserResponse = userService.login(userDto);
     }catch (HttpClientErrorException e){
       throw e;
+    }catch (Exception e){
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
 
     String subject;
