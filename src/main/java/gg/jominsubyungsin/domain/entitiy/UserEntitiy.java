@@ -4,6 +4,7 @@ import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter
@@ -16,6 +17,7 @@ public class UserEntitiy {
   private Long id;
 
   @Column(unique = true)
+  @Email
   private String email;
 
   @Column
