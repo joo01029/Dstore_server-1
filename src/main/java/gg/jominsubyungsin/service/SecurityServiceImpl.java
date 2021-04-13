@@ -97,20 +97,25 @@ public class SecurityServiceImpl implements SecurityService{
               .build()
               .parseClaimsJws(token)
               .getBody();
+
+      return claims;
     } catch (ExpiredJwtException e){
       System.out.println(e);
       return null;
     } catch (Exception e){
-      System.out.println(e);
-      return null;
+      throw e;
     }
-    return claims;
+
 
   }
 
   @Override
   public String getRefreshTokenSubject(String token) {
-    Claims claims = decodingToken(token, REFRESHSECRET_KEY);
-    return claims.getSubject();
+    try {
+      Claims claims = decodingToken(token, REFRESHSECRET_KEY);
+      return claims.getSubject();
+    }catch (Exception e){
+      throw e;
+    }
   }
 }

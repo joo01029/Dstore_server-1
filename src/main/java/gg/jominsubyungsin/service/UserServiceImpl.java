@@ -5,7 +5,9 @@ import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
 import gg.jominsubyungsin.domain.entitiy.UserEntitiy;
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -26,7 +28,7 @@ public class UserServiceImpl implements UserService{
     }
 
     if(findUserByEmail.isPresent()){
-      return false;
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이미 유저가 존재함");
     }
     try {
       UserEntitiy saveUser = userDto.toEntity();
@@ -44,7 +46,7 @@ public class UserServiceImpl implements UserService{
     try {
       Optional<UserEntitiy> findUserByEmailAndPassword = userRepository.findByEmailAndPassword(Email, password);
 
-      return findUserByEmailAndPassword.orElseGet(() -> null);
+      return findUserByEmailAndPassword.orElseGet(() -> {throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
     }catch (Exception e){
       throw e;
     }
