@@ -5,10 +5,13 @@ import lombok.Setter;
 import gg.jominsubyungsin.domain.entitiy.UserEntitiy;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.Email;
+
 @Getter @Setter
 public class UserDto {
   private Long id;
 
+  @Email
   private String email;
   private String password;
   private String name;
