@@ -47,7 +47,8 @@ public class UserServiceImpl implements UserService{
     try {
       Optional<UserEntitiy> findUserByEmailAndPassword = userRepository.findByEmailAndPassword(Email, password);
 
-      if(0 == findUserByEmailAndPassword.get().getMailAccess()){
+
+      if(findUserByEmailAndPassword.isPresent() && 0 == findUserByEmailAndPassword.get().getMailAccess()){
         throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일 인증 안됨");
       }
 
@@ -114,4 +115,19 @@ public class UserServiceImpl implements UserService{
     }
   }
 
+  @Override
+  @Transactional
+  public Boolean userMailAccess(String email){
+    try{
+      return userRepository.findByEmail(email)
+              .map(found->{
+                found.setMailAccess(1);
+
+                return true;
+              }).orElse(false);
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+  }
 }

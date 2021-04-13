@@ -5,8 +5,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 
-@Getter
-@Setter
+@Getter @Setter
 public class EmailDto {
   @Email
   private String senderName;
