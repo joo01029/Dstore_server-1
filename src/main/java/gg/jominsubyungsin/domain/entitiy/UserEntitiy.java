@@ -20,8 +20,8 @@ public class UserEntitiy {
   @Email
   private String email;
 
-  @Column
-  private boolean mailAccess;
+  @Column(nullable = false)
+  private int mailAccess;
 
   @Column(nullable = false)
   private String password;
@@ -41,7 +41,7 @@ public class UserEntitiy {
     this.email = email;
     this.password = password;
     this.name = name;
-    this.mailAccess = false;
+    this.mailAccess = 0;
     this.introduce = null;
     this.profileImage = null;
   }

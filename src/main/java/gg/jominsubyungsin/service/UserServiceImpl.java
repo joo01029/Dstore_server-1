@@ -47,6 +47,10 @@ public class UserServiceImpl implements UserService{
     try {
       Optional<UserEntitiy> findUserByEmailAndPassword = userRepository.findByEmailAndPassword(Email, password);
 
+      if(0 == findUserByEmailAndPassword.get().getMailAccess()){
+        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일 인증 안됨");
+      }
+
       return findUserByEmailAndPassword.orElseGet(() -> {throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
     }catch (Exception e){
       throw e;
