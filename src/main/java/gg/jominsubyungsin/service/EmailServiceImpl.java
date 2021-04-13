@@ -2,9 +2,11 @@ package gg.jominsubyungsin.service;
 
 import gg.jominsubyungsin.domain.dto.email.EmailDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -28,6 +30,7 @@ public class EmailServiceImpl implements EmailService {
       javaMailSender.send(msg);
     } catch (Exception e) {
       e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 에러");
     }
   }
 

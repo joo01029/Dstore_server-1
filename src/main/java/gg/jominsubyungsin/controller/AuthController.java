@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,35 +37,27 @@ public class AuthController {
   public Response userCreate(@RequestBody UserDto userDto){
     Response response = new Response();
 
-    String hashPassword = securityService.hashPassword(userDto.getPassword());
-    userDto.setPassword(hashPassword);
-
-    if(null == userDto.getPassword()){
-      response.setResult(false);
-      response.setMessage("비밀번호 암호화 실패");
-      response.setHttpStatus(HttpStatus.VARIANT_ALSO_NEGOTIATES);
-      response.setStatus(HttpStatus.VARIANT_ALSO_NEGOTIATES.value());
-
-      return response;
+    try{
+      String hashPassword = securityService.hashPassword(userDto.getPassword());
+      userDto.setPassword(hashPassword);
+    }catch (HttpServerErrorException e){
+      throw e;
     }
 
-    boolean userCreateResult = userService.userCreate(userDto);
-
-    if(!userCreateResult){
-      response.setResult(false);
-      response.setMessage("유저 저장 실패");
-      response.setHttpStatus(HttpStatus.BAD_REQUEST);
-      response.setStatus(HttpStatus.BAD_REQUEST.value());
+    try {
+      boolean userCreateResult = userService.userCreate(userDto);
+      response.setResult(true);
+      response.setMessage("유저 저장 성공");
+      response.setHttpStatus(HttpStatus.OK);
+      response.setStatus(HttpStatus.OK.value());
 
       return response;
+    }catch (HttpClientErrorException e){
+      throw e;
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
-
-    response.setResult(true);
-    response.setMessage("유저 저장 성공");
-    response.setHttpStatus(HttpStatus.OK);
-    response.setStatus(HttpStatus.OK.value());
-
-    return response;
   }
 
   //로그인
@@ -71,46 +65,38 @@ public class AuthController {
   public LoginResponse login(@RequestBody UserDto userDto){
     LoginResponse loginResponse = new LoginResponse();
 
-    //비밀번호 암호화
-    String hashPassword = securityService.hashPassword(userDto.getPassword());
-    userDto.setPassword(hashPassword);
-
-    if(null == userDto.getPassword()){
-      loginResponse.setResult(false);
-      loginResponse.setMessage("비밀번호 암호화 실패");
-      loginResponse.setHttpStatus(HttpStatus.VARIANT_ALSO_NEGOTIATES);
-      loginResponse.setStatus(HttpStatus.VARIANT_ALSO_NEGOTIATES.value());
-
-      return loginResponse;
+    //비밀번호 암호화러
+    try {
+      String hashPassword = securityService.hashPassword(userDto.getPassword());
+      userDto.setPassword(hashPassword);
+    }catch (HttpServerErrorException e){
+      throw e;
     }
 
-    Optional<UserEntitiy> findUserResponse = Optional.ofNullable(userService.login(userDto));
-
-    if(findUserResponse.isEmpty()){
-      loginResponse.setResult(false);
-      loginResponse.setMessage("유저 찾기 실패");
-      loginResponse.setHttpStatus(HttpStatus.OK);
-      loginResponse.setStatus(HttpStatus.OK.value());
-
-      return loginResponse;
+    UserEntitiy findUserResponse;
+    try {
+      findUserResponse = userService.login(userDto);
+    }catch (HttpClientErrorException e){
+      throw e;
+    }catch (Exception e){
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
-    //token발행
-    String subject = findUserResponse.get().getEmail();
 
+    String subject;
+    String accessToken;
     long accessExpiredTime = 20 * 60 * 1000L;
-    String accessToken = securityService.createToken(subject, accessExpiredTime, false);
 
-    long refreshExpiredTime = 7 * 24 * 60* 60 * 1000L;
-    String refreshToken = securityService.createToken(subject, refreshExpiredTime, true);
-
-    if(accessToken == null || refreshToken == null){
-      loginResponse.setResult(false);
-      loginResponse.setMessage("토큰 발행 실패");
-      loginResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
-      loginResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-
-      return loginResponse;
+    String refreshToken;
+    long refreshExpiredTime = 7 * 24 * 60 * 60 * 1000L;
+    //token발행
+    try {
+      subject = findUserResponse.getEmail();
+      accessToken = securityService.createToken(subject, accessExpiredTime, false);
+      refreshToken = securityService.createToken(subject, refreshExpiredTime, true);
+    }catch (Exception e){
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 만들기 실패");
     }
+
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Date time = new Date(System.currentTimeMillis()+accessExpiredTime);
     String expiredTime = format.format(time);
@@ -129,23 +115,26 @@ public class AuthController {
   public LoginResponse tokenRefresh(@RequestHeader String Authorization){
     LoginResponse loginResponse = new LoginResponse();
 
-    String subject = securityService.getRefreshTokenSubject(Authorization);
-
-    if(null == subject){
-      loginResponse.setResult(false);
-      loginResponse.setMessage("토큰 디코딩 실패");
-      loginResponse.setHttpStatus(HttpStatus.BAD_REQUEST);
-      loginResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-
-      return loginResponse;
+    String subject;
+    try {
+      subject = securityService.getRefreshTokenSubject(Authorization);
+    }catch (Exception e){
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
     }
 
+
     long accessExpiredTime = 20 * 60 * 1000L;
-    String accessToken = securityService.createToken(subject, accessExpiredTime, false);
+    String accessToken;
 
     long refreshExpiredTime = 7 * 24 * 60 * 60 * 1000L;
-    String refreshTokenRemake = securityService.createToken(subject, refreshExpiredTime, true);
+    String refreshTokenRemake;
 
+    try{
+      accessToken = securityService.createToken(subject, accessExpiredTime, false);
+      refreshTokenRemake = securityService.createToken(subject, refreshExpiredTime, true);
+    }catch (Exception e){
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 재생성 실패");
+    }
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Date time = new Date(System.currentTimeMillis()+accessExpiredTime);
     String expiredTime = format.format(time);
@@ -169,9 +158,14 @@ public class AuthController {
 
     System.out.println(mail);
 
-    String authKey = securityService.hashPassword(mail);
-    EmailDto emailDto = new EmailDto();
+    String authKey;
+    try {
+      authKey = securityService.hashPassword(mail);
 
+    }catch (Exception e){
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "키 인증 에러");
+    }
+    EmailDto emailDto = new EmailDto();
     emailDto.setSenderMail(email);
     emailDto.setReceiveMail(mail);
     emailDto.setSubject("이메일 인증");
@@ -181,8 +175,12 @@ public class AuthController {
             .append("<a href=`http://localhost:8080/auth/email?email="+mail)
             .append("&authKey="+authKey).append(">메일 인증 링크</a>")
             .toString());
-    emailService.sendMail(emailDto);
 
+    try {
+      emailService.sendMail(emailDto);
+    }catch (HttpClientErrorException e){
+      throw e;
+    }
     response.setMessage("이메일 보내기 성공");
     response.setHttpStatus(HttpStatus.OK);
     response.setStatus(HttpStatus.OK.value());

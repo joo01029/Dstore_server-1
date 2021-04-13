@@ -7,7 +7,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -27,9 +29,7 @@ public class SecurityServiceImpl implements SecurityService{
       md.update(password.getBytes(), 0, password.getBytes().length);
       return new BigInteger(1, md.digest()).toString(16);
     } catch (NoSuchAlgorithmException e) {
-      Logger logger = (Logger) LoggerFactory.getLogger(UserEntitiy.class);
-      logger.warning(e.getMessage());
-      return null;
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "비밀번호 암호화 실패");
     }
   }
 
@@ -97,20 +97,25 @@ public class SecurityServiceImpl implements SecurityService{
               .build()
               .parseClaimsJws(token)
               .getBody();
+
+      return claims;
     } catch (ExpiredJwtException e){
       System.out.println(e);
       return null;
     } catch (Exception e){
-      System.out.println(e);
-      return null;
+      throw e;
     }
-    return claims;
+
 
   }
 
   @Override
   public String getRefreshTokenSubject(String token) {
-    Claims claims = decodingToken(token, REFRESHSECRET_KEY);
-    return claims.getSubject();
+    try {
+      Claims claims = decodingToken(token, REFRESHSECRET_KEY);
+      return claims.getSubject();
+    }catch (Exception e){
+      throw e;
+    }
   }
 }
