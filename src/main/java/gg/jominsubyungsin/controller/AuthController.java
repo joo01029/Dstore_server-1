@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.controller;
 
+import gg.jominsubyungsin.domain.dto.email.EmailAccessDto;
 import gg.jominsubyungsin.domain.dto.email.EmailDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.entitiy.UserEntitiy;
@@ -185,6 +186,36 @@ public class AuthController {
     response.setHttpStatus(HttpStatus.OK);
     response.setStatus(HttpStatus.OK.value());
     response.setResult(true);
+    return response;
+  }
+  @RequestMapping("/email")
+  public Response emailAccess(@RequestParam String email, @RequestParam String authKey){
+    Response response = new Response();
+
+    String makeAuthKey;
+    try{
+      makeAuthKey = securityService.hashPassword(email);
+    }catch (Exception e){
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "키 인증 에러");
+    }
+
+    if(!makeAuthKey.equals(authKey)){
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"다른 키");
+    }
+    boolean MailAccess;
+    try {
+      MailAccess = userService.userMailAccess(email);
+    }catch (HttpServerErrorException e){
+      throw e;
+    }
+
+    if(!MailAccess){
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일을 찾을 수 없습니다");
+    }
+    response.setResult(true);
+    response.setMessage("메일인증 성공");
+    response.setHttpStatus(HttpStatus.OK);
+    response.setStatus(HttpStatus.OK.value());
     return response;
   }
 
