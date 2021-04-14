@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,6 +25,7 @@ public class UserEntity {
   @Column(nullable = false)
   private int mailAccess;
 
+
   @Column(nullable = false)
   private String password;
 
@@ -36,6 +38,7 @@ public class UserEntity {
   @Column
   private String profileImage;
 
+  @JsonIgnore
   @ManyToMany
   @JoinTable(name="user_project_connect",
             joinColumns = @JoinColumn(name = "user_id"),

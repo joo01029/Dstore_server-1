@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,9 +24,11 @@ public class ProjectEntity {
   @Column
   private String content;
 
+  @JsonIgnore
   @ManyToMany(mappedBy = "projects")
   private List<UserEntity> users = new ArrayList<>();
 
+  @JsonIgnore
   @OneToMany(mappedBy = "projectId")
   private List<FileEntity> files = new ArrayList<>();
 
