@@ -1,13 +1,10 @@
-package gg.jominsubyungsin.controller;
+package gg.jominsubyungsin.admin.controller;
 
-import gg.jominsubyungsin.domain.entitiy.UserEntitiy;
+import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.response.Response;
-import gg.jominsubyungsin.response.admin.UserListResponse;
-import gg.jominsubyungsin.service.admin.AdminService;
-import javassist.runtime.Desc;
+import gg.jominsubyungsin.admin.response.UserListResponse;
+import gg.jominsubyungsin.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -33,7 +30,7 @@ public class AdminController {
     public Response showUserList(Pageable pageable){
         UserListResponse response = new UserListResponse();
 
-        List<UserEntitiy> userList;
+        List<UserEntity> userList;
 
         System.out.println(pageable);
 
@@ -47,7 +44,7 @@ public class AdminController {
         response.setMessage("페이지의 유저 보내기 성공");
         response.setHttpStatus(HttpStatus.OK);
         response.setStatus(HttpStatus.OK.value());
-        response.setUserEntitiy(userList);
+        response.setUserEntity(userList);
 
         return response;
     }

@@ -1,11 +1,9 @@
-package gg.jominsubyungsin.domain.entitiy;
+package gg.jominsubyungsin.domain.entity;
 
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -13,7 +11,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "user")
-public class UserEntitiy {
+public class UserEntity {
   @Id
   @Column(name="user_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,7 +47,7 @@ public class UserEntitiy {
   }
 
   @Builder
-  public UserEntitiy(Long id, String email, String password, String name){
+  public UserEntity(Long id, String email, String password, String name){
     this.id = id;
     this.email = email;
     this.password = password;

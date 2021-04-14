@@ -2,7 +2,7 @@ package gg.jominsubyungsin.domain.dto.user;
 
 import lombok.Getter;
 import lombok.Setter;
-import gg.jominsubyungsin.domain.entitiy.UserEntitiy;
+import gg.jominsubyungsin.domain.entity.UserEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Email;
@@ -17,8 +17,8 @@ public class UserDto {
   private String introduce;
   private MultipartFile profileImage;
 
-  public UserEntitiy toEntity(){
-    return UserEntitiy.builder()
+  public UserEntity toEntity(){
+    return UserEntity.builder()
             .id(id)
             .email(email)
             .password(password)
