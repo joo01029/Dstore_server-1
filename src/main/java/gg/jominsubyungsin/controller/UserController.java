@@ -2,11 +2,10 @@ package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
-import gg.jominsubyungsin.domain.entitiy.UserEntitiy;
 import gg.jominsubyungsin.response.Response;
-import gg.jominsubyungsin.response.user.LoginResponse;
-import gg.jominsubyungsin.service.SecurityService;
-import gg.jominsubyungsin.service.UserService;
+import gg.jominsubyungsin.service.jwt.JwtService;
+import gg.jominsubyungsin.service.security.SecurityService;
+import gg.jominsubyungsin.service.user.UserService;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Optional;
-
 @Controller
 @ResponseBody
 @RequestMapping("/user")
@@ -28,12 +23,14 @@ public class UserController {
   UserService userService;
   @Autowired
   SecurityService securityService;
+  @Autowired
+  JwtService jwtService;
 
   @PostMapping("/set/introduce")
   public Response setIntroduce(@RequestBody UserDto userDto, @RequestHeader String Authorization){
     Response response = new Response();
 
-    String subject = securityService.getRefreshTokenSubject(Authorization);
+    String subject = jwtService.getRefreshTokenSubject(Authorization);
 
     userDto.setEmail(subject);
 
