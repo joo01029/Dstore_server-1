@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.domain.entitiy;
+package gg.jominsubyungsin.domain.entity;
 
 import lombok.*;
 
