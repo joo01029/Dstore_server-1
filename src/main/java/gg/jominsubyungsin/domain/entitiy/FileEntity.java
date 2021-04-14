@@ -25,8 +25,11 @@ public class FileEntity {
   @Column(name="file_type")
   private String type;
 
+  @Column(name="Thumnail")
+  private Integer thumnail;
+
   @ManyToOne
-  @JoinColumn(name = "project_id")
-  private ProjectEntity project;
+  @JoinColumn
+  private ProjectEntity projectId;
 
 }

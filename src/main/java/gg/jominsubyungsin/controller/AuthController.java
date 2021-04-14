@@ -2,7 +2,7 @@ package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.email.EmailDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
-import gg.jominsubyungsin.domain.entitiy.UserEntitiy;
+import gg.jominsubyungsin.domain.entitiy.UserEntity;
 import gg.jominsubyungsin.response.Response;
 import gg.jominsubyungsin.response.user.LoginResponse;
 import gg.jominsubyungsin.service.email.EmailService;
@@ -75,7 +75,7 @@ public class AuthController {
       throw e;
     }
 
-    UserEntitiy findUserResponse;
+    UserEntity findUserResponse;
     try {
       findUserResponse = userService.login(userDto);
     }catch (HttpClientErrorException e){

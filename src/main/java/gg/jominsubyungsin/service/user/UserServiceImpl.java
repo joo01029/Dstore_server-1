@@ -2,7 +2,7 @@ package gg.jominsubyungsin.service.user;
 
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
-import gg.jominsubyungsin.domain.entitiy.UserEntitiy;
+import gg.jominsubyungsin.domain.entitiy.UserEntity;
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService{
   @Override
   @Transactional
   public boolean userCreate(UserDto userDto) {
-    Optional<UserEntitiy> findUserByEmail;
+    Optional<UserEntity> findUserByEmail;
     try {
       findUserByEmail = userRepository.findByEmail(userDto.getEmail());
     }catch (Exception e){
@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService{
       throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이미 유저가 존재함");
     }
     try {
-      UserEntitiy saveUser = userDto.toEntity();
+      UserEntity saveUser = userDto.toEntity();
       userRepository.save(saveUser);
       return true;
     }catch (Exception e){
@@ -41,11 +41,11 @@ public class UserServiceImpl implements UserService{
   }
 
   @Override
-  public UserEntitiy login(UserDto userDto) {
+  public UserEntity login(UserDto userDto) {
     String password = userDto.getPassword();
     String Email = userDto.getEmail();
     try {
-      Optional<UserEntitiy> findUserByEmailAndPassword = userRepository.findByEmailAndPassword(Email, password);
+      Optional<UserEntity> findUserByEmailAndPassword = userRepository.findByEmailAndPassword(Email, password);
 
 
       if(findUserByEmailAndPassword.isPresent() && 0 == findUserByEmailAndPassword.get().getMailAccess()){
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService{
   @Override
   @Transactional
   public boolean userDelete(UserDto userDto) {
-    Optional<UserEntitiy> findUser;
+    Optional<UserEntity> findUser;
     try {
       findUser = userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
     }catch (Exception e){
