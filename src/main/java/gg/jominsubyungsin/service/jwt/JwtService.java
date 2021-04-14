@@ -1,8 +1,6 @@
-package gg.jominsubyungsin.service;
+package gg.jominsubyungsin.service.jwt;
 
-public interface SecurityService {
-  String hashPassword(String password);
-
+public interface JwtService {
   String createToken(String subject, long ttlMillis, boolean MakeTokenForRefresh);
 
   String getAccessTokenSubject(String token);

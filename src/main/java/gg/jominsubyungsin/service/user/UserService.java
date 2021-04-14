@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.service;
+package gg.jominsubyungsin.service.user;
 
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
