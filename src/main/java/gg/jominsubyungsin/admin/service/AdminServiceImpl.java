@@ -1,8 +1,8 @@
-package gg.jominsubyungsin.service.admin;
+package gg.jominsubyungsin.admin.service;
 
-import gg.jominsubyungsin.domain.entitiy.UserEntitiy;
+import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.UserRepository;
-import gg.jominsubyungsin.domain.repository.admin.UserListRepository;
+import gg.jominsubyungsin.admin.domain.repository.UserListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +18,9 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public List<UserEntitiy> getUserList(Pageable pageable){
-        List<UserEntitiy> userList;
-        Page<UserEntitiy> userEntityPage;
+    public List<UserEntity> getUserList(Pageable pageable){
+        List<UserEntity> userList;
+        Page<UserEntity> userEntityPage;
 
         try {
             userEntityPage = userListRepository.findAll(pageable);

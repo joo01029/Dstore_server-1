@@ -1,10 +1,9 @@
-package gg.jominsubyungsin.domain.entitiy;
+package gg.jominsubyungsin.domain.entity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.java.Log;
 
 import javax.persistence.*;
 
