@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.service;
+package gg.jominsubyungsin.service.user;
 
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
@@ -46,6 +46,11 @@ public class UserServiceImpl implements UserService{
     String Email = userDto.getEmail();
     try {
       Optional<UserEntitiy> findUserByEmailAndPassword = userRepository.findByEmailAndPassword(Email, password);
+
+
+      if(findUserByEmailAndPassword.isPresent() && 0 == findUserByEmailAndPassword.get().getMailAccess()){
+        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일 인증 안됨");
+      }
 
       return findUserByEmailAndPassword.orElseGet(() -> {throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
     }catch (Exception e){
@@ -110,4 +115,19 @@ public class UserServiceImpl implements UserService{
     }
   }
 
+  @Override
+  @Transactional
+  public Boolean userMailAccess(String email){
+    try{
+      return userRepository.findByEmail(email)
+              .map(found->{
+                found.setMailAccess(1);
+
+                return true;
+              }).orElse(false);
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+  }
 }

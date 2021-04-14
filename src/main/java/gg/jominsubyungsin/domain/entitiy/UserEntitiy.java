@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter
@@ -13,6 +15,7 @@ import javax.validation.constraints.Email;
 @Table(name = "user")
 public class UserEntitiy {
   @Id
+  @Column(name="user_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
@@ -20,8 +23,8 @@ public class UserEntitiy {
   @Email
   private String email;
 
-  @Column
-  private boolean mailAccess;
+  @Column(nullable = false)
+  private int mailAccess;
 
   @Column(nullable = false)
   private String password;
@@ -35,15 +38,27 @@ public class UserEntitiy {
   @Column
   private String profileImage;
 
+  @ManyToMany
+  @JoinTable(name="user_project_connect",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id"))
+  private List<ProjectEntity> projects;
+
+  public void add(ProjectEntity project){
+    projects.add(project);
+  }
+
   @Builder
   public UserEntitiy(Long id, String email, String password, String name){
     this.id = id;
     this.email = email;
     this.password = password;
     this.name = name;
-    this.mailAccess = false;
+    this.mailAccess = 0;
     this.introduce = null;
     this.profileImage = null;
   }
+
+
 
 }

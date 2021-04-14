@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.service;
+package gg.jominsubyungsin.service.email;
 
 import gg.jominsubyungsin.domain.dto.email.EmailDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 @Service

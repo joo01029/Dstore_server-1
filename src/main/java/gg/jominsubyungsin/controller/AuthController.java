@@ -5,9 +5,10 @@ import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.entitiy.UserEntitiy;
 import gg.jominsubyungsin.response.Response;
 import gg.jominsubyungsin.response.user.LoginResponse;
-import gg.jominsubyungsin.service.EmailService;
-import gg.jominsubyungsin.service.SecurityService;
-import gg.jominsubyungsin.service.UserService;
+import gg.jominsubyungsin.service.email.EmailService;
+import gg.jominsubyungsin.service.jwt.JwtService;
+import gg.jominsubyungsin.service.security.SecurityService;
+import gg.jominsubyungsin.service.user.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +20,6 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
 
 @Controller
 @ResponseBody
@@ -32,6 +32,8 @@ public class AuthController {
   UserService userService;
   @Autowired
   EmailService emailService;
+  @Autowired
+  JwtService jwtService;
   //유저 생성
   @PostMapping("/create")
   public Response userCreate(@RequestBody UserDto userDto){
@@ -91,8 +93,8 @@ public class AuthController {
     //token발행
     try {
       subject = findUserResponse.getEmail();
-      accessToken = securityService.createToken(subject, accessExpiredTime, false);
-      refreshToken = securityService.createToken(subject, refreshExpiredTime, true);
+      accessToken = jwtService.createToken(subject, accessExpiredTime, false);
+      refreshToken = jwtService.createToken(subject, refreshExpiredTime, true);
     }catch (Exception e){
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 만들기 실패");
     }
@@ -117,7 +119,7 @@ public class AuthController {
 
     String subject;
     try {
-      subject = securityService.getRefreshTokenSubject(Authorization);
+      subject = jwtService.getRefreshTokenSubject(Authorization);
     }catch (Exception e){
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
     }
@@ -130,8 +132,8 @@ public class AuthController {
     String refreshTokenRemake;
 
     try{
-      accessToken = securityService.createToken(subject, accessExpiredTime, false);
-      refreshTokenRemake = securityService.createToken(subject, refreshExpiredTime, true);
+      accessToken = jwtService.createToken(subject, accessExpiredTime, false);
+      refreshTokenRemake = jwtService.createToken(subject, refreshExpiredTime, true);
     }catch (Exception e){
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 재생성 실패");
     }
@@ -185,6 +187,36 @@ public class AuthController {
     response.setHttpStatus(HttpStatus.OK);
     response.setStatus(HttpStatus.OK.value());
     response.setResult(true);
+    return response;
+  }
+  @RequestMapping("/email")
+  public Response emailAccess(@RequestParam String email, @RequestParam String authKey){
+    Response response = new Response();
+
+    String makeAuthKey;
+    try{
+      makeAuthKey = securityService.hashPassword(email);
+    }catch (Exception e){
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "키 인증 에러");
+    }
+
+    if(!makeAuthKey.equals(authKey)){
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"다른 키");
+    }
+    boolean MailAccess;
+    try {
+      MailAccess = userService.userMailAccess(email);
+    }catch (HttpServerErrorException e){
+      throw e;
+    }
+
+    if(!MailAccess){
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일을 찾을 수 없습니다");
+    }
+    response.setResult(true);
+    response.setMessage("메일인증 성공");
+    response.setHttpStatus(HttpStatus.OK);
+    response.setStatus(HttpStatus.OK.value());
     return response;
   }
 

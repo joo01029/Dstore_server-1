@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.service;
+package gg.jominsubyungsin.service.email;
 
 import gg.jominsubyungsin.domain.dto.email.EmailDto;
 import org.springframework.beans.factory.annotation.Autowired;
