@@ -2,7 +2,11 @@ package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.email.EmailDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
+<<<<<<< HEAD
+import gg.jominsubyungsin.domain.entitiy.UserEntity;
+=======
 import gg.jominsubyungsin.domain.entity.UserEntity;
+>>>>>>> 4d3a949bb1041a05d5ac86f234cce4a4be9c6e7e
 import gg.jominsubyungsin.response.Response;
 import gg.jominsubyungsin.response.user.LoginResponse;
 import gg.jominsubyungsin.service.email.EmailService;

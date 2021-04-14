@@ -26,7 +26,7 @@ public class ProjectEntity {
   @ManyToMany(mappedBy = "projects")
   private List<UserEntity> users = new ArrayList<>();
 
-  @OneToMany(mappedBy = "project_id")
+  @OneToMany(mappedBy = "projectId")
   private List<FileEntity> files = new ArrayList<>();
 
   public void add(UserEntity user){
