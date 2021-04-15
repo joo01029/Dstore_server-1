@@ -2,9 +2,6 @@ package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.email.EmailDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
-
-import gg.jominsubyungsin.domain.entity.UserEntity;
-
 import gg.jominsubyungsin.domain.entity.UserEntity;
 
 import gg.jominsubyungsin.response.Response;

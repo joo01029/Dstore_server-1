@@ -17,17 +17,21 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
 
 
+    /**
+     * 유저 리스트
+     * @return
+     */
     @Override
-    public List<UserEntity> getUserList(Pageable pageable){
+    public List<UserEntity> getUserList(){
         List<UserEntity> userList;
         Page<UserEntity> userEntityPage;
+        List<UserEntity> allUserList;
 
         try {
-            userEntityPage = userListRepository.findAll(pageable);
-            System.out.println(userEntityPage);
-            userList = userEntityPage.getContent();
+            // userEntityPage = userListRepository.findAll(pageable);
+            allUserList = userRepository.findAll();
 
-            return userList;
+            return allUserList;
         } catch (Exception e) {
             throw e;
         }

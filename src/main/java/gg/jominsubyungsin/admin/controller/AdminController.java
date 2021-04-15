@@ -5,6 +5,7 @@ import gg.jominsubyungsin.response.Response;
 import gg.jominsubyungsin.admin.response.UserListResponse;
 import gg.jominsubyungsin.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -31,11 +32,15 @@ public class AdminController {
         UserListResponse response = new UserListResponse();
 
         List<UserEntity> userList;
+        Page<UserEntity> userEntityPage;
+        List<UserEntity> allUserList;
 
         System.out.println(pageable);
 
         try {
-            userList = adminService.getUserList(pageable);
+//            userEntityPage = adminService.getUserList(pageable);
+//            userList = userEntityPage.getContent();
+            allUserList = adminService.getUserList();
         } catch (Exception e){
             throw e;
         }
@@ -44,7 +49,8 @@ public class AdminController {
         response.setMessage("페이지의 유저 보내기 성공");
         response.setHttpStatus(HttpStatus.OK);
         response.setStatus(HttpStatus.OK.value());
-        response.setUserEntity(userList);
+        response.setUserEntity(allUserList);
+        response.setTotalPages(0);
 
         return response;
     }
