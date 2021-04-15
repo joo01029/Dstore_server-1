@@ -5,11 +5,7 @@ import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
 
-<<<<<<< Updated upstream
-
 import gg.jominsubyungsin.domain.query.SelectUserDto;
-=======
->>>>>>> Stashed changes
 import org.springframework.web.client.HttpServerErrorException;
 
 public interface UserService {

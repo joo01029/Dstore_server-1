@@ -4,11 +4,7 @@ import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
-<<<<<<< Updated upstream
 import gg.jominsubyungsin.domain.query.SelectUserDto;
-=======
-
->>>>>>> Stashed changes
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
