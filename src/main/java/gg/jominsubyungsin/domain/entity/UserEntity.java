@@ -1,11 +1,9 @@
-package gg.jominsubyungsin.domain.entitiy;
+package gg.jominsubyungsin.domain.entity;
 
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
