@@ -4,6 +4,7 @@ import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
+import gg.jominsubyungsin.domain.query.SelectUserDto;
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -126,6 +127,18 @@ public class UserServiceImpl implements UserService{
 
                 return true;
               }).orElse(false);
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+  }
+
+  @Override
+  public SelectUserDto finduser(Long id){
+    try{
+      Optional<UserEntity> findUser =  userRepository.findById(id);
+
+      return new SelectUserDto(findUser.orElseGet(() -> {throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");} ));
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");

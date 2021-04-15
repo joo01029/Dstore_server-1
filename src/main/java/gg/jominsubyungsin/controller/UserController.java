@@ -2,7 +2,9 @@ package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
+import gg.jominsubyungsin.domain.query.SelectUserDto;
 import gg.jominsubyungsin.response.Response;
+import gg.jominsubyungsin.response.user.ShowUserResponse;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.security.SecurityService;
 import gg.jominsubyungsin.service.user.UserService;
@@ -113,6 +115,24 @@ public class UserController {
     response.setStatus(HttpStatus.OK.value());
 
     return response;
+  }
+  @GetMapping("/show")
+  public ShowUserResponse showUser(@RequestParam Long id) {
+    ShowUserResponse showUserResponse = new ShowUserResponse();
+    SelectUserDto selectUser;
+    try {
+      selectUser = userService.finduser(id);
+    }catch (HttpServerErrorException e){
+      throw e;
+    }
+
+    showUserResponse.setResult(true);
+    showUserResponse.setHttpStatus(HttpStatus.OK);
+    showUserResponse.setStatus(HttpStatus.OK.value());
+    showUserResponse.setMessage("성공");
+    showUserResponse.setSelectUserNoPrivacy(selectUser);
+
+    return showUserResponse;
   }
 }
 
