@@ -6,6 +6,7 @@ import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 
 
+import gg.jominsubyungsin.domain.query.SelectUserDto;
 import org.springframework.web.client.HttpServerErrorException;
 
 public interface UserService {
@@ -15,4 +16,5 @@ public interface UserService {
   boolean userDelete(UserDto userDto);
   boolean userUpdateIntroduce(UserDto userDto);
   Boolean userMailAccess(String email);
+  SelectUserDto finduser(Long id);
 }
