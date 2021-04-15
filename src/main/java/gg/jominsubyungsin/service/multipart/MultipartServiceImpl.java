@@ -38,6 +38,6 @@ public class MultipartServiceImpl implements MultipartService{
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
     }
-  }//aa
+  }
 
 }
