@@ -21,6 +21,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,7 +60,7 @@ public class AuthController {
       response.setStatus(HttpStatus.OK.value());
 
       return response;
-    }catch (HttpClientErrorException e){
+    }catch (ResponseStatusException e){
       throw e;
     }catch (Exception e){
       e.printStackTrace();
@@ -82,7 +84,7 @@ public class AuthController {
     UserEntity findUserResponse;
     try {
       findUserResponse = userService.login(userDto);
-    }catch (HttpClientErrorException e){
+    }catch (ResponseStatusException e){
       throw e;
     }catch (Exception e){
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
@@ -100,6 +102,7 @@ public class AuthController {
       accessToken = jwtService.createToken(subject, accessExpiredTime, false);
       refreshToken = jwtService.createToken(subject, refreshExpiredTime, true);
     }catch (Exception e){
+      e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 만들기 실패");
     }
 
@@ -184,7 +187,7 @@ public class AuthController {
 
     try {
       emailService.sendMail(emailDto);
-    }catch (HttpClientErrorException e){
+    }catch (HttpServerErrorException e){
       throw e;
     }
     response.setMessage("이메일 보내기 성공");
@@ -205,7 +208,7 @@ public class AuthController {
     }
 
     if(!makeAuthKey.equals(authKey)){
-      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"다른 키");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"다른 키");
     }
     boolean MailAccess;
     try {
@@ -215,7 +218,7 @@ public class AuthController {
     }
 
     if(!MailAccess){
-      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일을 찾을 수 없습니다");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일을 찾을 수 없습니다");
     }
     response.setResult(true);
     response.setMessage("메일인증 성공");

@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @ResponseBody
@@ -21,7 +23,7 @@ public class FileTestController {
   public String file(@RequestBody MultipartFile file){
     try {
       return multipartService.uploadSingle(file);
-    }catch (HttpClientErrorException | HttpServerErrorException e){
+    }catch (ResponseStatusException | HttpServerErrorException e){
       throw e;
     }
   }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @ResponseBody
@@ -43,7 +44,7 @@ public class UserController {
       throw e;
     }
     if(!setIntruduceResult){
-      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 이메일");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 이메일");
     }
 
     response.setHttpStatus(HttpStatus.OK);
@@ -77,7 +78,7 @@ public class UserController {
       throw e;
     }
     if(!userUpdateResult){
-      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일 또는 비밀번호가 틀림");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일 또는 비밀번호가 틀림");
     }
 
     response.setResult(true);
