@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,6 +25,7 @@ public class UserEntity {
   @Column(nullable = false)
   private int mailAccess;
 
+  @JsonIgnore
   @Column(nullable = false)
   private String password;
 

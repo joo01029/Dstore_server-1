@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.controller;
 
+import gg.jominsubyungsin.domain.dto.file.FileDto;
 import gg.jominsubyungsin.service.multipart.MultipartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +21,7 @@ public class FileTestController {
   MultipartService multipartService;
 
   @PostMapping("/file")
-  public String file(@RequestBody MultipartFile file){
+  public FileDto file(@RequestBody MultipartFile file){
     try {
       return multipartService.uploadSingle(file);
     }catch (ResponseStatusException | HttpServerErrorException e){

@@ -17,4 +17,6 @@ public interface UserService {
   boolean userUpdateIntroduce(UserDto userDto);
   Boolean userMailAccess(String email);
   SelectUserDto finduser(Long id);
+  UserEntity findUserId(Long id);
+  UserEntity findUser(String email);
 }

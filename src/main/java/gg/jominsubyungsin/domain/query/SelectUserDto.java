@@ -1,6 +1,5 @@
 package gg.jominsubyungsin.domain.query;
 
-import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import lombok.Getter;
 import lombok.Setter;

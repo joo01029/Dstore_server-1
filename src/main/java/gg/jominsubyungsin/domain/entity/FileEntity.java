@@ -1,9 +1,6 @@
 package gg.jominsubyungsin.domain.entity;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -31,4 +28,11 @@ public class FileEntity {
   @JoinColumn
   private ProjectEntity projectId;
 
+  @Builder
+  public FileEntity(Long id, Integer thumnail, String type, String fileLocation){
+    this.id = id;
+    this.type = type;
+    this.thumnail = thumnail;
+    this.fileLocation = fileLocation;
+  }
 }
