@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class MultipartServiceImpl implements MultipartService{
     System.out.println(fileName);
     try{
       if(fileName.contains("..")){
-        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
       }
       Path targetLocation = fileStorageLocation.resolve(fileName);
       System.out.println(targetLocation.toString());
@@ -54,7 +55,7 @@ public class MultipartServiceImpl implements MultipartService{
     try{
       for(int i = 0; i < files.toArray().length; i++){
         if(fileNames.get(i).contains("..")){
-          throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
         }
         Path targetLocation = fileStorageLocation.resolve(fileNames.get(i));
         System.out.println(targetLocation.toString());
