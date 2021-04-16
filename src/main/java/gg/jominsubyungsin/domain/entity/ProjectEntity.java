@@ -35,15 +35,17 @@ public class ProjectEntity {
 
   public void add(FileEntity fileEntity){
     files.add(fileEntity);
+    fileEntity.setProjectId(this);
   }
 
   @Builder
-  public void ProjectEntity(Long id, String title, String content, List<UserEntity> users, List<FileEntity> files){
+  public ProjectEntity(Long id, String title, String content, List<UserEntity> users, List<FileEntity> files){
     this.id = id;
     this.title = title;
     this.content = content;
     for(UserEntity user:users){
       this.add(user);
+      user.add(this);
     }
     for(FileEntity file:files){
       this.add(file);

@@ -145,4 +145,27 @@ public class UserServiceImpl implements UserService{
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
   }
+  @Override
+  public UserEntity findUserId(Long id){
+    try{
+      Optional<UserEntity> findUser =  userRepository.findById(id);
+
+      return findUser.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+  }
+
+  @Override
+  public UserEntity findUser(String email) {
+    try{
+      Optional<UserEntity> findUser =  userRepository.findByEmail(email);
+
+      return findUser.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+  }
 }

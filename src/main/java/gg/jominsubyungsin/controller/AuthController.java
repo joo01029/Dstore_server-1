@@ -5,8 +5,6 @@ import gg.jominsubyungsin.domain.dto.user.UserDto;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
 
-import gg.jominsubyungsin.domain.entity.UserEntity;
-
 import gg.jominsubyungsin.response.Response;
 import gg.jominsubyungsin.response.user.LoginResponse;
 import gg.jominsubyungsin.service.email.EmailService;
@@ -19,9 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.text.SimpleDateFormat;
