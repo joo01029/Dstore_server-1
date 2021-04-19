@@ -1,10 +1,11 @@
 package gg.jominsubyungsin.service.user;
 
+import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.query.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,8 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -124,7 +127,7 @@ public class UserServiceImpl implements UserService{
     try{
       return userRepository.findByEmail(email)
               .map(found->{
-                found.setMailAccess(1);
+                found.setMailAccess((byte) 1);
 
                 return true;
               }).orElse(false);
@@ -163,6 +166,24 @@ public class UserServiceImpl implements UserService{
       Optional<UserEntity> findUser =  userRepository.findByEmail(email);
 
       return findUser.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+  }
+
+  @Override
+  public List<SelectUserDto> findUserLikeName(String name, String email) {
+    try{
+      List<UserEntity> findUsers =  userRepository.findByNameLike(name, email);
+
+      List<SelectUserDto> userList = new ArrayList<>();
+
+      for(UserEntity findUser:findUsers){
+        userList.add(new SelectUserDto(findUser));
+      }
+
+      return userList;
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");

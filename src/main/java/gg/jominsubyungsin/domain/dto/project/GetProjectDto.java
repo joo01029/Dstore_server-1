@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ReturnProjectDto {
+public class GetProjectDto {
   private Long id;
   private String title;
   private String content;

@@ -26,17 +26,18 @@ public class MultipartServiceImpl implements MultipartService{
 
   @Override
   public FileDto uploadSingle(MultipartFile file){
+    //파일 이름 재 생
     String fileName = StringUtils.cleanPath(UUID.randomUUID().toString() + "-" + Objects.requireNonNull(file.getOriginalFilename()));
-    System.out.println(fileName);
     try{
       if(fileName.contains("..")){
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
       }
+      //저장할 파일 위치
       Path targetLocation = fileStorageLocation.resolve(fileName);
-      System.out.println(targetLocation.toString());
+      //파일 생성
       File newFile = new File(targetLocation.toString());
       boolean result = newFile.createNewFile();
-
+      //파일에 받아온 파일의 값 넣음
       Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
       String type = fileName.substring(fileName.lastIndexOf(".")+1);
@@ -78,8 +79,6 @@ public class MultipartServiceImpl implements MultipartService{
 
         fileDtos.add(fileDto);
       }
-
-
       return fileDtos;
     }catch (IOException e){
       e.printStackTrace();
