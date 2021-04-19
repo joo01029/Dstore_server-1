@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,6 +25,7 @@ public class FileEntity {
   @Column(name="Thumnail")
   private Integer thumnail;
 
+  @JsonIgnore
   @ManyToOne
   @JoinColumn
   private ProjectEntity projectId;

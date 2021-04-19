@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.domain.query;
+package gg.jominsubyungsin.domain.dto.query;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import lombok.Getter;

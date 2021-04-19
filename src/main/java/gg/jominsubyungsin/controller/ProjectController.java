@@ -1,11 +1,13 @@
 package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.file.FileDto;
-import gg.jominsubyungsin.domain.dto.project.ReturnProjectDto;
+import gg.jominsubyungsin.domain.dto.project.GetProjectDto;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
+import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.response.Response;
+import gg.jominsubyungsin.response.projects.GetProjectResponse;
 import gg.jominsubyungsin.service.file.FileService;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.multipart.MultipartService;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +38,7 @@ public class ProjectController {
   @Autowired
   FileService fileService;
   @PostMapping("/create")
-  public Response createProject(@ModelAttribute ReturnProjectDto projectDto, @RequestHeader String Authorization){
+  public Response createProject(@ModelAttribute GetProjectDto projectDto, @RequestHeader String Authorization){
     Response response = new Response();
     List<UserEntity> userEntities = new ArrayList<>();
 
@@ -73,6 +76,24 @@ public class ProjectController {
     response.setResult(true);
     response.setStatus(HttpStatus.OK.value());
     response.setMessage("프로젝트 저장 성공");
+    return response;
+  }
+  @GetMapping("/list")
+  public GetProjectResponse projectList(Pageable pageable){
+    GetProjectResponse response = new GetProjectResponse();
+    List<SelectProjectDto> projects;
+
+    try{
+      projects = projectService.getProjects(pageable);
+    }catch (Exception e){
+      throw e;
+    }
+
+    response.setResult(true);
+    response.setHttpStatus(HttpStatus.OK);
+    response.setStatus(HttpStatus.OK.value());
+    response.setMessage("성공");
+    response.setProjectList(projects);
     return response;
   }
 }

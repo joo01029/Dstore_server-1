@@ -23,7 +23,7 @@ public class UserEntity {
   private String email;
 
   @Column(nullable = false)
-  private int mailAccess;
+  private byte mailAccess;
 
   @JsonIgnore
   @Column(nullable = false)

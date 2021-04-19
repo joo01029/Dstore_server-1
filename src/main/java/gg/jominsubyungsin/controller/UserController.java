@@ -2,13 +2,13 @@ package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
-import gg.jominsubyungsin.domain.query.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
 import gg.jominsubyungsin.response.Response;
+import gg.jominsubyungsin.response.user.ShowUserListResponse;
 import gg.jominsubyungsin.response.user.ShowUserResponse;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.security.SecurityService;
 import gg.jominsubyungsin.service.user.UserService;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Controller
 @ResponseBody
@@ -134,6 +136,27 @@ public class UserController {
     showUserResponse.setSelectUserNoPrivacy(selectUser);
 
     return showUserResponse;
+  }
+  @GetMapping("/find/name")
+  public ShowUserListResponse showUserList(@RequestParam String name,@RequestHeader String Authorization){
+    ShowUserListResponse showUserListResponse = new ShowUserListResponse();
+
+    String email = jwtService.getAccessTokenSubject(Authorization);
+
+    List<SelectUserDto> userList;
+    try {
+      userList = userService.findUserLikeName(name, email);
+    }catch (Exception e){
+      throw e;
+    }
+
+    showUserListResponse.setResult(true);
+    showUserListResponse.setHttpStatus(HttpStatus.OK);
+    showUserListResponse.setMessage("성공");
+    showUserListResponse.setStatus(HttpStatus.OK.value());
+    showUserListResponse.setUserList(userList);
+
+    return showUserListResponse;
   }
 }
 

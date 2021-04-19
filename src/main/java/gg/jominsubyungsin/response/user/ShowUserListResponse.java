@@ -5,8 +5,9 @@ import gg.jominsubyungsin.response.Response;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
-public class ShowUserResponse extends Response {
-  private SelectUserDto selectUserNoPrivacy;
+import java.util.List;
+
+@Getter @Setter
+public class ShowUserListResponse extends Response {
+  List<SelectUserDto> userList;
 }
