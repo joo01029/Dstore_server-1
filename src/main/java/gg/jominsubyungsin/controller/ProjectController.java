@@ -73,8 +73,6 @@ public class ProjectController {
     }
 
     response.setHttpStatus(HttpStatus.OK);
-    response.setResult(true);
-    response.setStatus(HttpStatus.OK.value());
     response.setMessage("프로젝트 저장 성공");
     return response;
   }
@@ -89,9 +87,7 @@ public class ProjectController {
       throw e;
     }
 
-    response.setResult(true);
     response.setHttpStatus(HttpStatus.OK);
-    response.setStatus(HttpStatus.OK.value());
     response.setMessage("성공");
     response.setProjectList(projects);
     return response;
