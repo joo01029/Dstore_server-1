@@ -1,6 +1,4 @@
 package gg.jominsubyungsin.admin.service;
-
-import gg.jominsubyungsin.admin.domain.dto.UserPermissionDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.UserRepository;
