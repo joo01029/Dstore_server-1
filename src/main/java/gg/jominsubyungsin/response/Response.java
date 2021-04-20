@@ -8,7 +8,5 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class Response {
   private HttpStatus httpStatus;
-  private int status;
   private String message;
-  private boolean result;
 }

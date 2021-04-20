@@ -27,7 +27,6 @@ import java.util.Date;
 @ResponseBody
 @RequestMapping("/auth")
 public class AuthController {
-
   @Autowired
   SecurityService securityService;
   @Autowired
@@ -49,11 +48,9 @@ public class AuthController {
     }
 
     try {
-      boolean userCreateResult = userService.userCreate(userDto);
-      response.setResult(true);
+      userService.userCreate(userDto);
       response.setMessage("유저 저장 성공");
       response.setHttpStatus(HttpStatus.OK);
-      response.setStatus(HttpStatus.OK.value());
 
       return response;
     }catch (ResponseStatusException e){
@@ -68,8 +65,7 @@ public class AuthController {
   @PostMapping("/login")
   public LoginResponse login(@RequestBody UserDto userDto){
     LoginResponse loginResponse = new LoginResponse();
-
-    //비밀번호 암호화러
+    //비밀번호 암호화
     try {
       String hashPassword = securityService.hashPassword(userDto.getPassword());
       userDto.setPassword(hashPassword);
@@ -101,15 +97,12 @@ public class AuthController {
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 만들기 실패");
     }
-
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Date time = new Date(System.currentTimeMillis()+accessExpiredTime);
     String expiredTime = format.format(time);
 
-    loginResponse.setResult(false);
     loginResponse.setMessage("로그인 성공");
     loginResponse.setHttpStatus(HttpStatus.OK);
-    loginResponse.setStatus(HttpStatus.OK.value());
     loginResponse.setExepiration(expiredTime);
     loginResponse.setAccessToken(accessToken);
     loginResponse.setRefreshToken(refreshToken);
@@ -126,14 +119,11 @@ public class AuthController {
     }catch (Exception e){
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
     }
-
-
     long accessExpiredTime = 20 * 60 * 1000L;
     String accessToken;
 
     long refreshExpiredTime = 7 * 24 * 60 * 60 * 1000L;
     String refreshTokenRemake;
-
     try{
       accessToken = jwtService.createToken(subject, accessExpiredTime, false);
       refreshTokenRemake = jwtService.createToken(subject, refreshExpiredTime, true);
@@ -144,13 +134,12 @@ public class AuthController {
     Date time = new Date(System.currentTimeMillis()+accessExpiredTime);
     String expiredTime = format.format(time);
 
-    loginResponse.setResult(false);
     loginResponse.setMessage("로그인 성공");
     loginResponse.setHttpStatus(HttpStatus.OK);
-    loginResponse.setStatus(HttpStatus.OK.value());
     loginResponse.setExepiration(expiredTime);
     loginResponse.setAccessToken(accessToken);
     loginResponse.setRefreshToken(refreshTokenRemake);
+
     return loginResponse;
   }
 
@@ -188,8 +177,6 @@ public class AuthController {
     }
     response.setMessage("이메일 보내기 성공");
     response.setHttpStatus(HttpStatus.OK);
-    response.setStatus(HttpStatus.OK.value());
-    response.setResult(true);
     return response;
   }
   @RequestMapping("/email")
@@ -216,10 +203,8 @@ public class AuthController {
     if(!MailAccess){
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일을 찾을 수 없습니다");
     }
-    response.setResult(true);
     response.setMessage("메일인증 성공");
     response.setHttpStatus(HttpStatus.OK);
-    response.setStatus(HttpStatus.OK.value());
     return response;
   }
 

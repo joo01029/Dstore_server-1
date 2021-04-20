@@ -50,9 +50,7 @@ public class UserController {
     }
 
     response.setHttpStatus(HttpStatus.OK);
-    response.setStatus(HttpStatus.OK.value());
     response.setMessage("자기 소개 변경 성공");
-    response.setResult(true);
 
     return response;
   }
@@ -83,9 +81,7 @@ public class UserController {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일 또는 비밀번호가 틀림");
     }
 
-    response.setResult(true);
     response.setHttpStatus(HttpStatus.OK);
-    response.setStatus(HttpStatus.OK.value());
     response.setMessage("유저 업데이트 성공");
 
     return response;
@@ -113,9 +109,7 @@ public class UserController {
     }
 
     response.setMessage("유저 삭제 성공");
-    response.setResult(true);
     response.setHttpStatus(HttpStatus.OK);
-    response.setStatus(HttpStatus.OK.value());
 
     return response;
   }
@@ -129,9 +123,7 @@ public class UserController {
       throw e;
     }
 
-    showUserResponse.setResult(true);
     showUserResponse.setHttpStatus(HttpStatus.OK);
-    showUserResponse.setStatus(HttpStatus.OK.value());
     showUserResponse.setMessage("성공");
     showUserResponse.setSelectUserNoPrivacy(selectUser);
 
@@ -150,10 +142,8 @@ public class UserController {
       throw e;
     }
 
-    showUserListResponse.setResult(true);
     showUserListResponse.setHttpStatus(HttpStatus.OK);
     showUserListResponse.setMessage("성공");
-    showUserListResponse.setStatus(HttpStatus.OK.value());
     showUserListResponse.setUserList(userList);
 
     return showUserListResponse;
