@@ -64,15 +64,15 @@ public class UserServiceImpl implements UserService{
   }
 
   @Override
-  public void userUpdate(UserUpdateDto userUpdateDto) throws HttpServerErrorException {
+  public boolean userUpdate(UserUpdateDto userUpdateDto) throws HttpServerErrorException {
     try {
-      userRepository.findByEmailAndPassword(userUpdateDto.getEmail(), userUpdateDto.getPassword())
+      return userRepository.findByEmailAndPassword(userUpdateDto.getEmail(), userUpdateDto.getPassword())
               .map(found -> {
                 found.setPassword(Optional.ofNullable(userUpdateDto.getChangePassword()).orElse(found.getPassword()));
                 found.setName(Optional.ofNullable(userUpdateDto.getChangeName()).orElse(found.getName()));
                 userRepository.save(found);
-                return null;
-              });
+                return true;
+              }).orElse(false);
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
@@ -82,25 +82,24 @@ public class UserServiceImpl implements UserService{
 
   @Override
   @Transactional
-  public void userUpdateIntroduce(UserDto userDto) {
+  public boolean userUpdateIntroduce(UserDto userDto) {
     try {
-        userRepository.findByEmail(userDto.getEmail())
+        return userRepository.findByEmail(userDto.getEmail())
               .map(found -> {
                 found.setIntroduce(userDto.getIntroduce());
                 userRepository.save(found);
 
-                return null;
-              });
+                return true;
+              }).orElse(false);
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
-
   }
 
   @Override
   @Transactional
-  public void userDelete(UserDto userDto) {
+  public boolean userDelete(UserDto userDto) {
     Optional<UserEntity> findUser;
     try {
       findUser = userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
@@ -115,6 +114,7 @@ public class UserServiceImpl implements UserService{
     }catch (Exception e){
       throw e;
     }
+    return true;
   }
 
   @Override
