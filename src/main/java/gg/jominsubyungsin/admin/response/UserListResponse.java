@@ -11,5 +11,4 @@ import java.util.List;
 @Setter
 public class UserListResponse extends Response {
     private List<UserEntity> userEntity;
-    private int totalPages;
 }
