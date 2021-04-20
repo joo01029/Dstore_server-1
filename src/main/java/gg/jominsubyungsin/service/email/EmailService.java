@@ -1,7 +1,6 @@
 package gg.jominsubyungsin.service.email;
 
 import gg.jominsubyungsin.domain.dto.email.EmailDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
