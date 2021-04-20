@@ -1,6 +1,7 @@
 package gg.jominsubyungsin.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gg.jominsubyungsin.enums.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -44,6 +45,10 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "project_id"))
   private List<ProjectEntity> projects;
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private Role  role;
+
   public void add(ProjectEntity project){
     projects.add(project);
   }
@@ -57,6 +62,7 @@ public class UserEntity {
     this.mailAccess = 0;
     this.introduce = null;
     this.profileImage = null;
+    this.role = Role.USER;
   }
 
 
