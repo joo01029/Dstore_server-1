@@ -14,9 +14,9 @@ import java.util.List;
 public interface UserService {
   void userCreate(UserDto userDto);
   UserEntity login(UserDto userDto);
-  void userUpdate(UserUpdateDto userDto) throws HttpServerErrorException;
-  void userDelete(UserDto userDto);
-  void userUpdateIntroduce(UserDto userDto);
+  boolean userUpdate(UserUpdateDto userDto) throws HttpServerErrorException;
+  boolean userDelete(UserDto userDto);
+  boolean userUpdateIntroduce(UserDto userDto);
   boolean userMailAccess(String email);
   SelectUserDto finduser(Long id);
   UserEntity findUserId(Long id);

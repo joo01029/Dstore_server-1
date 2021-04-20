@@ -2,6 +2,7 @@ package gg.jominsubyungsin.domain.repository;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
 
+import gg.jominsubyungsin.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +19,6 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
 
   @Query("SELECT u FROM UserEntity as u WHERE u.name like %:name% and u.email not like :email")
   List<UserEntity> findByNameLike(@Param("name")String name, @Param("email")String email);
+
+  List<UserEntity> findByRole(Role admin);
 }
