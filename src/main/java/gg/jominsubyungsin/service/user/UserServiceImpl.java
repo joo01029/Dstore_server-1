@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -51,10 +52,10 @@ public class UserServiceImpl implements UserService{
 
 
       if(findUserByEmailAndPassword.isPresent() && 0 == findUserByEmailAndPassword.get().getMailAccess()){
-        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일 인증 안됨");
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일 인증 안됨");
       }
 
-      return findUserByEmailAndPassword.orElseGet(() -> {throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
+      return findUserByEmailAndPassword.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
     }catch (Exception e){
       throw e;
     }
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService{
       throw e;
     }
     if(findUser.isEmpty()){
-      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
     }
 
     try{
@@ -138,7 +139,7 @@ public class UserServiceImpl implements UserService{
     try{
       Optional<UserEntity> findUser =  userRepository.findById(id);
 
-      return new SelectUserDto(findUser.orElseGet(() -> {throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");} ));
+      return new SelectUserDto(findUser.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");} ));
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
