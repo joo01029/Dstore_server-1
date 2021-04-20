@@ -175,7 +175,7 @@ public class AuthController {
     emailDto.setSenderName("D-Store");
     emailDto.setMessage(new StringBuffer().append("<h1>회원가입 인증메일입니다.</h1>")
             .append("<p>밑의 링크를 클릭하면 메일이 인증 됩니다.</p>")
-            .append("<a href=`http://localhost:8080/auth/email?email="+mail)
+            .append("<a href=`http://10.80.162.195:8080/auth/email?email="+mail)
             .append("&authKey="+authKey).append(">메일 인증 링크</a>")
             .toString());
 

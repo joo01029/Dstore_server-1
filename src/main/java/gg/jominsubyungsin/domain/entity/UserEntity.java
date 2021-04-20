@@ -57,6 +57,4 @@ public class UserEntity {
     this.profileImage = null;
   }
 
-
-
 }
