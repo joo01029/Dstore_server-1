@@ -82,7 +82,7 @@ public class JwtServiceImpl implements JwtService{
       return claims;
     } catch (ExpiredJwtException e){
       System.out.println(e);
-      return null;
+      throw e;
     } catch (Exception e){
       throw e;
     }

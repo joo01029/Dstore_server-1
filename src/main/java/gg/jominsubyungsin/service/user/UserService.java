@@ -22,4 +22,5 @@ public interface UserService {
   UserEntity findUserId(Long id);
   UserEntity findUser(String email);
   List<SelectUserDto> findUserLikeName(String name, String email);
+  boolean checkUserSame(String email, Long id);
 }
