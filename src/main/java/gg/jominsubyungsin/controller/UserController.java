@@ -1,16 +1,23 @@
 package gg.jominsubyungsin.controller;
 
+import gg.jominsubyungsin.domain.dto.query.SelectProjectDetailDto;
+import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
 import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponseDto;
+import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.response.Response;
 import gg.jominsubyungsin.response.user.ShowUserListResponse;
 import gg.jominsubyungsin.response.user.ShowUserResponse;
+import gg.jominsubyungsin.response.user.UserDetailResponse;
 import gg.jominsubyungsin.service.jwt.JwtService;
+import gg.jominsubyungsin.service.project.ProjectService;
 import gg.jominsubyungsin.service.security.SecurityService;
 import gg.jominsubyungsin.service.user.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +37,8 @@ public class UserController {
   SecurityService securityService;
   @Autowired
   JwtService jwtService;
+  @Autowired
+  ProjectService projectService;
 
   @PostMapping("/set/introduce")
   public Response setIntroduce(@RequestBody UserDto userDto, @RequestHeader String Authorization){
@@ -147,6 +156,35 @@ public class UserController {
     showUserListResponse.setUserList(userList);
 
     return showUserListResponse;
+  }
+
+  @GetMapping("/detail/{id}")
+  public UserDetailResponse detailUser(@PathVariable("id")Long id,Pageable pageable, @RequestHeader String Authorization){
+    UserDetailResponse response = new UserDetailResponse();
+    UserDetailResponseDto userDetailResponseDto;
+    String subject;
+    try {
+      subject = jwtService.getAccessTokenSubject(Authorization);
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
+    }
+    boolean myProfile;
+    UserEntity profile;
+    List<SelectProjectDto> selectProjectDetailDtos;
+    try {
+      myProfile = userService.checkUserSame(subject, id);
+      profile = userService.findUserId(id);
+      selectProjectDetailDtos = projectService.getProjects(pageable, profile);
+    } catch (Exception e){
+      throw e;
+    }
+    userDetailResponseDto = new UserDetailResponseDto(profile,myProfile, selectProjectDetailDtos);
+
+    response.setHttpStatus(HttpStatus.OK);
+    response.setMessage("성공");
+    response.setUser(userDetailResponseDto);
+    return response;
   }
 }
 

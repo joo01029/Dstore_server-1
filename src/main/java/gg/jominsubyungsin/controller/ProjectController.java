@@ -2,10 +2,10 @@ package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.file.FileDto;
 import gg.jominsubyungsin.domain.dto.project.GetProjectDto;
+import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.response.Response;
 import gg.jominsubyungsin.response.projects.GetProjectResponse;
 import gg.jominsubyungsin.service.file.FileService;
@@ -37,6 +37,7 @@ public class ProjectController {
   JwtService jwtService;
   @Autowired
   FileService fileService;
+
   @PostMapping("/create")
   public Response createProject(@ModelAttribute GetProjectDto projectDto, @RequestHeader String Authorization){
     Response response = new Response();
@@ -45,11 +46,26 @@ public class ProjectController {
     if(Authorization.isEmpty()){
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "토큰 없음");
     }
+    if(projectDto.getFiles().isEmpty()){
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일은 무조건 1개 이상 보내야 합니다");
+    }
     String email = jwtService.getAccessTokenSubject(Authorization);
-    userEntities.add(userService.findUser(email));
+    UserEntity mainUser;
+    try {
+      mainUser = userService.findUser(email);
+    }catch (Exception e){
+      throw e;
+    }
+    userEntities.add(mainUser);
     for(Long id:projectDto.getUsers()){
       try{
-        userEntities.add(userService.findUserId(id));
+        UserEntity user = userService.findUserId(id);
+        for(UserEntity compare:userEntities) {
+          if (user.getId().equals(compare.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "같은 유저 입니다");
+          }
+        }
+        userEntities.add(user);
       }catch (Exception e){
         throw e;
       }

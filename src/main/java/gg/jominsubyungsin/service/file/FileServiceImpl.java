@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,10 @@ public class FileServiceImpl implements FileService{
     List<FileEntity> fileEntities = new ArrayList<>();
 
     for(FileDto file: files){
+
       if(!thumnail){
         file.setThumnail(1);
+        thumnail = true;
       }else{
         file.setThumnail(0);
       }

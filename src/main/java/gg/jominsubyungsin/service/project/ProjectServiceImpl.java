@@ -1,8 +1,9 @@
 package gg.jominsubyungsin.service.project;
 
+import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.query.SelectProjectDetailDto;
 import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
 import gg.jominsubyungsin.domain.repository.ProjectListRepository;
 import gg.jominsubyungsin.domain.repository.ProjectRepository;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ProjectSeriveImpl implements ProjectService{
+public class ProjectServiceImpl implements ProjectService{
   @Autowired
   ProjectRepository projectRepository;
   @Autowired
@@ -52,6 +53,31 @@ public class ProjectSeriveImpl implements ProjectService{
         }
         SelectProjectDto selectProjectDto = new SelectProjectDto(projectEntity, userDtos);
         projectDtos.add(selectProjectDto);
+      }
+
+      return projectDtos;
+    }catch (Exception e){
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+  }
+
+  @Override
+  public List<SelectProjectDto> getProjects(Pageable pageable, UserEntity user) {
+    List<ProjectEntity> projectEntities;
+    List<SelectProjectDto> projectDtos = new ArrayList<>();
+
+    Page<ProjectEntity> projectEntityPage;
+    try{
+      projectEntityPage = projectListRepository.findByUsers(pageable, user);
+      projectEntities = projectEntityPage.getContent();
+      for(ProjectEntity projectEntity: projectEntities){
+        List<SelectUserDto> userDtos = new ArrayList<>();
+        for(UserEntity userEntity: projectEntity.getUsers()){
+          SelectUserDto userDto = new SelectUserDto(userEntity);
+          userDtos.add(userDto);
+        }
+        SelectProjectDto selectProjectDetailDto = new SelectProjectDto(projectEntity, userDtos);
+        projectDtos.add(selectProjectDetailDto);
       }
 
       return projectDtos;

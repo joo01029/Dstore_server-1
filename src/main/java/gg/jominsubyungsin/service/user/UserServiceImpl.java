@@ -1,6 +1,5 @@
 package gg.jominsubyungsin.service.user;
 
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
 
@@ -10,7 +9,6 @@ import gg.jominsubyungsin.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -35,7 +33,7 @@ public class UserServiceImpl implements UserService{
     }
 
     if(findUserByEmail.isPresent()){
-      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이미 유저가 존재함");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 유저가 존재함");
     }
     try {
       UserEntity saveUser = userDto.toEntity();
@@ -59,6 +57,7 @@ public class UserServiceImpl implements UserService{
 
       return findUserByEmailAndPassword.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
     }catch (Exception e){
+      e.printStackTrace();
       throw e;
     }
   }
@@ -183,6 +182,22 @@ public class UserServiceImpl implements UserService{
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+  }
+
+  @Override
+  public boolean checkUserSame(String email, Long id) {
+    UserEntity findUser;
+    try{
+      findUser = userRepository.findByEmail(email).orElseGet(()->{throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 못찾음");});
+      if(findUser.getId().equals(id)){
+        return true;
+      }else{
+        return false;
+      }
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 못찾");
     }
   }
 }
