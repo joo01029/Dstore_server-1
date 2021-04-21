@@ -24,6 +24,7 @@ public class FileServiceImpl implements FileService{
     for(FileDto file: files){
       if(!thumnail){
         file.setThumnail(1);
+        thumnail = true;
       }else{
         file.setThumnail(0);
       }
