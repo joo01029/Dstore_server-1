@@ -1,8 +1,9 @@
 package gg.jominsubyungsin.service.project;
 
+import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.query.SelectProjectDetailDto;
 import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
 import gg.jominsubyungsin.domain.repository.ProjectListRepository;
 import gg.jominsubyungsin.domain.repository.ProjectRepository;
@@ -75,8 +76,8 @@ public class ProjectServiceImpl implements ProjectService{
           SelectUserDto userDto = new SelectUserDto(userEntity);
           userDtos.add(userDto);
         }
-        SelectProjectDto selectProjectDto = new SelectProjectDto(projectEntity, userDtos);
-        projectDtos.add(selectProjectDto);
+        SelectProjectDto selectProjectDetailDto = new SelectProjectDto(projectEntity, userDtos);
+        projectDtos.add(selectProjectDetailDto);
       }
 
       return projectDtos;

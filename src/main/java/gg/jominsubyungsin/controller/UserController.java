@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.controller;
 
+import gg.jominsubyungsin.domain.dto.query.SelectProjectDetailDto;
 import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
@@ -24,7 +25,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Calendar;
 import java.util.List;
 
 @Controller
@@ -171,20 +171,19 @@ public class UserController {
     }
     boolean myProfile;
     UserEntity profile;
-    List<SelectProjectDto> selectProjectDtos;
+    List<SelectProjectDto> selectProjectDetailDtos;
     try {
       myProfile = userService.checkUserSame(subject, id);
       profile = userService.findUserId(id);
-      selectProjectDtos = projectService.getProjects(pageable, profile);
+      selectProjectDetailDtos = projectService.getProjects(pageable, profile);
     } catch (Exception e){
       throw e;
     }
-    userDetailResponseDto = new UserDetailResponseDto(profile,myProfile,selectProjectDtos);
+    userDetailResponseDto = new UserDetailResponseDto(profile,myProfile, selectProjectDetailDtos);
 
     response.setHttpStatus(HttpStatus.OK);
     response.setMessage("성공");
     response.setUser(userDetailResponseDto);
-
     return response;
   }
 }

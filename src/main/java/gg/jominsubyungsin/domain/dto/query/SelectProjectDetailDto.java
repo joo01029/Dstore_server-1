@@ -5,20 +5,27 @@ import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
-public class SelectProjectDto {
+public class SelectProjectDetailDto {
   private Long id;
   private String title;
-  private FileEntity mainPhoto;
-  private List<SelectUserDto> users;
+  private String content;
 
-  public SelectProjectDto(ProjectEntity projectEntity, List<SelectUserDto> selectUserDto){
+  private FileEntity mainPhoto;
+  private List<FileEntity> files = new ArrayList<>();
+
+  private List<SelectUserDto> users = new ArrayList<>();
+
+  public SelectProjectDetailDto(ProjectEntity projectEntity, List<SelectUserDto> selectUserDto){
     this.id = projectEntity.getId();
     this.title = projectEntity.getTitle();
+    this.content = projectEntity.getContent();
     this.mainPhoto = projectEntity.getFiles().get(0);
+    this.files = projectEntity.getFiles();
     this.users = selectUserDto;
   }
 }

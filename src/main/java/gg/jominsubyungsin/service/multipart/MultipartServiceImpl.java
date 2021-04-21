@@ -26,12 +26,16 @@ public class MultipartServiceImpl implements MultipartService{
 
   @Override
   public FileDto uploadSingle(MultipartFile file){
+    if(file.isEmpty()){
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일이 비었음");
+    }
     //파일 이름 재 생
     String fileName = StringUtils.cleanPath(UUID.randomUUID().toString() + "-" + Objects.requireNonNull(file.getOriginalFilename()));
     try{
       if(fileName.contains("..")){
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
       }
+
       //저장할 파일 위치
       Path targetLocation = fileStorageLocation.resolve(fileName);
       //파일 생성
@@ -53,6 +57,12 @@ public class MultipartServiceImpl implements MultipartService{
 
   @Override
   public List<FileDto> uploadMulti(List<MultipartFile> files){
+    for(MultipartFile file:files) {
+      if (file.isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일이 비었음");
+      }
+    }
+
     List<FileDto> fileDtos = new ArrayList<>();
     List<String> fileNames = new ArrayList<>();
     for(MultipartFile file:files){
