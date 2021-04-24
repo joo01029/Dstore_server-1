@@ -7,8 +7,8 @@ import javax.validation.constraints.Email;
 
 @Getter @Setter
 public class EmailDto {
-  @Email
   private String senderName;
+  @Email
   private String senderMail;
   @Email
   private String receiveMail;

@@ -6,8 +6,8 @@ import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.response.Response;
-import gg.jominsubyungsin.response.projects.GetProjectResponse;
+import gg.jominsubyungsin.domain.response.Response;
+import gg.jominsubyungsin.domain.response.projects.GetProjectResponse;
 import gg.jominsubyungsin.service.file.FileService;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.multipart.MultipartService;
@@ -77,7 +77,7 @@ public class ProjectController {
     }catch (Exception e){
       throw e;
     }
-    List<FileEntity> fileEntities = fileService.createFile(files);
+    List<FileEntity> fileEntities = fileService.createFiles(files);
 
 
     ProjectEntity projectEntity = projectDto.toEntity(userEntities,fileEntities);

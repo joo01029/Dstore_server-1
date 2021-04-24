@@ -1,6 +1,7 @@
 package gg.jominsubyungsin.service.multipart;
 
 import gg.jominsubyungsin.domain.dto.file.FileDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,11 +20,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+
 @Service
 public class MultipartServiceImpl implements MultipartService{
 
-  private final Path fileStorageLocation = Paths.get("src/main/resources/static/").toAbsolutePath().normalize();
+  private Path fileStorageLocation = Paths.get("gg/jominsubyungsin/static/").toAbsolutePath().normalize();
 
+  @Value(value = "server.get.url")
+  String server;
   @Override
   public FileDto uploadSingle(MultipartFile file){
     if(file.isEmpty()){
@@ -46,7 +50,7 @@ public class MultipartServiceImpl implements MultipartService{
 
       String type = fileName.substring(fileName.lastIndexOf(".")+1);
       FileDto fileDto = new FileDto();
-      fileDto.setFileLocation("/static/"+fileName);
+      fileDto.setFileLocation(server+"/file/get"+fileName);
       fileDto.setType(type);
       return fileDto;
     }catch (IOException e){
@@ -84,7 +88,7 @@ public class MultipartServiceImpl implements MultipartService{
         FileDto fileDto = new FileDto();
 
         fileDto.setType(type);
-        fileNames.set(i,"/static/"+fileNames.get(i));
+        fileNames.set(i,server+"/file/get"+fileNames.get(i));
         fileDto.setFileLocation(fileNames.get(i));
 
         fileDtos.add(fileDto);
