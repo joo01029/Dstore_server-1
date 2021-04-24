@@ -24,9 +24,9 @@ import java.util.UUID;
 @Service
 public class MultipartServiceImpl implements MultipartService{
 
-  private Path fileStorageLocation = Paths.get("gg/jominsubyungsin/static/").toAbsolutePath().normalize();
+  private Path fileStorageLocation = Paths.get("static/").toAbsolutePath().normalize();
 
-  @Value(value = "server.get.url")
+  @Value("${server.get.url}")
   String server;
   @Override
   public FileDto uploadSingle(MultipartFile file){
@@ -88,7 +88,7 @@ public class MultipartServiceImpl implements MultipartService{
         FileDto fileDto = new FileDto();
 
         fileDto.setType(type);
-        fileNames.set(i,server+"/file/get"+fileNames.get(i));
+        fileNames.set(i,server+"/file/get/"+fileNames.get(i));
         fileDto.setFileLocation(fileNames.get(i));
 
         fileDtos.add(fileDto);

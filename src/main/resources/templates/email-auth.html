@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>D-Store</title>
+</head>
+<script>
+    window.onload = () =>{
+        if([[${isConfirm}]]){
+            alert("인증에 성공했습니다.")
+        }else{
+            alert("인증에 실패했습니다.")
+        }
+        window.close();
+    }
+</script>
+</html>
