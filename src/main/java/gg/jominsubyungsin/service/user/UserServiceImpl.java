@@ -23,46 +23,6 @@ public class UserServiceImpl implements UserService{
   private UserRepository userRepository;
 
   @Override
-  @Transactional
-  public void userCreate(UserDto userDto) {
-    Optional<UserEntity> findUserByEmail;
-    try {
-      findUserByEmail = userRepository.findByEmail(userDto.getEmail());
-    }catch (Exception e){
-      throw e;
-    }
-
-    if(findUserByEmail.isPresent()){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 유저가 존재함");
-    }
-    try {
-      UserEntity saveUser = userDto.toEntity();
-      userRepository.save(saveUser);
-    }catch (Exception e){
-      throw e;
-    }
-  }
-
-  @Override
-  public UserEntity login(UserDto userDto) {
-    String password = userDto.getPassword();
-    String Email = userDto.getEmail();
-    try {
-      Optional<UserEntity> findUserByEmailAndPassword = userRepository.findByEmailAndPassword(Email, password);
-
-
-      if(findUserByEmailAndPassword.isPresent() && 0 == findUserByEmailAndPassword.get().getMailAccess()){
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일 인증 안됨");
-      }
-
-      return findUserByEmailAndPassword.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
-    }catch (Exception e){
-      e.printStackTrace();
-      throw e;
-    }
-  }
-
-  @Override
   public boolean userUpdate(UserUpdateDto userUpdateDto) throws HttpServerErrorException {
     try {
       return userRepository.findByEmailAndPassword(userUpdateDto.getEmail(), userUpdateDto.getPassword())
@@ -114,22 +74,6 @@ public class UserServiceImpl implements UserService{
       throw e;
     }
     return true;
-  }
-
-  @Override
-  @Transactional
-  public boolean userMailAccess(String email){
-    try{
-      return userRepository.findByEmail(email)
-              .map(found->{
-                found.setMailAccess((byte) 1);
-
-                return true;
-              }).orElse(false);
-    }catch (Exception e){
-      e.printStackTrace();
-      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
-    }
   }
 
   @Override

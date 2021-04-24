@@ -29,6 +29,7 @@ public class JwtServiceImpl implements JwtService{
 
       return encodingToken(subject, signingKey, ttlMillis);
     }catch (Exception e){
+      e.printStackTrace();
       throw e;
     }
   }
@@ -45,6 +46,7 @@ public class JwtServiceImpl implements JwtService{
       }
       return new SecretKeySpec(secretKey, signatureAlgorithm.getJcaName());
     }catch (Exception e){
+      e.printStackTrace();
       throw e;
     }
   }
@@ -59,6 +61,7 @@ public class JwtServiceImpl implements JwtService{
               .signWith(secretKey, signatureAlgorithm)
               .compact();
     }catch (Exception e){
+      e.printStackTrace();
       throw e;
     }
   }
@@ -80,10 +83,8 @@ public class JwtServiceImpl implements JwtService{
               .getBody();
 
       return claims;
-    } catch (ExpiredJwtException e){
-      System.out.println(e);
-      throw e;
-    } catch (Exception e){
+    }catch (Exception e){
+      e.printStackTrace();
       throw e;
     }
 
@@ -96,6 +97,7 @@ public class JwtServiceImpl implements JwtService{
       Claims claims = decodingToken(token, REFRESHSECRET_KEY);
       return claims.getSubject();
     }catch (Exception e){
+      e.printStackTrace();
       throw e;
     }
   }

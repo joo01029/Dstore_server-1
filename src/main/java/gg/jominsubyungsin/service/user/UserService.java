@@ -12,12 +12,10 @@ import org.springframework.web.client.HttpServerErrorException;
 import java.util.List;
 
 public interface UserService {
-  void userCreate(UserDto userDto);
-  UserEntity login(UserDto userDto);
+
   boolean userUpdate(UserUpdateDto userDto) throws HttpServerErrorException;
   boolean userDelete(UserDto userDto);
   boolean userUpdateIntroduce(UserDto userDto);
-  boolean userMailAccess(String email);
   SelectUserDto finduser(Long id);
   UserEntity findUserId(Long id);
   UserEntity findUser(String email);

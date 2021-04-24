@@ -2,23 +2,51 @@ package gg.jominsubyungsin.service.file;
 
 import gg.jominsubyungsin.domain.dto.file.FileDto;
 import gg.jominsubyungsin.domain.entity.FileEntity;
+import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.FileRepository;
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class FileServiceImpl implements FileService{
+
+  private final Path fileStorageLocation = Paths.get("gg/jominsubyungsin/static/").toAbsolutePath().normalize();
+
+
   @Autowired
-  private FileRepository fileRepository;
+  FileRepository fileRepository;
+  @Autowired
+  UserRepository userRepository;
+
   @Override
-  public List<FileEntity> createFile(List<FileDto> files) {
+  @Transactional
+  public void setProfileImage(FileDto file, String email) {
+    UserEntity user = userRepository.findByEmail(email).orElseGet(()->{throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지않는 이메일");});
+    user.setProfileImage(file.getFileLocation());
+    try{
+      FileEntity fileEntity = file.toEntity();
+      fileRepository.save(fileEntity);
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버에러");
+    }
+  }
+
+  @Override
+  @Transactional
+  public List<FileEntity> createFiles(List<FileDto> files) {
     boolean thumnail  = false;
     List<FileEntity> fileEntities = new ArrayList<>();
 
@@ -44,4 +72,23 @@ public class FileServiceImpl implements FileService{
     }
     return fileEntities;
   }
+
+  @Override
+  public UrlResource loadFile(String filename) {
+
+   try {
+      Path file = fileStorageLocation.resolve(filename).normalize();
+      UrlResource resource = new UrlResource(file.toUri());
+
+      if(resource.exists()){
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "없는 파일");
+      }
+      return resource;
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "없는 파일");
+    }
+  }
+
+
 }

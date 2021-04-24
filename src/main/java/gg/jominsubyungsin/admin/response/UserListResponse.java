@@ -1,7 +1,7 @@
 package gg.jominsubyungsin.admin.response;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.response.Response;
+import gg.jominsubyungsin.domain.response.Response;
 import lombok.Getter;
 import lombok.Setter;
 

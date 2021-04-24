@@ -1,7 +1,7 @@
-package gg.jominsubyungsin.response.projects;
+package gg.jominsubyungsin.domain.response.projects;
 
 import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
-import gg.jominsubyungsin.response.Response;
+import gg.jominsubyungsin.domain.response.Response;
 import lombok.Getter;
 import lombok.Setter;
 

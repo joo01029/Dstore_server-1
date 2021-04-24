@@ -1,6 +1,6 @@
-package gg.jominsubyungsin.response.user;
+package gg.jominsubyungsin.domain.response.user;
 
-import gg.jominsubyungsin.response.Response;
+import gg.jominsubyungsin.domain.response.Response;
 import lombok.Getter;
 import lombok.Setter;
 

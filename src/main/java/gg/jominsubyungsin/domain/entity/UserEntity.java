@@ -8,7 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Setter
 @Getter
 @Entity
@@ -22,9 +22,6 @@ public class UserEntity {
   @Column(unique = true)
   @Email
   private String email;
-
-  @Column(nullable = false)
-  private byte mailAccess;
 
   @JsonIgnore
   @Column(nullable = false)
@@ -59,7 +56,6 @@ public class UserEntity {
     this.email = email;
     this.password = password;
     this.name = name;
-    this.mailAccess = 0;
     this.introduce = null;
     this.profileImage = null;
     this.role = Role.USER;

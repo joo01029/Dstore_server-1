@@ -1,6 +1,6 @@
 package gg.jominsubyungsin.handler;
 
-import gg.jominsubyungsin.response.Response;
+import gg.jominsubyungsin.domain.response.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

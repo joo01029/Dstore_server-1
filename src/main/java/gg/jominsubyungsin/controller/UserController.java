@@ -1,17 +1,19 @@
 package gg.jominsubyungsin.controller;
 
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDetailDto;
 import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
 import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
 import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponseDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.response.Response;
-import gg.jominsubyungsin.response.user.ShowUserListResponse;
-import gg.jominsubyungsin.response.user.ShowUserResponse;
-import gg.jominsubyungsin.response.user.UserDetailResponse;
+import gg.jominsubyungsin.lib.Hash;
+import gg.jominsubyungsin.domain.response.Response;
+import gg.jominsubyungsin.domain.response.user.ShowUserListResponse;
+import gg.jominsubyungsin.domain.response.user.ShowUserResponse;
+import gg.jominsubyungsin.domain.response.user.UserDetailResponse;
+import gg.jominsubyungsin.service.file.FileService;
 import gg.jominsubyungsin.service.jwt.JwtService;
+import gg.jominsubyungsin.service.multipart.MultipartService;
 import gg.jominsubyungsin.service.project.ProjectService;
 import gg.jominsubyungsin.service.security.SecurityService;
 import gg.jominsubyungsin.service.user.UserService;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -39,6 +42,11 @@ public class UserController {
   JwtService jwtService;
   @Autowired
   ProjectService projectService;
+  @Autowired
+  MultipartService multipartService;
+  @Autowired
+  FileService fileService;
+  Hash hash;
 
   @PostMapping("/set/introduce")
   public Response setIntroduce(@RequestBody UserDto userDto, @RequestHeader String Authorization){
@@ -71,8 +79,8 @@ public class UserController {
     String hashChangePassword;
 
     try {
-      hashNowPassword = securityService.hashPassword(userUpdateDto.getPassword());
-      hashChangePassword = userUpdateDto.getChangePassword() != null ? securityService.hashPassword(userUpdateDto.getChangePassword()) : null;
+      hashNowPassword = hash.hashText(userUpdateDto.getPassword());
+      hashChangePassword = userUpdateDto.getChangePassword() != null ? hash.hashText(userUpdateDto.getChangePassword()) : null;
     }catch (HttpServerErrorException e){
       throw e;
     }
@@ -102,7 +110,7 @@ public class UserController {
     Response response = new Response();
 
     try {
-      String hashPassword = securityService.hashPassword(userDto.getPassword());
+      String hashPassword = hash.hashText(userDto.getPassword());
       userDto.setPassword(hashPassword);
     }catch (HttpServerErrorException e){
       throw e;
@@ -186,5 +194,24 @@ public class UserController {
     response.setUser(userDetailResponseDto);
     return response;
   }
+//  @PutMapping("/profile/image")
+//  public Response updateProfileImage(@RequestHeader String Authorization, @ModelAttribute MultipartFile file){
+//    Response response = new Response();
+//
+//    String subject;
+//    try{
+//      subject = jwtService.getAccessTokenSubject(Authorization);
+//    }catch (Exception e){
+//      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
+//    }
+//    try {
+//      multipartService.uploadSingle(file);
+//    }catch (Exception e){
+//      throw e;
+//    }
+//
+//    response.setMessage("성공");
+//    response.setHttpStatus(HttpStatus.OK);
+//  }
 }
 
