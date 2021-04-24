@@ -22,7 +22,7 @@ import java.util.List;
 @Service
 public class FileServiceImpl implements FileService{
 
-  private final Path fileStorageLocation = Paths.get("gg/jominsubyungsin/static/").toAbsolutePath().normalize();
+  private final Path fileStorageLocation = Paths.get("static/").toAbsolutePath().normalize();
 
 
   @Autowired
@@ -80,7 +80,7 @@ public class FileServiceImpl implements FileService{
       Path file = fileStorageLocation.resolve(filename).normalize();
       UrlResource resource = new UrlResource(file.toUri());
 
-      if(resource.exists()){
+      if(!resource.exists()){
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "없는 파일");
       }
       return resource;
