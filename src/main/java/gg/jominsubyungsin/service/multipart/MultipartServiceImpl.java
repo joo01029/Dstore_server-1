@@ -50,7 +50,7 @@ public class MultipartServiceImpl implements MultipartService{
 
       String type = fileName.substring(fileName.lastIndexOf(".")+1);
       FileDto fileDto = new FileDto();
-      fileDto.setFileLocation(server+"/file/get"+fileName);
+      fileDto.setFileLocation(server+"/file/see"+fileName);
       fileDto.setType(type);
       return fileDto;
     }catch (IOException e){
@@ -88,7 +88,7 @@ public class MultipartServiceImpl implements MultipartService{
         FileDto fileDto = new FileDto();
 
         fileDto.setType(type);
-        fileNames.set(i,server+"/file/get/"+fileNames.get(i));
+        fileNames.set(i,server+"/file/see/"+fileNames.get(i));
         fileDto.setFileLocation(fileNames.get(i));
 
         fileDtos.add(fileDto);

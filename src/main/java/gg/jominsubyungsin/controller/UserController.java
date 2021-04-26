@@ -48,7 +48,7 @@ public class UserController {
   FileService fileService;
   Hash hash;
 
-  @PostMapping("/set/introduce")
+  @PutMapping("/set/introduce")
   public Response setIntroduce(@RequestBody UserDto userDto, @RequestHeader String Authorization){
     Response response = new Response();
 

@@ -22,7 +22,7 @@ public class FileController {
   @Autowired
   FileService fileService;
 
-  @GetMapping("/get/{filename}")
+  @GetMapping("/see/{filename}")
   public ResponseEntity<UrlResource> getImage(@PathVariable String filename, HttpServletRequest request){
     UrlResource resource = fileService.loadFile(filename);
     String contentType = null;
