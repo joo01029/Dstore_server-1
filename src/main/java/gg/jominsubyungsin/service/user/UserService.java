@@ -21,4 +21,5 @@ public interface UserService {
   UserEntity findUser(String email);
   List<SelectUserDto> findUserLikeName(String name, String email);
   boolean checkUserSame(String email, Long id);
+  void updateProfileImage(String email, String fileUrl);
 }

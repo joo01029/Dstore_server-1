@@ -1,9 +1,12 @@
 package gg.jominsubyungsin.service.jwt;
 
+import gg.jominsubyungsin.domain.entity.UserEntity;
+import gg.jominsubyungsin.enums.JwtAuth;
+
 public interface JwtService {
-  String createToken(String subject, long ttlMillis, boolean MakeTokenForRefresh);
+  String createToken(String subject, long ttlMillis, JwtAuth authType);
 
-  String getAccessTokenSubject(String token);
+  UserEntity accessTokenDecoding(String token);
 
-  String getRefreshTokenSubject(String token);
+  String refreshTokenDecoding(String token);
 }

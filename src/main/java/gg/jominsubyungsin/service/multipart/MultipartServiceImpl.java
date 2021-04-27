@@ -50,7 +50,7 @@ public class MultipartServiceImpl implements MultipartService{
 
       String type = fileName.substring(fileName.lastIndexOf(".")+1);
       FileDto fileDto = new FileDto();
-      fileDto.setFileLocation(server+"/file/see"+fileName);
+      fileDto.setFileLocation(server+"/file/see/"+fileName);
       fileDto.setType(type);
       return fileDto;
     }catch (IOException e){
@@ -78,14 +78,29 @@ public class MultipartServiceImpl implements MultipartService{
         if(fileNames.get(i).contains("..")){
           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
         }
+        String type = fileNames.get(i).substring(fileNames.get(i).lastIndexOf(".")+1);
+        FileDto fileDto = new FileDto();
+
+        if(type.equals("jpeg") || type.equals("png")||type.equals("jpg")){
+          fileDto.setType("image");
+        }else if(type.equals("mp4")||type.equals("AVI")){
+          fileDto.setType("video");
+        }else{
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
+        }
+
         Path targetLocation = fileStorageLocation.resolve(fileNames.get(i));
-        System.out.println(targetLocation.toString());
+
         File newFile = new File(targetLocation.toString());
         boolean result = newFile.createNewFile();
 
+        if(!result){
+          throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 저장 실패");
+        }
+
         Files.copy(files.get(i).getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-        String type = fileNames.get(i).substring(fileNames.get(i).lastIndexOf(".")+1);
-        FileDto fileDto = new FileDto();
+
+
 
         fileDto.setType(type);
         fileNames.set(i,server+"/file/see/"+fileNames.get(i));

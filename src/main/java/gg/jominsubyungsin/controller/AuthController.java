@@ -5,6 +5,7 @@ import gg.jominsubyungsin.domain.dto.user.UserDto;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
 
+import gg.jominsubyungsin.enums.JwtAuth;
 import gg.jominsubyungsin.lib.Hash;
 import gg.jominsubyungsin.domain.response.Response;
 import gg.jominsubyungsin.domain.response.user.LoginResponse;
@@ -94,8 +95,8 @@ public class AuthController {
     //token발행
     try {
       subject = findUserResponse.getEmail();
-      accessToken = jwtService.createToken(subject, accessExpiredTime, false);
-      refreshToken = jwtService.createToken(subject, refreshExpiredTime, true);
+      accessToken = jwtService.createToken(subject, accessExpiredTime, JwtAuth.ACCESS);
+      refreshToken = jwtService.createToken(subject, refreshExpiredTime, JwtAuth.REFRESH);
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 만들기 실패");
@@ -118,7 +119,7 @@ public class AuthController {
 
     String subject;
     try {
-      subject = jwtService.getRefreshTokenSubject(Authorization);
+      subject = jwtService.refreshTokenDecoding(Authorization);
     }catch (Exception e){
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
     }
@@ -128,8 +129,8 @@ public class AuthController {
     long refreshExpiredTime = 7 * 24 * 60 * 60 * 1000L;
     String refreshTokenRemake;
     try{
-      accessToken = jwtService.createToken(subject, accessExpiredTime, false);
-      refreshTokenRemake = jwtService.createToken(subject, refreshExpiredTime, true);
+      accessToken = jwtService.createToken(subject, accessExpiredTime, JwtAuth.ACCESS);
+      refreshTokenRemake = jwtService.createToken(subject, refreshExpiredTime, JwtAuth.REFRESH);
     }catch (Exception e){
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 재생성 실패");
     }

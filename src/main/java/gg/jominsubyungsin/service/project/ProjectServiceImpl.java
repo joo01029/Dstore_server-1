@@ -57,6 +57,7 @@ public class ProjectServiceImpl implements ProjectService{
 
       return projectDtos;
     }catch (Exception e){
+      e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
   }
@@ -68,9 +69,15 @@ public class ProjectServiceImpl implements ProjectService{
 
     Page<ProjectEntity> projectEntityPage;
     try{
-      projectEntityPage = projectListRepository.findByUsers(pageable, user);
+      projectEntityPage = projectListRepository.findByUsers(user, pageable);
+      System.out.println(projectEntityPage.getContent());
+      if (projectEntityPage.isEmpty()){
+        return projectDtos;
+      }
       projectEntities = projectEntityPage.getContent();
+
       for(ProjectEntity projectEntity: projectEntities){
+        System.out.println(projectEntity.getId());
         List<SelectUserDto> userDtos = new ArrayList<>();
         for(UserEntity userEntity: projectEntity.getUsers()){
           SelectUserDto userDto = new SelectUserDto(userEntity);
@@ -82,6 +89,7 @@ public class ProjectServiceImpl implements ProjectService{
 
       return projectDtos;
     }catch (Exception e){
+      e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
   }
