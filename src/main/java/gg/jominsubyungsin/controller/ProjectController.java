@@ -2,11 +2,13 @@ package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.file.FileDto;
 import gg.jominsubyungsin.domain.dto.project.GetProjectDto;
+import gg.jominsubyungsin.domain.dto.project.ProjectDto;
 import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.response.Response;
+import gg.jominsubyungsin.domain.response.projects.GetProjectDetailResponse;
 import gg.jominsubyungsin.domain.response.projects.GetProjectResponse;
 import gg.jominsubyungsin.service.file.FileService;
 import gg.jominsubyungsin.service.jwt.JwtService;
@@ -107,5 +109,25 @@ public class ProjectController {
     response.setProjectList(projects);
     response.setEnd(end);
     return response;
+  }
+  @GetMapping("/detail/{id}")
+  public GetProjectDetailResponse projectDetail(HttpServletRequest request, @PathVariable("id") Long id){
+    GetProjectDetailResponse response = new GetProjectDetailResponse();
+
+    UserEntity user = (UserEntity) request.getAttribute("user");
+
+    try {
+      ProjectDto project = projectService.projectDetail(id);
+
+      response.setHttpStatus(HttpStatus.OK);
+      response.setMessage("성공");
+      response.setProject(project);
+
+      return response;
+    }catch (Exception e){
+      throw e;
+    }
+
+
   }
 }

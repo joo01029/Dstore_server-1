@@ -106,7 +106,6 @@ public class AuthServiceImpl implements AuthService{
     try {
       checkEmail(email);
       EmailAuthEntity emailAuth = emailAuthRepository.findByEmail(email).orElse(new EmailAuthEntity());
-      System.out.println(emailAuth.getEmail());
       Date expireAt = new Date();
 
       String code = hash.hashText(email+expireAt.toString());

@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.service.project;
 
+import gg.jominsubyungsin.domain.dto.project.ProjectDto;
 import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 
@@ -11,4 +12,5 @@ public interface ProjectService {
   void saveProject(ProjectEntity projectEntity);
   List<SelectProjectDto> getProjects(Pageable pageable);
   List<SelectProjectDto> getProjects(Pageable pageable, UserEntity user);
+  ProjectDto projectDetail(Long id);
 }
