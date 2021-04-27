@@ -42,14 +42,22 @@ public class MultipartServiceImpl implements MultipartService{
 
       //저장할 파일 위치
       Path targetLocation = fileStorageLocation.resolve(fileName);
+      FileDto fileDto = new FileDto();
+      String type = fileName.substring(fileName.lastIndexOf(".")+1);
+      if(type.equals("jpeg") || type.equals("png")||type.equals("jpg")){
+        fileDto.setType("image");
+      }else if(type.equals("mp4")||type.equals("AVI")){
+        fileDto.setType("video");
+      }else{
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
+      }
       //파일 생성
       File newFile = new File(targetLocation.toString());
       boolean result = newFile.createNewFile();
       //파일에 받아온 파일의 값 넣음
       Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-      String type = fileName.substring(fileName.lastIndexOf(".")+1);
-      FileDto fileDto = new FileDto();
+
       fileDto.setFileLocation(server+"/file/see/"+fileName);
       fileDto.setType(type);
       return fileDto;

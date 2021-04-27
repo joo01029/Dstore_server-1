@@ -64,12 +64,9 @@ public class JwtServiceImpl implements JwtService{
   public String encodingToken(String subject, Key secretKey,long ttlMillis, JwtAuth authType){
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    Map<String, String> map = new HashMap<>();
-    map.put("AuthType",authType.toString());
     try {
       return Jwts.builder()
               .setSubject(subject)
-              .setClaims(map)
               .setIssuedAt(new Date(System.currentTimeMillis()))
               .setExpiration(new Date(System.currentTimeMillis() + ttlMillis))
               .signWith(secretKey, signatureAlgorithm)
@@ -82,17 +79,17 @@ public class JwtServiceImpl implements JwtService{
 
   @Override
   public UserEntity accessTokenDecoding(String token) {
+    System.out.println(ACCESSSECRET_KEY);
     try {
       Claims claims = decodingToken(token, ACCESSSECRET_KEY);
-      if(claims.get("AuthType") != "ACCESS"){
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"잘못된 토큰");
-      }
+      System.out.println(claims.getSubject());
       return userRepository.findByEmail(claims.getSubject()).orElseGet(() -> {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 유저");
       });
 
     }catch(Exception e){
-      throw e;
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
 
   }
@@ -125,9 +122,6 @@ public class JwtServiceImpl implements JwtService{
   public String refreshTokenDecoding(String token) {
     try {
       Claims claims = decodingToken(token, REFRESHSECRET_KEY);
-      if("REFRESH" != claims.get("AuthType")){
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 토큰 타입.");
-      }
       return claims.getSubject();
     }catch (Exception e){
       e.printStackTrace();

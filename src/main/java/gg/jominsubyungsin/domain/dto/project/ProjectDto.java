@@ -16,6 +16,15 @@ public class ProjectDto {
   private String content;
   private List<UserEntity> users = new ArrayList<>();
   private List<FileEntity> files = new ArrayList<>();
+  private Boolean like = false;
+  private Integer likeNum = 0;
+  private Integer commentsNum = 0;
 
-
+  public ProjectDto(ProjectEntity projectEntity){
+    id = projectEntity.getId();
+    title = projectEntity.getTitle();
+    content = projectEntity.getContent();
+    users = projectEntity.getUsers();
+    files = projectEntity.getFiles();
+  }
 }

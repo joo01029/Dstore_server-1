@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.service.project;
 
+import gg.jominsubyungsin.domain.dto.project.ProjectDto;
 import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,5 +96,16 @@ public class ProjectServiceImpl implements ProjectService{
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
   }
+  public ProjectDto projectDetail(Long id){
+    try{
+      ProjectEntity project = projectRepository.findById(id).orElseGet(()->{
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
+      });
 
+      return new ProjectDto(project);
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+  }
 }

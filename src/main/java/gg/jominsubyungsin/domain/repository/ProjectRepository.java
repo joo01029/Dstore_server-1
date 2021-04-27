@@ -8,7 +8,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.awt.print.Pageable;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
-    List<ProjectEntity> findByUsers(Long id);
+  Optional<ProjectEntity> findById(Long id);
 }
