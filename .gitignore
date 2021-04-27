@@ -41,4 +41,4 @@ out/
 .vscode/
 
 #images
-/src/main/resources/static
+/static

@@ -5,10 +5,10 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Setter
 @Getter
-@Entity
+@Entity(name = "file")
 
 public class FileEntity {
   @Id

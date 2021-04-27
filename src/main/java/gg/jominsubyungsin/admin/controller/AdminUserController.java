@@ -4,7 +4,7 @@ import gg.jominsubyungsin.admin.response.UserListResponse;
 import gg.jominsubyungsin.admin.service.user.AdminUserService;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.response.Response;
+import gg.jominsubyungsin.domain.response.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
