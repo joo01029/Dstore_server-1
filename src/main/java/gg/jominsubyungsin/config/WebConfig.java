@@ -14,7 +14,6 @@ public class WebConfig implements WebMvcConfigurer {
             .allowedOrigins("*")
             .allowedMethods("*")
             .allowedHeaders("*")
-
             .maxAge(3000);
   }
 }
