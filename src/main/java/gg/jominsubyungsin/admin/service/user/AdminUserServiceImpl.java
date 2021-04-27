@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.admin.service;
+package gg.jominsubyungsin.admin.service.user;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.UserRepository;
@@ -6,18 +6,16 @@ import gg.jominsubyungsin.admin.domain.repository.UserListRepository;
 import gg.jominsubyungsin.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class AdminServiceImpl implements AdminService {
+public class AdminUserServiceImpl implements AdminUserService {
     private final UserListRepository userListRepository;
     private final UserRepository userRepository;
 

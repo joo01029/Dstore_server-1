@@ -1,7 +1,7 @@
 package gg.jominsubyungsin.admin.controller;
 
 import gg.jominsubyungsin.admin.response.UserListResponse;
-import gg.jominsubyungsin.admin.service.AdminService;
+import gg.jominsubyungsin.admin.service.user.AdminUserService;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.response.Response;
@@ -19,8 +19,8 @@ import java.util.List;
 @ResponseBody
 @RequestMapping("/admin")
 @Controller
-public class AdminController {
-    private final AdminService adminService;
+public class AdminUserController {
+    private final AdminUserService adminUserService;
 
     /**
      * 유저 무한 스크롤
@@ -40,7 +40,7 @@ public class AdminController {
         try {
 //            userEntityPage = adminService.getUserList(pageable);
 //            userList = userEntityPage.getContent();
-            allUserList = adminService.getUserList();
+            allUserList = adminUserService.getUserList();
         } catch (Exception e){
             throw e;
         }
@@ -64,8 +64,8 @@ public class AdminController {
         System.out.println("delete user id = " + id);
 
         try {
-            adminService.dropUser(id);
-            allUserList = adminService.getUserList();
+            adminUserService.dropUser(id);
+            allUserList = adminUserService.getUserList();
         } catch (Exception e){
             throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "유저 저장 실패");
         }
@@ -89,7 +89,7 @@ public class AdminController {
 
 
         try {
-            adminService.addPerUser(user);
+            adminUserService.addPerUser(user);
         } catch (Exception e){
             throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "역할 수정 실패");
         }
@@ -107,12 +107,12 @@ public class AdminController {
      * @param user
      * @return
      */
-    @PutMapping("/permission/delete")
+    @DeleteMapping("/permission/delete")
     public Response delPermission(@RequestBody UserDto user){
         UserListResponse response = new UserListResponse();
 
         try {
-            adminService.delPerUser(user);
+            adminUserService.delPerUser(user);
         } catch (Exception e) {
             throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "권한 삭제 실패");
         }
@@ -129,7 +129,7 @@ public class AdminController {
         List<UserEntity> allUserList;
 
         try {
-            allUserList = adminService.getUserList();
+            allUserList = adminUserService.getUserList();
         } catch (Exception e){
             throw e;
         }
@@ -141,7 +141,7 @@ public class AdminController {
         List<UserEntity> adminUserList;
 
         try {
-            adminUserList = adminService.getAdminUserList();
+            adminUserList = adminUserService.getAdminUserList();
         } catch (Exception e) {
             throw e;
         }
@@ -153,7 +153,7 @@ public class AdminController {
         List<UserEntity> generalUserList;
 
         try {
-            generalUserList = adminService.getGeneralUserList();
+            generalUserList = adminUserService.getGeneralUserList();
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

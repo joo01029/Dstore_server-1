@@ -10,4 +10,5 @@ import java.awt.print.Pageable;
 import java.util.List;
 
 public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
+    List<ProjectEntity> findByUsers(Long id);
 }
