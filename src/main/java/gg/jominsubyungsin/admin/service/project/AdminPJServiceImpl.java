@@ -24,19 +24,19 @@ public class AdminPJServiceImpl implements AdminPJService {
             throw e;
         }
     }
-
-    @Override
-    public List<ProjectEntity> getProjectById(Long id){
-        List<ProjectEntity> pjList;
-
-        try {
-            pjList = projectRepository.findByUsers(id);
-            return pjList;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
+//
+//    @Override
+//    public List<ProjectEntity> getProjectById(Long id){
+//        List<ProjectEntity> pjList;
+//
+//        try {
+//            pjList = projectRepository.findByUsers(id);
+//            return pjList;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw e;
+//        }
+//    }
 
     @Override
     public List<ProjectEntity> dropProject(Long id) {
