@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.response;
+package gg.jominsubyungsin.domain.response;
 
 import lombok.Getter;
 import lombok.Setter;
