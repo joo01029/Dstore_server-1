@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.admin.response;
+package gg.jominsubyungsin.admin.domain.response;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.response.Response;
