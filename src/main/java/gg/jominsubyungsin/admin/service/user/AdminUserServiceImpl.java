@@ -119,13 +119,13 @@ public class AdminUserServiceImpl implements AdminUserService {
         }
     }
 
-    @Override
-    @Transactional
-    public void okToEmail(Long id) {
-        UserEntity target = isThereUser(id);
-
-        target.set
-    }
+//    @Override
+//    @Transactional
+//    public void okToEmail(Long id) {
+//        UserEntity target = isThereUser(id);
+//
+//        target.set
+//    }
 
     /**
      * 유저 존재 확인

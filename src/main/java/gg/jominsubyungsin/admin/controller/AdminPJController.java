@@ -40,27 +40,27 @@ public class AdminPJController {
         return response;
     }
 
-    @GetMapping("/list")
-    public Response showProjectListAsUserId(@RequestParam Long id){
-        ProjectListResponse response = new ProjectListResponse();
-
-        List<ProjectEntity> PjList;
-
-        System.out.println(id + "의 프로젝트 보기");
-
-        try {
-            PjList = adminPJService.getProjectById(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-
-        response.setHttpStatus(HttpStatus.OK);
-        response.setMessage(id + "의 프로젝트 보기");
-        response.setProjectList(PjList);
-
-        return response;
-    }
+//    @GetMapping("/list")
+//    public Response showProjectListAsUserId(@RequestParam Long id){
+//        ProjectListResponse response = new ProjectListResponse();
+//
+//        List<ProjectEntity> PjList;
+//
+//        System.out.println(id + "의 프로젝트 보기");
+//
+//        try {
+//            PjList = adminPJService.getProjectById(id);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw e;
+//        }
+//
+//        response.setHttpStatus(HttpStatus.OK);
+//        response.setMessage(id + "의 프로젝트 보기");
+//        response.setProjectList(PjList);
+//
+//        return response;
+//    }
 
     @DeleteMapping("/delete")
     public Response deleteProject(@RequestParam Long projectId){

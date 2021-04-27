@@ -9,7 +9,7 @@ import java.util.List;
 public interface AdminPJService {
     List<ProjectEntity> getProjectAll();
 
-    List<ProjectEntity> getProjectById(Long id);
+//    List<ProjectEntity> getProjectById(Long id);
 
     List<ProjectEntity> dropProject(Long id);
 }
