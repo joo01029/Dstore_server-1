@@ -14,7 +14,7 @@ import java.io.IOException;
 
 
 @Component
-@Order(1)
+@Order(0)
 public class CorsFilter implements Filter {
 
   @Override
@@ -25,10 +25,10 @@ public class CorsFilter implements Filter {
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Methods","POST,GET,PUT,OPTIONS,DELETE,PATCH,HEAD");
     res.setHeader("Access-Control-Max-Age","3600");
-    res.setHeader("Access-Control-Allow-Headers","X-Request-With, Content-Type, Authorization, Origin, Accept, Access-Control-Request-Method, Access-Control-Request-header,Cache-Control, Progma, Expires");
+    res.setHeader("Access-Control-Allow-Headers","X-Request-With, Content-Type, Authorization, Origin, Accept, Access-Control-Request-Method, Access-Control-Request-header,Cache-Control, Pragma, Expires");
     res.setHeader("Access-Control-Expose-Headers","content-disposition");
-
-    chain.doFilter(request,response);
+    System.out.println("cors");
+    chain.doFilter(request,(ServletResponse) res);
   }
 
 }

@@ -13,6 +13,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.crypto.spec.SecretKeySpec;
+import javax.swing.*;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.Date;
@@ -79,7 +80,6 @@ public class JwtServiceImpl implements JwtService{
 
   @Override
   public UserEntity accessTokenDecoding(String token) {
-    System.out.println(ACCESSSECRET_KEY);
     try {
       Claims claims = decodingToken(token, ACCESSSECRET_KEY);
       System.out.println(claims.getSubject());
@@ -88,8 +88,7 @@ public class JwtServiceImpl implements JwtService{
       });
 
     }catch(Exception e){
-      e.printStackTrace();
-      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+      throw e;
     }
 
   }
@@ -124,7 +123,6 @@ public class JwtServiceImpl implements JwtService{
       Claims claims = decodingToken(token, REFRESHSECRET_KEY);
       return claims.getSubject();
     }catch (Exception e){
-      e.printStackTrace();
       throw e;
     }
   }

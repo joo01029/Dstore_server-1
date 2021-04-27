@@ -39,11 +39,8 @@ public class JwtAuthorizationFilter implements Filter {
 
     token = token.replace("Bearer ","");
 
-    System.out.println(token);
-
     try {
       UserEntity user = jwtService.accessTokenDecoding(token);
-      System.out.println(user.getId());
       request.setAttribute("user", user);
 
       chain.doFilter(request, response);
