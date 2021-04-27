@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.controller;
 
+import gg.jominsubyungsin.domain.dto.file.FileDto;
 import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
@@ -28,6 +29,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
@@ -49,12 +51,16 @@ public class UserController {
   Hash hash;
 
   @PutMapping("/set/introduce")
-  public Response setIntroduce(@RequestBody UserDto userDto, @RequestHeader String Authorization){
+  public Response setIntroduce(@RequestBody UserDto userDto, HttpServletRequest request){
     Response response = new Response();
 
-    String subject = jwtService.getRefreshTokenSubject(Authorization);
-
-    userDto.setEmail(subject);
+    UserEntity user;
+    try {
+      user = (UserEntity) request.getAttribute("user");
+    }catch (Exception e) {
+      throw e;
+    }
+    userDto.setEmail(user.getEmail());
 
     boolean setIntruduceResult;
     try {
@@ -142,19 +148,22 @@ public class UserController {
 
     showUserResponse.setHttpStatus(HttpStatus.OK);
     showUserResponse.setMessage("성공");
-    showUserResponse.setSelectUserNoPrivacy(selectUser);
+    showUserResponse.setUser(selectUser);
 
     return showUserResponse;
   }
   @GetMapping("/find/name")
-  public ShowUserListResponse showUserList(@RequestParam String name,@RequestHeader String Authorization){
+  public ShowUserListResponse showUserList(@RequestParam String name,HttpServletRequest request){
     ShowUserListResponse showUserListResponse = new ShowUserListResponse();
-
-    String email = jwtService.getAccessTokenSubject(Authorization);
-
+    UserEntity user;
+    try {
+      user = (UserEntity) request.getAttribute("user");
+    }catch (Exception e) {
+      throw e;
+    }
     List<SelectUserDto> userList;
     try {
-      userList = userService.findUserLikeName(name, email);
+      userList = userService.findUserLikeName(name, user.getEmail());
     }catch (Exception e){
       throw e;
     }
@@ -167,21 +176,20 @@ public class UserController {
   }
 
   @GetMapping("/detail/{id}")
-  public UserDetailResponse detailUser(@PathVariable("id")Long id,Pageable pageable, @RequestHeader String Authorization){
+  public UserDetailResponse detailUser(@PathVariable("id")Long id, Pageable pageable, HttpServletRequest request){
     UserDetailResponse response = new UserDetailResponse();
     UserDetailResponseDto userDetailResponseDto;
-    String subject;
+    UserEntity user;
     try {
-      subject = jwtService.getAccessTokenSubject(Authorization);
+      user = (UserEntity) request.getAttribute("user");
     }catch (Exception e){
-      e.printStackTrace();
-      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
+      throw e;
     }
     boolean myProfile;
     UserEntity profile;
     List<SelectProjectDto> selectProjectDetailDtos;
     try {
-      myProfile = userService.checkUserSame(subject, id);
+      myProfile = userService.checkUserSame(user.getEmail(), id);
       profile = userService.findUserId(id);
       selectProjectDetailDtos = projectService.getProjects(pageable, profile);
     } catch (Exception e){
@@ -189,29 +197,40 @@ public class UserController {
     }
     userDetailResponseDto = new UserDetailResponseDto(profile,myProfile, selectProjectDetailDtos);
 
+    Boolean end = selectProjectDetailDtos.size() < pageable.getPageSize();
+
     response.setHttpStatus(HttpStatus.OK);
     response.setMessage("성공");
     response.setUser(userDetailResponseDto);
+    response.setEnd(end);
     return response;
   }
-//  @PutMapping("/profile/image")
-//  public Response updateProfileImage(@RequestHeader String Authorization, @ModelAttribute MultipartFile file){
-//    Response response = new Response();
-//
-//    String subject;
-//    try{
-//      subject = jwtService.getAccessTokenSubject(Authorization);
-//    }catch (Exception e){
-//      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
-//    }
-//    try {
-//      multipartService.uploadSingle(file);
-//    }catch (Exception e){
-//      throw e;
-//    }
-//
-//    response.setMessage("성공");
-//    response.setHttpStatus(HttpStatus.OK);
-//  }
+
+  @PutMapping("/profile/image")
+  public Response updateProfileImage(HttpServletRequest request, @ModelAttribute MultipartFile file){
+    Response response = new Response();
+
+    if(file.isEmpty()){
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일이 없음");
+    }
+
+    UserEntity user;
+    try {
+      user = (UserEntity) request.getAttribute("user");
+    }catch (Exception e) {
+      throw e;
+    }
+    try {
+      FileDto profileImage = multipartService.uploadSingle(file);
+      userService.updateProfileImage(user.getEmail(), profileImage.getFileLocation());
+
+      response.setHttpStatus(HttpStatus.OK);
+      response.setMessage("성공");
+      return response;
+    }catch (Exception e){
+      throw e;
+    }
+
+  }
 }
 

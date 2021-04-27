@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import org.springframework.data.domain.Pageable;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,33 +41,30 @@ public class ProjectController {
   FileService fileService;
 
   @PostMapping("/create")
-  public Response createProject(@ModelAttribute GetProjectDto projectDto, @RequestHeader String Authorization){
+  public Response createProject(@ModelAttribute GetProjectDto projectDto, HttpServletRequest request){
     Response response = new Response();
     List<UserEntity> userEntities = new ArrayList<>();
 
-    if(Authorization.isEmpty()){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "토큰 없음");
-    }
     if(projectDto.getFiles().isEmpty()){
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일은 무조건 1개 이상 보내야 합니다");
     }
-    String email = jwtService.getAccessTokenSubject(Authorization);
+    UserEntity user = (UserEntity) request.getAttribute("user");
     UserEntity mainUser;
     try {
-      mainUser = userService.findUser(email);
+      mainUser = userService.findUser(user.getEmail());
     }catch (Exception e){
       throw e;
     }
     userEntities.add(mainUser);
     for(Long id:projectDto.getUsers()){
       try{
-        UserEntity user = userService.findUserId(id);
+        UserEntity saveUser = userService.findUserId(id);
         for(UserEntity compare:userEntities) {
-          if (user.getId().equals(compare.getId())) {
+          if (saveUser.getId().equals(compare.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "같은 유저 입니다");
           }
         }
-        userEntities.add(user);
+        userEntities.add(saveUser);
       }catch (Exception e){
         throw e;
       }
@@ -102,10 +101,11 @@ public class ProjectController {
     }catch (Exception e){
       throw e;
     }
-
+    Boolean end = projects.size() < pageable.getPageSize();
     response.setHttpStatus(HttpStatus.OK);
     response.setMessage("성공");
     response.setProjectList(projects);
+    response.setEnd(end);
     return response;
   }
 }

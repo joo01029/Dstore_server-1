@@ -71,6 +71,7 @@ public class UserServiceImpl implements UserService{
     try{
       userRepository.deleteByEmail(userDto.getEmail());
     }catch (Exception e){
+      e.printStackTrace();
       throw e;
     }
     return true;
@@ -143,5 +144,22 @@ public class UserServiceImpl implements UserService{
       e.printStackTrace();
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 못찾");
     }
+  }
+
+  @Override
+  @Transactional
+  public void updateProfileImage(String email, String fileUrl) {
+    UserEntity findUser;
+    try {
+      findUser = userRepository.findByEmail(email).orElseGet(() -> {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 못찾음");
+      });
+      findUser.setProfileImage(fileUrl);
+      userRepository.save(findUser);
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+    }
+
   }
 }

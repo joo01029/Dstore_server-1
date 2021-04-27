@@ -11,4 +11,5 @@ import java.util.List;
 @Setter
 public class GetProjectResponse extends Response {
   private List<SelectProjectDto> projectList;
+  private Boolean end;
 }
