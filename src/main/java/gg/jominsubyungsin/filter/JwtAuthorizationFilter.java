@@ -7,6 +7,7 @@ import gg.jominsubyungsin.service.jwt.JwtServiceImpl;
 import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Component
+@Order(2)
 public class JwtAuthorizationFilter implements Filter {
   @Autowired
   JwtServiceImpl jwtService;
@@ -33,26 +35,25 @@ public class JwtAuthorizationFilter implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
     HttpServletRequest request1 = (HttpServletRequest) request;
     String token = request1.getHeader("Authorization");
-
-    if(request1.getMethod().equals("OPTIONS")){
-
-    }
-
-    if(token == null){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"토큰이 비었음");
-    }
-
+    System.out.println(token);
     token = token.replace("Bearer ","");
 
-    try {
-      UserEntity user = jwtService.accessTokenDecoding(token);
-      request.setAttribute("user", user);
 
-      chain.doFilter(request, response);
-    }catch (Exception e){
-      throw e;
+    if(!request1.getMethod().equals("OPTIONS")){
+      if(token == null){
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"토큰이 비었음");
+      }
+
+      try {
+        UserEntity user = jwtService.accessTokenDecoding(token);
+        request.setAttribute("user", user);
+
+
+      }catch (Exception e){
+        throw e;
+      }
     }
-
+    chain.doFilter(request, response);
   }
 
 }

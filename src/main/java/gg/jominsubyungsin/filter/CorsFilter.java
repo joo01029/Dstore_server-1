@@ -16,7 +16,7 @@ import java.io.IOException;
 
 
 @Component
-@Order(0)
+@Order(1)
 public class CorsFilter implements Filter {
 
   @Override
