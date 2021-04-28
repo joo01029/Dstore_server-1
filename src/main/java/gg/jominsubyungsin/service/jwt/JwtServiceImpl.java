@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -84,7 +85,7 @@ public class JwtServiceImpl implements JwtService{
       Claims claims = decodingToken(token, ACCESSSECRET_KEY);
       System.out.println(claims.getSubject());
       return userRepository.findByEmail(claims.getSubject()).orElseGet(() -> {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 유저");
+        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 유저");
       });
 
     }catch(Exception e){
@@ -105,10 +106,10 @@ public class JwtServiceImpl implements JwtService{
       return claims;
     }catch (ExpiredJwtException e){
       e.printStackTrace();
-      throw new ResponseStatusException(HttpStatus.GONE,"토큰 만료");
+      throw new HttpClientErrorException(HttpStatus.GONE,"토큰 만료");
     }catch (SignatureException | MalformedJwtException e){
       e.printStackTrace();
-      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "토큰 위조");
+      throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰 위조");
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
