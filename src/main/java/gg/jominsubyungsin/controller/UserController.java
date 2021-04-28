@@ -69,7 +69,7 @@ public class UserController {
       throw e;
     }
     if(!setIntruduceResult){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 이메일");
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 이메일");
     }
 
     response.setHttpStatus(HttpStatus.OK);
@@ -101,7 +101,7 @@ public class UserController {
       throw e;
     }
     if(!userUpdateResult){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일 또는 비밀번호가 틀림");
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일 또는 비밀번호가 틀림");
     }
 
     response.setHttpStatus(HttpStatus.OK);

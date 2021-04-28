@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -33,7 +34,7 @@ public class FileServiceImpl implements FileService{
   @Override
   @Transactional
   public void setProfileImage(FileDto file, String email) {
-    UserEntity user = userRepository.findByEmail(email).orElseGet(()->{throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지않는 이메일");});
+    UserEntity user = userRepository.findByEmail(email).orElseGet(()->{throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지않는 이메일");});
     user.setProfileImage(file.getFileLocation());
     try{
       FileEntity fileEntity = file.toEntity();
@@ -81,12 +82,12 @@ public class FileServiceImpl implements FileService{
       UrlResource resource = new UrlResource(file.toUri());
 
       if(!resource.exists()){
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "없는 파일");
+        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
       }
       return resource;
     } catch (MalformedURLException e) {
       e.printStackTrace();
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "없는 파일");
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
     }
   }
 

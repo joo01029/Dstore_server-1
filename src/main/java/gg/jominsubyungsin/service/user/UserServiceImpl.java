@@ -9,6 +9,7 @@ import gg.jominsubyungsin.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService{
       throw e;
     }
     if(findUser.isEmpty()){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
     }
     try{
       userRepository.deleteByEmail(userDto.getEmail());
@@ -82,7 +83,7 @@ public class UserServiceImpl implements UserService{
     try{
       Optional<UserEntity> findUser =  userRepository.findById(id);
 
-      return new SelectUserDto(findUser.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");} ));
+      return new SelectUserDto(findUser.orElseGet(() -> {throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");} ));
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
@@ -93,7 +94,7 @@ public class UserServiceImpl implements UserService{
     try{
       Optional<UserEntity> findUser =  userRepository.findById(id);
 
-      return findUser.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
+      return findUser.orElseGet(() -> {throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
@@ -105,7 +106,7 @@ public class UserServiceImpl implements UserService{
     try{
       Optional<UserEntity> findUser =  userRepository.findByEmail(email);
 
-      return findUser.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
+      return findUser.orElseGet(() -> {throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
@@ -134,7 +135,7 @@ public class UserServiceImpl implements UserService{
   public boolean checkUserSame(String email, Long id) {
     UserEntity findUser;
     try{
-      findUser = userRepository.findByEmail(email).orElseGet(()->{throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 못찾음");});
+      findUser = userRepository.findByEmail(email).orElseGet(()->{throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "유저 못찾음");});
       if(findUser.getId().equals(id)){
         return true;
       }else{
@@ -142,7 +143,7 @@ public class UserServiceImpl implements UserService{
       }
     }catch (Exception e){
       e.printStackTrace();
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 못찾");
+      throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "유저 못찾음");
     }
   }
 
@@ -152,7 +153,7 @@ public class UserServiceImpl implements UserService{
     UserEntity findUser;
     try {
       findUser = userRepository.findByEmail(email).orElseGet(() -> {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 못찾음");
+        throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "유저 못찾음");
       });
       findUser.setProfileImage(fileUrl);
       userRepository.save(findUser);

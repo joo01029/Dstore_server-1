@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import org.springframework.data.domain.Pageable;
@@ -99,7 +100,7 @@ public class ProjectServiceImpl implements ProjectService{
   public ProjectDto projectDetail(Long id){
     try{
       ProjectEntity project = projectRepository.findById(id).orElseGet(()->{
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
+        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
       });
 
       return new ProjectDto(project);

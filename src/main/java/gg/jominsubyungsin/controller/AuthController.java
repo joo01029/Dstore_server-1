@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -57,7 +58,7 @@ public class AuthController {
       response.setHttpStatus(HttpStatus.OK);
 
       return response;
-    }catch (ResponseStatusException e){
+    }catch (HttpClientErrorException e){
       throw e;
     }catch (Exception e){
       e.printStackTrace();
@@ -80,7 +81,7 @@ public class AuthController {
     UserEntity findUserResponse;
     try {
       findUserResponse = authService.login(userDto);
-    }catch (ResponseStatusException e){
+    }catch (HttpClientErrorException e){
       throw e;
     }catch (Exception e){
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");

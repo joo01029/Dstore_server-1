@@ -4,6 +4,7 @@ import gg.jominsubyungsin.domain.response.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,11 +19,11 @@ public class ExeptionHandler {
     return new ResponseEntity<Response>(data,e.getStatusCode());
   }
   @ExceptionHandler(ResponseStatusException.class)
-  public ResponseEntity<Response> ClientErrorReturn (ResponseStatusException e){
+  public ResponseEntity<Response> ClientErrorReturn (HttpClientErrorException e){
     Response data = new Response();
-    data.setHttpStatus(e.getStatus());
+    data.setHttpStatus(e.getStatusCode());
     data.setMessage(e.getMessage());
 
-    return new ResponseEntity<Response>(data,e.getStatus());
+    return new ResponseEntity<Response>(data,e.getStatusCode());
   }
 }
