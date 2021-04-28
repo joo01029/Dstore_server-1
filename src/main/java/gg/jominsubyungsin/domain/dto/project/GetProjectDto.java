@@ -13,7 +13,6 @@ import java.util.List;
 @Getter
 @Setter
 public class GetProjectDto {
-  private Long id;
   @NotBlank
   private String title;
   @NotBlank
@@ -25,7 +24,6 @@ public class GetProjectDto {
 
   public ProjectEntity toEntity(List<UserEntity> userEntities, List<FileEntity> fileEntities){
     return ProjectEntity.builder()
-            .id(id)
             .title(title)
             .content(content)
             .users(userEntities)

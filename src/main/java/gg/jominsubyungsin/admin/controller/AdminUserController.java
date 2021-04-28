@@ -125,15 +125,6 @@ public class AdminUserController {
         return response;
     }
 
-//    @PutMapping("/ok/email")
-//    public Response okToEmail(@RequestParam Long userId) {
-//        UserListResponse response = new UserListResponse();
-//
-//        try {
-//
-//        }
-//    }
-
     private List<UserEntity> findAllUserListAsResponse(){
         List<UserEntity> allUserList;
 
