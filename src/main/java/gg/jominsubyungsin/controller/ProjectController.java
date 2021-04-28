@@ -42,6 +42,7 @@ public class ProjectController {
   @Autowired
   FileService fileService;
 
+  @CrossOrigin
   @PostMapping("/create")
   public Response createProject(@ModelAttribute GetProjectDto projectDto, HttpServletRequest request){
     Response response = new Response();

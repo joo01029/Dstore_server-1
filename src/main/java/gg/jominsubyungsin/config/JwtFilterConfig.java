@@ -12,6 +12,7 @@ public class JwtFilterConfig {
   @Autowired
   private HandlerExceptionResolver handlerExceptionResolver;
 
+
   @Bean
   public FilterRegistrationBean<JwtAuthorizationFilter> authFilter(){
     FilterRegistrationBean<JwtAuthorizationFilter> registrationBean = new FilterRegistrationBean<JwtAuthorizationFilter>();

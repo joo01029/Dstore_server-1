@@ -7,8 +7,10 @@ import gg.jominsubyungsin.service.jwt.JwtServiceImpl;
 import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Component
+@Order(2)
 public class JwtAuthorizationFilter implements Filter {
   @Autowired
   JwtServiceImpl jwtService;
@@ -29,10 +32,13 @@ public class JwtAuthorizationFilter implements Filter {
 
     this.jwtService = ctx.getBean(JwtServiceImpl.class);
   }
+
+  @CrossOrigin
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
     HttpServletRequest request1 = (HttpServletRequest) request;
     String token = request1.getHeader("Authorization");
+    System.out.println(token);
 
     if(request1.getMethod().equals("OPTIONS")){
 
