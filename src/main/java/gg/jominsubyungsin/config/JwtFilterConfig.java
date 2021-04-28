@@ -17,6 +17,7 @@ public class JwtFilterConfig {
 
   @Bean
   public FilterRegistrationBean<JwtAuthorizationFilter> authFilter(){
+<<<<<<< Updated upstream
     try {
       FilterRegistrationBean<JwtAuthorizationFilter> registrationBean = new FilterRegistrationBean<>(new JwtAuthorizationFilter());
       registrationBean.setFilter(new JwtAuthorizationFilter());
@@ -24,6 +25,13 @@ public class JwtFilterConfig {
       registrationBean.addUrlPatterns("/project/create");
       registrationBean.addUrlPatterns("/project/detail");
       registrationBean.setOrder(3);
+=======
+    FilterRegistrationBean registrationBean = new FilterRegistrationBean(new JwtAuthorizationFilter());
+    registrationBean.addUrlPatterns("/user/*");
+    registrationBean.addUrlPatterns("/project/create");
+    registrationBean.addUrlPatterns("/project/detail");
+    registrationBean.setOrder(1);
+>>>>>>> Stashed changes
 
       return registrationBean;
     }catch (Exception e){
