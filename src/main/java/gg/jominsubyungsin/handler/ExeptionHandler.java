@@ -18,7 +18,7 @@ public class ExeptionHandler {
 
     return new ResponseEntity<Response>(data,e.getStatusCode());
   }
-  @ExceptionHandler(ResponseStatusException.class)
+  @ExceptionHandler(HttpClientErrorException.class)
   public ResponseEntity<Response> ClientErrorReturn (HttpClientErrorException e){
     Response data = new Response();
     data.setHttpStatus(e.getStatusCode());

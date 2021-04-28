@@ -39,26 +39,26 @@ public class JwtAuthorizationFilter implements Filter {
     HttpServletRequest request1 = (HttpServletRequest) request;
     String token = request1.getHeader("Authorization");
     System.out.println(token);
+    System.out.println(request1.getMethod());
+    if(!request1.getMethod().equals("OPTIONS")){
 
-    if(request1.getMethod().equals("OPTIONS")){
+      if(token == null){
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"토큰이 비었음");
+      }
 
+      token = token.replace("Bearer ","");
+
+      try {
+        UserEntity user = jwtService.accessTokenDecoding(token);
+        request.setAttribute("user", user);
+
+
+      }catch (Exception e){
+        throw e;
+      }
     }
 
-    if(token == null){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"토큰이 비었음");
-    }
-
-    token = token.replace("Bearer ","");
-
-    try {
-      UserEntity user = jwtService.accessTokenDecoding(token);
-      request.setAttribute("user", user);
-
-      chain.doFilter(request, response);
-    }catch (Exception e){
-      throw e;
-    }
-
+    chain.doFilter(request, response);
   }
 
 }

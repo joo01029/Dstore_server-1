@@ -42,10 +42,18 @@ public class ProjectController {
   @Autowired
   FileService fileService;
 
-  @CrossOrigin
   @PostMapping("/create")
-  public Response createProject(@ModelAttribute GetProjectDto projectDto, HttpServletRequest request){
+  public Response createProject(@RequestPart GetProjectDto projectDto, HttpServletRequest request){
     Response response = new Response();
+
+    System.out.println(request.getMethod());
+
+    if(request.getMethod().equals("OPTIONS")){
+      response.setHttpStatus(HttpStatus.OK);
+      response.setMessage("good");
+    }
+
+    System.out.println("aa");
     List<UserEntity> userEntities = new ArrayList<>();
 
     if(projectDto.getFiles().isEmpty()){
