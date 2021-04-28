@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -71,7 +72,7 @@ public class MultipartServiceImpl implements MultipartService{
   public List<FileDto> uploadMulti(List<MultipartFile> files){
     for(MultipartFile file:files) {
       if (file.isEmpty()) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일이 비었음");
+        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일이 비었음");
       }
     }
 
@@ -84,7 +85,7 @@ public class MultipartServiceImpl implements MultipartService{
     try{
       for(int i = 0; i < files.toArray().length; i++){
         if(fileNames.get(i).contains("..")){
-          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
+          throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
         }
         String type = fileNames.get(i).substring(fileNames.get(i).lastIndexOf(".")+1);
         FileDto fileDto = new FileDto();
@@ -94,7 +95,7 @@ public class MultipartServiceImpl implements MultipartService{
         }else if(type.equals("mp4")||type.equals("AVI")){
           fileDto.setType("video");
         }else{
-          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
+          throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
         }
 
         Path targetLocation = fileStorageLocation.resolve(fileNames.get(i));

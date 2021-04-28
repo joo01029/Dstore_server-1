@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -42,12 +43,12 @@ public class AuthServiceImpl implements AuthService{
     }
 
     if(findUserByEmail.isPresent()){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 유저가 존재함");
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이미 유저가 존재함");
     }
     try {
       Optional<EmailAuthEntity> findAccess = emailAuthRepository.findByEmailAndAuth(userDto.getEmail(), true);
       if(findAccess.isEmpty()){
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일 인증이 안됨");
+        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일 인증이 안됨");
       }
       UserEntity saveUser = userDto.toEntity();
       userRepository.save(saveUser);
@@ -63,7 +64,9 @@ public class AuthServiceImpl implements AuthService{
     try {
       Optional<UserEntity> findUserByEmailAndPassword = userRepository.findByEmailAndPassword(Email, password);
 
-      return findUserByEmailAndPassword.orElseGet(() -> {throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");});
+      return findUserByEmailAndPassword.orElseGet(() -> {
+        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
+      });
     }catch (Exception e){
       e.printStackTrace();
       throw e;
@@ -73,11 +76,11 @@ public class AuthServiceImpl implements AuthService{
   @Override
   public void checkEmail(String email){
     if(email == null || email.trim().isEmpty()){
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "메일 비었음");
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "메일 비었음");
     }
     Optional<UserEntity> user = userRepository.findByEmail(email);
     if(user.isPresent()){
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "중복된 이메일");
+      throw new HttpClientErrorException(HttpStatus.CONFLICT, "중복된 이메일");
     }
   }
 

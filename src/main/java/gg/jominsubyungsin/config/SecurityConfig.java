@@ -16,10 +16,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .httpBasic().disable()
-                .cors().configurationSource(corsConfigurationSource())
-              .and()
-              .csrf().disable()
+                .cors().and()
+                .csrf().disable()
                 .csrf().disable()
                 .headers().frameOptions().disable()
                 .and()
@@ -32,17 +30,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 ).hasRole(Role.ADMIN.name())
                 .anyRequest().authenticated();
     }
-  @Bean
-  public static CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.addAllowedOrigin("*");
-    configuration.addAllowedHeader("*");
-    configuration.addAllowedMethod("*");
-    configuration.setAllowCredentials(true);
-
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-  }
 }

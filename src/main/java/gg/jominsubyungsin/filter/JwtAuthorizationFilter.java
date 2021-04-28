@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.filter;
 
+import antlr.StringUtils;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.jwt.JwtServiceImpl;
@@ -32,6 +33,10 @@ public class JwtAuthorizationFilter implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
     HttpServletRequest request1 = (HttpServletRequest) request;
     String token = request1.getHeader("Authorization");
+
+    if(request1.getMethod().equals("OPTIONS")){
+
+    }
 
     if(token == null){
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"토큰이 비었음");
