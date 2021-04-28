@@ -14,15 +14,17 @@ public class JwtFilterConfig {
   @Autowired
   private HandlerExceptionResolver handlerExceptionResolver;
 
+
   @Bean
   public FilterRegistrationBean<JwtAuthorizationFilter> authFilter(){
+
     try {
-      FilterRegistrationBean<JwtAuthorizationFilter> registrationBean = new FilterRegistrationBean<>(new JwtAuthorizationFilter());
-      registrationBean.setFilter(new JwtAuthorizationFilter());
-      registrationBean.addUrlPatterns("/user/*");
-      registrationBean.addUrlPatterns("/project/create");
-      registrationBean.addUrlPatterns("/project/detail");
-      registrationBean.setOrder(3);
+
+    FilterRegistrationBean registrationBean = new FilterRegistrationBean(new JwtAuthorizationFilter());
+    registrationBean.addUrlPatterns("/user/*");
+    registrationBean.addUrlPatterns("/project/create");
+    registrationBean.addUrlPatterns("/project/detail");
+    registrationBean.setOrder(2);
 
       return registrationBean;
     }catch (Exception e){
