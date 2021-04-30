@@ -11,7 +11,6 @@ public class SelectUserForAdminDto {
     private Long id;
     private String name;
     private String email;
-    private boolean mailAccess;
     private String profileImage;
     private Role role;
 
@@ -19,6 +18,7 @@ public class SelectUserForAdminDto {
         this.id = userEntity.getId();
         this.name = userEntity.getName();
         this.email = userEntity.getEmail();
-//        this.mailAccess = userEntity.get
+        this.profileImage = userEntity.getProfileImage();
+        this.role = userEntity.getRole();
     }
 }

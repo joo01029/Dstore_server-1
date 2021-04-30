@@ -16,6 +16,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
@@ -34,26 +35,29 @@ public class JwtAuthorizationFilter implements Filter {
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
     HttpServletRequest request1 = (HttpServletRequest) request;
+    HttpServletResponse res = (HttpServletResponse) response;
     String token = request1.getHeader("Authorization");
-    System.out.println(token);
-    token = token.replace("Bearer ","");
-
 
     if(!request1.getMethod().equals("OPTIONS")){
       if(token == null){
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"토큰이 비었음");
       }
 
+      token = token.replace("Bearer ","");
+
       try {
         UserEntity user = jwtService.accessTokenDecoding(token);
         request.setAttribute("user", user);
 
-
+        chain.doFilter(request, response);
       }catch (Exception e){
         throw e;
       }
+    }else{
+      System.out.println("cors");
     }
-    chain.doFilter(request, response);
+      System.out.println(res.getStatus());
+
   }
 
 }

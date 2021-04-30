@@ -50,7 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .cors().and()
                 .csrf().disable()
-                .csrf().disable()
                 .headers().frameOptions().disable()
                 .and()
                 .cors().and()
@@ -66,8 +65,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/admin/*"
                 ).hasRole(Role.ADMIN.name())
                 .anyRequest().authenticated();
-        http.addFilterBefore(corsFilter, SessionManagementFilter.class);
-        http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(corsFilter, SessionManagementFilter.class);
+//        http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 }
