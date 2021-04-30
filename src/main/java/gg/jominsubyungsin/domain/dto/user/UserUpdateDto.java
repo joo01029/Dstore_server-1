@@ -3,10 +3,11 @@ package gg.jominsubyungsin.domain.dto.user;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 public class UserUpdateDto {
-  private String email;
-  private String password;
-  private String changePassword;
-  private String changeName;
+	private String email;
+	private String password;
+	private String changePassword;
+	private String changeName;
 }

@@ -10,15 +10,15 @@ import java.util.List;
 @Getter
 @Setter
 public class SelectProjectDto {
-  private Long id;
-  private String title;
-  private FileEntity mainPhoto;
-  private List<SelectUserDto> users;
+	private Long id;
+	private String title;
+	private FileEntity mainPhoto;
+	private List<SelectUserDto> users;
 
-  public SelectProjectDto(ProjectEntity projectEntity, List<SelectUserDto> selectUserDto){
-    this.id = projectEntity.getId();
-    this.title = projectEntity.getTitle();
-    this.mainPhoto = projectEntity.getFiles().get(0);
-    this.users = selectUserDto;
-  }
+	public SelectProjectDto(ProjectEntity projectEntity, List<SelectUserDto> selectUserDto) {
+		this.id = projectEntity.getId();
+		this.title = projectEntity.getTitle();
+		this.mainPhoto = projectEntity.getFiles().get(0);
+		this.users = selectUserDto;
+	}
 }

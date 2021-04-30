@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.server.ResponseStatusException;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -16,37 +17,38 @@ import java.io.IOException;
 @Component
 @Order(2)
 public class JwtAuthorizationFilter implements Filter {
-  @Autowired JwtServiceImpl jwtService;
+	@Autowired
+	JwtServiceImpl jwtService;
 
-  @Override
-  public void init(FilterConfig filterConfig){
-    ApplicationContext ctx = WebApplicationContextUtils
-            .getRequiredWebApplicationContext(filterConfig.getServletContext());
+	@Override
+	public void init(FilterConfig filterConfig) {
+		ApplicationContext ctx = WebApplicationContextUtils
+				.getRequiredWebApplicationContext(filterConfig.getServletContext());
 
-    this.jwtService = ctx.getBean(JwtServiceImpl.class);
-  }
+		this.jwtService = ctx.getBean(JwtServiceImpl.class);
+	}
 
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-    HttpServletRequest request1 = (HttpServletRequest) request;
-    String token = request1.getHeader("Authorization");
-    System.out.println(token);
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest request1 = (HttpServletRequest) request;
+		String token = request1.getHeader("Authorization");
+		System.out.println(token);
 
-    if(!request1.getMethod().equals("OPTIONS")){
-      if(token.equals(null))
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"토큰이 비었음");
+		if (!request1.getMethod().equals("OPTIONS")) {
+			if (token.equals(null))
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "토큰이 비었음");
 
-      token = token.replace("Bearer ","");
-      try {
-        UserEntity user = jwtService.accessTokenDecoding(token);
-        request1.setAttribute("user", user);
-        chain.doFilter(request, response);
+			token = token.replace("Bearer ", "");
+			try {
+				UserEntity user = jwtService.accessTokenDecoding(token);
+				request1.setAttribute("user", user);
+				chain.doFilter(request, response);
 
-      }catch (Exception e){
-        throw e;
-      }
-    }
+			} catch (Exception e) {
+				throw e;
+			}
+		}
 
-  }
+	}
 
 }

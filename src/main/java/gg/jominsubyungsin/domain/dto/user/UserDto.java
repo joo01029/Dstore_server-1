@@ -10,25 +10,26 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-@Getter @Setter
+@Getter
+@Setter
 public class UserDto {
-  private Long id;
-  @Email
-  @NotBlank
-  private String email;
-  @NotBlank
-  private String password;
-  @NotBlank
-  private String name;
-  private String introduce;
-  private MultipartFile profileImage;
+	private Long id;
+	@Email
+	@NotBlank
+	private String email;
+	@NotBlank
+	private String password;
+	@NotBlank
+	private String name;
+	private String introduce;
+	private MultipartFile profileImage;
 
-  public UserEntity toEntity(){
-    return UserEntity.builder()
-            .id(id)
-            .email(email)
-            .password(password)
-            .name(name)
-            .build();
-  }
+	public UserEntity toEntity() {
+		return UserEntity.builder()
+				.id(id)
+				.email(email)
+				.password(password)
+				.name(name)
+				.build();
+	}
 }

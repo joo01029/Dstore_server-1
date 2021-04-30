@@ -5,7 +5,8 @@ import gg.jominsubyungsin.domain.response.Response;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 public class GetProjectDetailResponse extends Response {
-  private ProjectDto project;
+	private ProjectDto project;
 }

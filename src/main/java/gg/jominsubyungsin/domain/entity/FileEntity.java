@@ -11,30 +11,30 @@ import javax.persistence.*;
 @Entity(name = "file")
 
 public class FileEntity {
-  @Id
-  @Column(name="file_id")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+	@Id
+	@Column(name = "file_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-  @Column(unique = true, name="file_location")
-  private String fileLocation;
+	@Column(unique = true, name = "file_location")
+	private String fileLocation;
 
-  @Column(name="file_type")
-  private String type;
+	@Column(name = "file_type")
+	private String type;
 
-  @Column(name="Thumnail")
-  private Integer thumnail;
+	@Column(name = "Thumnail")
+	private Integer thumnail;
 
-  @JsonIgnore
-  @ManyToOne
-  @JoinColumn
-  private ProjectEntity projectId;
+	@JsonIgnore
+	@ManyToOne
+	@JoinColumn
+	private ProjectEntity projectId;
 
-  @Builder
-  public FileEntity(Long id, Integer thumnail, String type, String fileLocation){
-    this.id = id;
-    this.type = type;
-    this.thumnail = thumnail;
-    this.fileLocation = fileLocation;
-  }
+	@Builder
+	public FileEntity(Long id, Integer thumnail, String type, String fileLocation) {
+		this.id = id;
+		this.type = type;
+		this.thumnail = thumnail;
+		this.fileLocation = fileLocation;
+	}
 }

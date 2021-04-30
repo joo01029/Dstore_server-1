@@ -5,19 +5,20 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 
-@Getter @Setter
+@Getter
+@Setter
 public class EmailDto {
-  private String senderName;
-  @Email
-  private String senderMail;
-  @Email
-  private String receiveMail;
-  private String subject;
-  private String message;
+	private String senderName;
+	@Email
+	private String senderMail;
+	@Email
+	private String receiveMail;
+	private String subject;
+	private String message;
 
-  @Override
-  public String toString() {
-    return "EmailDTO [senderName=" + senderName + ", senderMail=" + senderMail + ", receiveMail=" + receiveMail
-            + ", subject=" + subject + ", message=" + message + "]";
-  }
+	@Override
+	public String toString() {
+		return "EmailDTO [senderName=" + senderName + ", senderMail=" + senderMail + ", receiveMail=" + receiveMail
+				+ ", subject=" + subject + ", message=" + message + "]";
+	}
 }
