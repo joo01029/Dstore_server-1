@@ -11,9 +11,10 @@ import org.springframework.web.client.HttpServerErrorException;
 
 @Controller
 public class TemplateController {
-  @Autowired
-  private AuthService authService;
-
+  @Autowired AuthService authService;
+  /*
+  이메일 인증 페이지
+   */
   @RequestMapping("/email-auth")
   public String emailAuth(@RequestParam String code, Model model){
     try{

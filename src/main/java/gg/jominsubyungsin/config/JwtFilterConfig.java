@@ -1,30 +1,22 @@
 package gg.jominsubyungsin.config;
 
 import gg.jominsubyungsin.filter.JwtAuthorizationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 public class JwtFilterConfig {
-  @Autowired
-  private HandlerExceptionResolver handlerExceptionResolver;
-
-
   @Bean
-  public FilterRegistrationBean<JwtAuthorizationFilter> authFilter(){
-
+  public FilterRegistrationBean authFilter(){
     try {
-
-    FilterRegistrationBean registrationBean = new FilterRegistrationBean(new JwtAuthorizationFilter());
-    registrationBean.addUrlPatterns("/user/*");
-    registrationBean.addUrlPatterns("/project/create");
-    registrationBean.addUrlPatterns("/project/detail");
-    registrationBean.setOrder(2);
+      FilterRegistrationBean registrationBean = new FilterRegistrationBean(new JwtAuthorizationFilter());
+      registrationBean.addUrlPatterns("/user/*");
+      registrationBean.addUrlPatterns("/project/create");
+      registrationBean.addUrlPatterns("/project/detail");
+      registrationBean.setOrder(2);
 
       return registrationBean;
     }catch (Exception e){

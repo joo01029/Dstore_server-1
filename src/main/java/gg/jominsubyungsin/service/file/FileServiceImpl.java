@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.server.ResponseStatusException;
-
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
@@ -22,9 +20,7 @@ import java.util.List;
 
 @Service
 public class FileServiceImpl implements FileService{
-
   private final Path fileStorageLocation = Paths.get("static/").toAbsolutePath().normalize();
-
 
   @Autowired
   FileRepository fileRepository;
@@ -34,11 +30,13 @@ public class FileServiceImpl implements FileService{
   @Override
   @Transactional
   public void setProfileImage(FileDto file, String email) {
-    UserEntity user = userRepository.findByEmail(email).orElseGet(()->{throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지않는 이메일");});
-    user.setProfileImage(file.getFileLocation());
     try{
-      FileEntity fileEntity = file.toEntity();
-      fileRepository.save(fileEntity);
+      UserEntity user = userRepository.findByEmail(email).orElseGet(()->{
+        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지않는 이메일");
+      });
+      user.setProfileImage(file.getFileLocation());
+
+      userRepository.save(user);
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버에러");
@@ -52,13 +50,13 @@ public class FileServiceImpl implements FileService{
     List<FileEntity> fileEntities = new ArrayList<>();
 
     for(FileDto file: files){
-
       if(!thumnail){
         file.setThumnail(1);
         thumnail = true;
       }else{
         file.setThumnail(0);
       }
+
       file.setFileLocation(file.getFileLocation());
       file.setType(file.getType());
 
@@ -81,9 +79,9 @@ public class FileServiceImpl implements FileService{
       Path file = fileStorageLocation.resolve(filename).normalize();
       UrlResource resource = new UrlResource(file.toUri());
 
-      if(!resource.exists()){
+      if(!resource.exists())
         throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
-      }
+
       return resource;
     } catch (MalformedURLException e) {
       e.printStackTrace();

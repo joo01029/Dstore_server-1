@@ -1,21 +1,9 @@
 package gg.jominsubyungsin.filter;
 
-import lombok.val;
-import org.apache.catalina.connector.Response;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-
-import javax.persistence.OneToMany;
 import javax.servlet.*;
-
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-
-import javax.servlet.*;
-
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -37,13 +25,14 @@ public class CorsFilter implements Filter {
     res.setHeader("Access-Control-Allow-Headers","X-Request-With, Content-Type, ContentType, Authorization, Origin, Accept, Access-Control-Request-Method, Access-Control-Request-header,Cache-Control, Pragma, Expires");
     res.setHeader("Access-Control-Expose-Headers","content-disposition");
 
-
-    if (req.getMethod().equals("OPTIONS")) {
-      System.out.println(req.getMethod());
+    if (req.getMethod().equals("OPTIONS"))
       res.setStatus(HttpServletResponse.SC_OK);
-    }
 
-    chain.doFilter(req,res);
+    chain.doFilter(request, response);
+  }
+
+  @Override
+  public void init(FilterConfig filterConfig){
 
   }
 
