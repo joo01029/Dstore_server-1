@@ -8,11 +8,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
+@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class JominsubyungsinApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(JominsubyungsinApplication.class, args);
-  }
+	public static void main(String[] args) {
+		SpringApplication.run(JominsubyungsinApplication.class, args);
+	}
 
 }

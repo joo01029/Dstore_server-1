@@ -10,13 +10,13 @@ import java.security.NoSuchAlgorithmException;
 
 @Component
 public class Hash {
-  public String hashText(String text) {
-    try {
-      MessageDigest md = MessageDigest.getInstance("SHA-512");
-      md.update(text.getBytes(), 0, text.getBytes().length);
-      return new BigInteger(1, md.digest()).toString(16);
-    } catch (NoSuchAlgorithmException e) {
-      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "암호화 실패");
-    }
-  }
+	public String hashText(String text) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-512");
+			md.update(text.getBytes(), 0, text.getBytes().length);
+			return new BigInteger(1, md.digest()).toString(16);
+		} catch (NoSuchAlgorithmException e) {
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "암호화 실패");
+		}
+	}
 }

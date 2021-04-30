@@ -7,7 +7,8 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 public class ShowUserListResponse extends Response {
-  List<SelectUserDto> userList;
+	List<SelectUserDto> userList;
 }

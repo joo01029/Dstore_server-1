@@ -10,45 +10,45 @@ import java.util.List;
 @Entity
 @Setter
 @Getter
-@Table(name ="project")
+@Table(name = "project")
 public class ProjectEntity {
-  @Id
-  @Column(name="project_id")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+	@Id
+	@Column(name = "project_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-  @Column
-  private String title;
+	@Column
+	private String title;
 
-  @Column
-  private String content;
+	@Column
+	private String content;
 
-  @ManyToMany(mappedBy = "projects")
-  private List<UserEntity> users = new ArrayList<>();
+	@ManyToMany(mappedBy = "projects")
+	private List<UserEntity> users = new ArrayList<>();
 
-  @OneToMany(mappedBy = "projectId")
-  private List<FileEntity> files = new ArrayList<>();
+	@OneToMany(mappedBy = "projectId")
+	private List<FileEntity> files = new ArrayList<>();
 
-  public void add(UserEntity user){
-    users.add(user);
-  }
+	public void add(UserEntity user) {
+		users.add(user);
+	}
 
-  public void add(FileEntity fileEntity){
-    files.add(fileEntity);
-    fileEntity.setProjectId(this);
-  }
+	public void add(FileEntity fileEntity) {
+		files.add(fileEntity);
+		fileEntity.setProjectId(this);
+	}
 
-  @Builder
-  public ProjectEntity(Long id, String title, String content, List<UserEntity> users, List<FileEntity> files){
-    this.id = id;
-    this.title = title;
-    this.content = content;
-    for(UserEntity user:users){
-      this.add(user);
-      user.add(this);
-    }
-    for(FileEntity file:files){
-      this.add(file);
-    }
-  }
+	@Builder
+	public ProjectEntity(Long id, String title, String content, List<UserEntity> users, List<FileEntity> files) {
+		this.id = id;
+		this.title = title;
+		this.content = content;
+		for (UserEntity user : users) {
+			this.add(user);
+			user.add(this);
+		}
+		for (FileEntity file : files) {
+			this.add(file);
+		}
+	}
 }

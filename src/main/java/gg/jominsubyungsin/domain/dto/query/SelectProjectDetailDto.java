@@ -11,21 +11,21 @@ import java.util.List;
 @Getter
 @Setter
 public class SelectProjectDetailDto {
-  private Long id;
-  private String title;
-  private String content;
+	private Long id;
+	private String title;
+	private String content;
 
-  private FileEntity mainPhoto;
-  private List<FileEntity> files = new ArrayList<>();
+	private FileEntity mainPhoto;
+	private List<FileEntity> files = new ArrayList<>();
 
-  private List<SelectUserDto> users = new ArrayList<>();
+	private List<SelectUserDto> users = new ArrayList<>();
 
-  public SelectProjectDetailDto(ProjectEntity projectEntity, List<SelectUserDto> selectUserDto){
-    this.id = projectEntity.getId();
-    this.title = projectEntity.getTitle();
-    this.content = projectEntity.getContent();
-    this.mainPhoto = projectEntity.getFiles().get(0);
-    this.files = projectEntity.getFiles();
-    this.users = selectUserDto;
-  }
+	public SelectProjectDetailDto(ProjectEntity projectEntity, List<SelectUserDto> selectUserDto) {
+		this.id = projectEntity.getId();
+		this.title = projectEntity.getTitle();
+		this.content = projectEntity.getContent();
+		this.mainPhoto = projectEntity.getFiles().get(0);
+		this.files = projectEntity.getFiles();
+		this.users = selectUserDto;
+	}
 }
