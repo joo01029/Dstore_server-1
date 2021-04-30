@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.admin.controller;
 
+import gg.jominsubyungsin.admin.domain.dto.query.SelectUserForAdminDto;
 import gg.jominsubyungsin.admin.domain.response.UserListResponse;
 import gg.jominsubyungsin.admin.service.user.AdminUserService;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
@@ -22,32 +23,56 @@ import java.util.List;
 public class AdminUserController {
     private final AdminUserService adminUserService;
 
-    /**
-     * 유저 무한 스크롤
-     * @param pageable
-     * @return
-     */
-    @GetMapping("/list")
-    public Response showUserList(Pageable pageable){
+//    /**
+//     * 유저 무한 스크롤
+//     * @param pageable
+//     * @return
+//     */
+//    @GetMapping("/list")
+//    public Response showUserList(Pageable pageable){
+//        UserListResponse response = new UserListResponse();
+//
+////        List<SelectUserForAdminDto> userList;
+////        Page<SelectUserForAdminDto> userEntityPage;
+//        List<SelectUserForAdminDto> allUserList;
+//
+//        System.out.println(pageable);
+//
+//        try {
+////            userEntityPage = adminService.getUserList(pageable);
+////            userList = userEntityPage.getContent();
+//            allUserList = adminUserService.getUserList();
+//        } catch (Exception e){
+//            throw e;
+//        }
+//
+//        response.setMessage("페이지의 유저 보내기 성공");
+//        response.setHttpStatus(HttpStatus.OK);
+//        response.setUserEntity(allUserList);
+//        response.setTotalPages(0);
+//
+//        return response;
+//    }
+
+    @GetMapping("/general")
+    public Response generalUserList() {
         UserListResponse response = new UserListResponse();
 
-        List<UserEntity> userList;
-        Page<UserEntity> userEntityPage;
-        List<UserEntity> allUserList;
-
-        System.out.println(pageable);
-
-        try {
-//            userEntityPage = adminService.getUserList(pageable);
-//            userList = userEntityPage.getContent();
-            allUserList = adminUserService.getUserList();
-        } catch (Exception e){
-            throw e;
-        }
-
-        response.setMessage("페이지의 유저 보내기 성공");
         response.setHttpStatus(HttpStatus.OK);
-        response.setUserEntity(allUserList);
+        response.setMessage("일반 유저 리스트 가져오기 성공");
+        response.setUserEntity(findGeneralUserListAsResponse());
+        response.setTotalPages(0);
+
+        return response;
+    }
+
+    @GetMapping("/adminUser")
+    public Response adminUserList() {
+        UserListResponse response = new UserListResponse();
+
+        response.setHttpStatus(HttpStatus.OK);
+        response.setMessage("어드민 유저 리스트 가져오기 성공");
+        response.setUserEntity(findAdminUserListAsResponse());
         response.setTotalPages(0);
 
         return response;
@@ -59,15 +84,15 @@ public class AdminUserController {
     @DeleteMapping("/delete")
     public Response deleteUser(@RequestParam Long id){
         UserListResponse response = new UserListResponse();
-        List<UserEntity> allUserList;
+        List<SelectUserForAdminDto> allUserList;
 
         System.out.println("delete user id = " + id);
 
         try {
             adminUserService.dropUser(id);
-            allUserList = adminUserService.getUserList();
+            allUserList = adminUserService.getGeneralUserList();
         } catch (Exception e){
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "유저 저장 실패");
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "유저 삭제 실패");
         }
 
         response.setHttpStatus(HttpStatus.OK);
@@ -125,20 +150,20 @@ public class AdminUserController {
         return response;
     }
 
-    private List<UserEntity> findAllUserListAsResponse(){
-        List<UserEntity> allUserList;
+//    private List<SelectUserForAdminDto> findAllUserListAsResponse(){
+//        List<SelectUserForAdminDto> allUserList;
+//
+//        try {
+//            allUserList = adminUserService.getUserList();
+//        } catch (Exception e){
+//            throw e;
+//        }
+//
+//        return allUserList;
+//    }
 
-        try {
-            allUserList = adminUserService.getUserList();
-        } catch (Exception e){
-            throw e;
-        }
-
-        return allUserList;
-    }
-
-    private List<UserEntity> findAdminUserListAsResponse(){
-        List<UserEntity> adminUserList;
+    private List<SelectUserForAdminDto> findAdminUserListAsResponse(){
+        List<SelectUserForAdminDto> adminUserList;
 
         try {
             adminUserList = adminUserService.getAdminUserList();
@@ -149,8 +174,8 @@ public class AdminUserController {
         return adminUserList;
     }
 
-    private List<UserEntity> findGeneralUserListAsResponse(){
-        List<UserEntity> generalUserList;
+    private List<SelectUserForAdminDto> findGeneralUserListAsResponse(){
+        List<SelectUserForAdminDto> generalUserList;
 
         try {
             generalUserList = adminUserService.getGeneralUserList();
