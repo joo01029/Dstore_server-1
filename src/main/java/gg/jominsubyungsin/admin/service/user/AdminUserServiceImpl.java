@@ -1,52 +1,63 @@
 package gg.jominsubyungsin.admin.service.user;
+import gg.jominsubyungsin.admin.domain.dto.query.SelectUserForAdminDto;
+import gg.jominsubyungsin.admin.domain.repository.UserDetailRepository;
 import gg.jominsubyungsin.domain.dto.user.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import gg.jominsubyungsin.admin.domain.repository.UserListRepository;
 import gg.jominsubyungsin.enums.Role;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class AdminUserServiceImpl implements AdminUserService {
     private final UserListRepository userListRepository;
-    private final UserRepository userRepository;
+    private final UserDetailRepository userRepository;
 
 
-    /**
-     * 유저 리스트
-     * @return
-     */
+//    /**
+//     * 유저 리스트
+//     * @return
+//     */
+//    @Override
+//    public List<SelectUserForAdminDto> getUserList(){
+//        List<SelectUserForAdminDto> userList;
+//        Page<SelectUserForAdminDto> userEntityPage;
+//        List<SelectUserForAdminDto> allUserList;
+//
+//        try {
+//            // userEntityPage = userListRepository.findAll(pageable);
+//
+//            return allUserList;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw e;
+//        }
+//    }
+
     @Override
-    public List<UserEntity> getUserList(){
-        List<UserEntity> userList;
-        Page<UserEntity> userEntityPage;
-        List<UserEntity> allUserList;
+    public List<SelectUserForAdminDto> getAdminUserList(){
+        List<SelectUserForAdminDto> adminUserList = new ArrayList<>();
+
+        List<UserEntity> userEntities;
 
         try {
-            // userEntityPage = userListRepository.findAll(pageable);
-            allUserList = userRepository.findAll();
+            userEntities = userRepository.findByRole(Role.ADMIN);
 
-            return allUserList;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    @Override
-    public List<UserEntity> getAdminUserList(){
-        List<UserEntity> adminUserList;
-
-        try {
-            adminUserList = userRepository.findByRole(Role.ADMIN);
+            for (UserEntity userEntity : userEntities) {
+                System.out.println("admin user's id : " + userEntity.getId());
+                SelectUserForAdminDto userDto = new SelectUserForAdminDto(userEntity);
+                adminUserList.add(userDto);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -56,11 +67,19 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
-    public List<UserEntity> getGeneralUserList(){
-        List<UserEntity> generalUserList;
+    public List<SelectUserForAdminDto> getGeneralUserList(){
+        List<SelectUserForAdminDto> generalUserList = new ArrayList<>();
+
+        List<UserEntity> userEntities;
 
         try {
-            generalUserList = userRepository.findByRole(Role.USER);
+            userEntities = userRepository.findByRole(Role.USER);
+
+            for (UserEntity userEntity:userEntities) {
+                System.out.println("general user's id : " + userEntity.getId());
+                SelectUserForAdminDto userDto = new SelectUserForAdminDto(userEntity);
+                generalUserList.add(userDto);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
