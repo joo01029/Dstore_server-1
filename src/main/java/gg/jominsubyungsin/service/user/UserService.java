@@ -16,8 +16,8 @@ public interface UserService {
   boolean userUpdate(UserUpdateDto userDto) throws HttpServerErrorException;
   boolean userDelete(UserDto userDto);
   boolean userUpdateIntroduce(UserDto userDto);
-  SelectUserDto finduser(Long id);
-  UserEntity findUserId(Long id);
+  SelectUserDto findUser(Long id);
+  UserEntity findUserById(Long id);
   UserEntity findUser(String email);
   List<SelectUserDto> findUserLikeName(String name, String email);
   boolean checkUserSame(String email, Long id);

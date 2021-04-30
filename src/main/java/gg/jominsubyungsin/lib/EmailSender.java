@@ -1,6 +1,5 @@
 package gg.jominsubyungsin.lib;
 
-import gg.jominsubyungsin.domain.dto.email.EmailDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

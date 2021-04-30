@@ -18,9 +18,11 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/file")
 public class FileController {
-  @Autowired
-  FileService fileService;
+  @Autowired FileService fileService;
 
+  /*
+  파일 보기
+   */
   @GetMapping("/see/{filename}")
   public ResponseEntity<UrlResource> getImage(@PathVariable String filename, HttpServletRequest request){
     UrlResource resource = fileService.loadFile(filename);
