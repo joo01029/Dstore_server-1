@@ -11,25 +11,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.server.ResponseStatusException;
-
 import javax.crypto.spec.SecretKeySpec;
-import javax.swing.*;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class JwtServiceImpl implements JwtService{
-  @Autowired
-  UserRepository userRepository;
+  @Autowired UserRepository userRepository;
 
   @Value("${auth.access}")
-  private String ACCESSSECRET_KEY;
+  String ACCESSSECRET_KEY;
   @Value("${auth.refresh}")
-  private String REFRESHSECRET_KEY;
+  String REFRESHSECRET_KEY;
 
   @Override
   public String createToken(String subject, long ttlMillis, JwtAuth authType){
@@ -38,32 +32,33 @@ public class JwtServiceImpl implements JwtService{
 
     try {
       Key signingKey = makeSigningKey(authType);
-
       return encodingToken(subject, signingKey, ttlMillis, authType);
-    }catch (Exception e){
-      e.printStackTrace();
+    }catch (HttpServerErrorException e){
       throw e;
+    }
+    catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
     }
   }
 
-  public Key makeSigningKey(JwtAuth authType){
+  private Key makeSigningKey(JwtAuth authType){
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     byte[] secretKey;
-
     try {
-      if (authType == JwtAuth.REFRESH) {
+      if (authType == JwtAuth.REFRESH)
         secretKey = DatatypeConverter.parseBase64Binary(REFRESHSECRET_KEY);
-      } else {
+      else
         secretKey = DatatypeConverter.parseBase64Binary(ACCESSSECRET_KEY);
-      }
+
       return new SecretKeySpec(secretKey, signatureAlgorithm.getJcaName());
     }catch (Exception e){
       e.printStackTrace();
-      throw e;
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"key생성 에러");
     }
   }
 
-  public String encodingToken(String subject, Key secretKey,long ttlMillis, JwtAuth authType){
+  private String encodingToken(String subject, Key secretKey,long ttlMillis, JwtAuth authType){
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     try {
@@ -75,7 +70,7 @@ public class JwtServiceImpl implements JwtService{
               .compact();
     }catch (Exception e){
       e.printStackTrace();
-      throw e;
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"토큰 생성 에러");
     }
   }
 
@@ -94,7 +89,7 @@ public class JwtServiceImpl implements JwtService{
 
   }
 
-  public Claims decodingToken(String token, String key){
+  private Claims decodingToken(String token, String key){
     Claims claims;
     try{
       claims = Jwts.parserBuilder()

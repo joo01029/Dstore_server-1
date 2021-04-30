@@ -10,50 +10,38 @@ import gg.jominsubyungsin.lib.Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.server.ResponseStatusException;
-
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService{
-  @Autowired
-  private UserRepository userRepository;
-  @Autowired
-  private EmailAuthRepository emailAuthRepository;
+  @Autowired UserRepository userRepository;
+  @Autowired EmailAuthRepository emailAuthRepository;
+  @Autowired Hash hash;
+  @Autowired EmailSender emailSender;
 
-  @Autowired
-  Hash hash;
-  @Autowired
-  EmailSender emailSender;
-
-  @Override
-  @Transactional
+  @Override @Transactional
   public void userCreate(UserDto userDto) {
-    Optional<UserEntity> findUserByEmail;
     try {
-      findUserByEmail = userRepository.findByEmail(userDto.getEmail());
-    }catch (Exception e){
-      throw e;
-    }
-
-    if(findUserByEmail.isPresent()){
-      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이미 유저가 존재함");
-    }
-    try {
+      Optional<UserEntity> findUserByEmail = userRepository.findByEmail(userDto.getEmail());
+      if(findUserByEmail.isPresent()){
+        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이미 유저가 존재함");
+      }
+      //이메일 인증여부
       Optional<EmailAuthEntity> findAccess = emailAuthRepository.findByEmailAndAuth(userDto.getEmail(), true);
       if(findAccess.isEmpty()){
         throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일 인증이 안됨");
       }
+
       UserEntity saveUser = userDto.toEntity();
       userRepository.save(saveUser);
     }catch (Exception e){
-      throw e;
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
   }
 
@@ -69,7 +57,7 @@ public class AuthServiceImpl implements AuthService{
       });
     }catch (Exception e){
       e.printStackTrace();
-      throw e;
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
     }
   }
 
@@ -86,25 +74,31 @@ public class AuthServiceImpl implements AuthService{
 
   @Override
   public Boolean authEmail(String code){
-    if(code == null){
-      return false;
-    }
-    Optional<EmailAuthEntity> emailAuth = emailAuthRepository.findByCode(code);
-    if(emailAuth.isEmpty() || emailAuth.get().getExpireAt().getTime() < new Date().getTime()){
-      return false;
-    }
+    try {
+      if (code == null)
+        return false;
 
-    emailAuth.get().setAuth(true);
-    emailAuth.get().setCode(null);
+      Optional<EmailAuthEntity> emailAuth = emailAuthRepository.findByCode(code);
 
-    emailAuthRepository.save(emailAuth.get());
-    return true;
+      if (emailAuth.isEmpty() || emailAuth.get().getExpireAt().getTime() < new Date().getTime())
+        return false;
+
+      emailAuth.get().setAuth(true);
+      emailAuth.get().setCode(null);
+
+      emailAuthRepository.save(emailAuth.get());
+      return true;
+    }catch (Exception e){
+      e.printStackTrace();
+      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
+    }
   }
-
+  /*
+  이메일 보내기
+   */
   @Value("${server.get.url}")
   String serverUrl;
-  @Override
-  @Transactional
+  @Override @Transactional
   public void sendMail(String email) {
     try {
       checkEmail(email);
@@ -123,6 +117,7 @@ public class AuthServiceImpl implements AuthService{
               .append("</div>")
               .append("</a>").toString();
       emailSender.sendMail(email,"이메일 인증", content);
+
       expireAt.setTime(expireAt.getTime() + 1000*60*5);
       emailAuth.setAuth(false);
       emailAuth.setEmail(email);

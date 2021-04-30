@@ -11,17 +11,13 @@ import gg.jominsubyungsin.domain.response.Response;
 import gg.jominsubyungsin.domain.response.user.LoginResponse;
 import gg.jominsubyungsin.service.auth.AuthService;
 import gg.jominsubyungsin.service.jwt.JwtService;
-import gg.jominsubyungsin.service.security.SecurityService;
 import gg.jominsubyungsin.service.user.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -29,68 +25,56 @@ import java.util.Date;
 @ResponseBody
 @RequestMapping("/auth")
 public class AuthController {
-  @Autowired
-  SecurityService securityService;
-  @Autowired
-  UserService userService;
-  @Autowired
-  JwtService jwtService;
-  @Autowired
-  AuthService authService;
-  @Autowired
-  Hash hash;
-
-  //유저 생성
+  @Autowired UserService userService;
+  @Autowired JwtService jwtService;
+  @Autowired AuthService authService;
+  @Autowired Hash hash;
+  /*
+    회원가입
+   */
   @PostMapping("/create")
   public Response userCreate(@RequestBody UserDto userDto){
     Response response = new Response();
 
-    try{
+    try {
       String hashPassword = hash.hashText(userDto.getPassword());
       userDto.setPassword(hashPassword);
-    }catch (HttpServerErrorException e){
-      throw e;
-    }
 
-    try {
       authService.userCreate(userDto);
+
       response.setMessage("유저 저장 성공");
       response.setHttpStatus(HttpStatus.OK);
-
       return response;
-    }catch (HttpClientErrorException e){
+    }catch (HttpClientErrorException | HttpServerErrorException e){
       throw e;
     }catch (Exception e){
       e.printStackTrace();
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
   }
-
-  //로그인
+  /*
+  * 로그인
+  */
   @PostMapping("/login")
   public LoginResponse login(@RequestBody UserDto userDto){
     LoginResponse loginResponse = new LoginResponse();
-    //비밀번호 암호화
-    try {
-      String hashPassword = hash.hashText(userDto.getPassword());
-      userDto.setPassword(hashPassword);
-    }catch (HttpServerErrorException e){
-      throw e;
-    }
 
     UserEntity findUserResponse;
     try {
+      //비밀번호 암호화
+      String hashPassword = hash.hashText(userDto.getPassword());
+      userDto.setPassword(hashPassword);
+
       findUserResponse = authService.login(userDto);
-    }catch (HttpClientErrorException e){
+    }catch (HttpClientErrorException | HttpServerErrorException e){
       throw e;
     }catch (Exception e){
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
     }
-
+    //토큰
     String subject;
     String accessToken;
     long accessExpiredTime = 40 * 60 * 1000L;
-
     String refreshToken;
     long refreshExpiredTime = 7 * 24 * 60 * 60 * 1000L;
     //token발행
@@ -99,8 +83,7 @@ public class AuthController {
       accessToken = jwtService.createToken(subject, accessExpiredTime, JwtAuth.ACCESS);
       refreshToken = jwtService.createToken(subject, refreshExpiredTime, JwtAuth.REFRESH);
     }catch (Exception e){
-      e.printStackTrace();
-      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 만들기 실패");
+      throw e;
     }
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     Date time = new Date(System.currentTimeMillis()+accessExpiredTime);
@@ -111,9 +94,12 @@ public class AuthController {
     loginResponse.setExepiration(expiredTime);
     loginResponse.setAccessToken(accessToken);
     loginResponse.setRefreshToken(refreshToken);
-
     return loginResponse;
   }
+
+  /*
+  토큰 재생성
+   */
   @GetMapping("/refresh")
   public LoginResponse tokenRefresh(@RequestHeader String Authorization){
     LoginResponse loginResponse = new LoginResponse();
@@ -124,11 +110,12 @@ public class AuthController {
     }catch (Exception e){
       throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
     }
+
     long accessExpiredTime = 20 * 60 * 1000L;
     String accessToken;
-
     long refreshExpiredTime = 7 * 24 * 60 * 60 * 1000L;
     String refreshTokenRemake;
+
     try{
       accessToken = jwtService.createToken(subject, accessExpiredTime, JwtAuth.ACCESS);
       refreshTokenRemake = jwtService.createToken(subject, refreshExpiredTime, JwtAuth.REFRESH);
@@ -144,17 +131,15 @@ public class AuthController {
     loginResponse.setExepiration(expiredTime);
     loginResponse.setAccessToken(accessToken);
     loginResponse.setRefreshToken(refreshTokenRemake);
-
     return loginResponse;
   }
 
-
-
+  /*
+  이메일 인증 주소 보내기
+   */
   @PostMapping("/send/email")
   public Response sendEmail(@RequestBody SendEmailDto sendEmailDto){
     Response response = new Response();
-
-    System.out.println(sendEmailDto.getEmail());
 
     try {
       authService.sendMail(sendEmailDto.getEmail());
@@ -165,34 +150,5 @@ public class AuthController {
     response.setHttpStatus(HttpStatus.OK);
     return response;
   }
-
-//  @RequestMapping("/email")
-//  public Response emailAccess(@RequestParam String email, @RequestParam String authKey){
-//    Response response = new Response();
-//
-//    String makeAuthKey;
-//    try{
-//      makeAuthKey = securityService.hashPassword(email);
-//    }catch (Exception e){
-//      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "키 인증 에러");
-//    }
-//
-//    if(!makeAuthKey.equals(authKey)){
-//      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"다른 키");
-//    }
-//    boolean MailAccess;
-//    try {
-//      MailAccess = authService.userMailAccess(email);
-//    }catch (HttpServerErrorException e){
-//      throw e;
-//    }
-//
-//    if(!MailAccess){
-//      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일을 찾을 수 없습니다");
-//    }
-//    response.setMessage("메일인증 성공");
-//    response.setHttpStatus(HttpStatus.OK);
-//    return response;
-//  }
 
 }

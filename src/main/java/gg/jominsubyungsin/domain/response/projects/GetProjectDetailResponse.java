@@ -1,6 +1,5 @@
 package gg.jominsubyungsin.domain.response.projects;
 
-import gg.jominsubyungsin.domain.dto.project.GetProjectDto;
 import gg.jominsubyungsin.domain.dto.project.ProjectDto;
 import gg.jominsubyungsin.domain.response.Response;
 import lombok.Getter;

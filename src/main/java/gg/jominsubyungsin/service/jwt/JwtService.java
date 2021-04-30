@@ -5,8 +5,6 @@ import gg.jominsubyungsin.enums.JwtAuth;
 
 public interface JwtService {
   String createToken(String subject, long ttlMillis, JwtAuth authType);
-
   UserEntity accessTokenDecoding(String token);
-
   String refreshTokenDecoding(String token);
 }
