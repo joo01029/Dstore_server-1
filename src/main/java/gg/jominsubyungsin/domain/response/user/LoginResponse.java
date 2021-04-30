@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LoginResponse extends Response {
-  private String accessToken;
-  private String exepiration;
-  private String RefreshToken;
+	private String accessToken;
+	private String exepiration;
+	private String RefreshToken;
 }

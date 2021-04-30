@@ -8,5 +8,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ShowUserResponse extends Response {
-  private SelectUserDto User;
+	private SelectUserDto User;
 }

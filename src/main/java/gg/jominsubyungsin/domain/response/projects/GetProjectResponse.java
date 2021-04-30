@@ -10,6 +10,6 @@ import java.util.List;
 @Getter
 @Setter
 public class GetProjectResponse extends Response {
-  private List<SelectProjectDto> projectList;
-  private Boolean end;
+	private List<SelectProjectDto> projectList;
+	private Boolean end;
 }

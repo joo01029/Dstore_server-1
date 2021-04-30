@@ -18,24 +18,25 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/file")
 public class FileController {
-  @Autowired FileService fileService;
+	@Autowired
+	FileService fileService;
 
-  /*
-  파일 보기
-   */
-  @GetMapping("/see/{filename}")
-  public ResponseEntity<UrlResource> getImage(@PathVariable String filename, HttpServletRequest request){
-    UrlResource resource = fileService.loadFile(filename);
-    String contentType = null;
+	/*
+	파일 보기
+	 */
+	@GetMapping("/see/{filename}")
+	public ResponseEntity<UrlResource> getImage(@PathVariable String filename, HttpServletRequest request) {
+		UrlResource resource = fileService.loadFile(filename);
+		String contentType = null;
 
-    try{
-      contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-    }catch (IOException e){
-      e.printStackTrace();
-      throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
-    }
-    return ResponseEntity.ok()
-            .contentType(MediaType.parseMediaType(contentType))
-            .body(resource);
-  }
+		try {
+			contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
+		}
+		return ResponseEntity.ok()
+				.contentType(MediaType.parseMediaType(contentType))
+				.body(resource);
+	}
 }

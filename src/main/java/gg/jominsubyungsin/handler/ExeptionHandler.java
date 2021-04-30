@@ -9,20 +9,21 @@ import org.springframework.web.client.HttpServerErrorException;
 
 @ControllerAdvice
 public class ExeptionHandler {
-  @ExceptionHandler(HttpServerErrorException.class)
-  public ResponseEntity<Response> ServerErrorReturn (HttpServerErrorException e){
-    Response data = new Response();
-    data.setHttpStatus(e.getStatusCode());
-    data.setMessage(e.getMessage());
+	@ExceptionHandler(HttpServerErrorException.class)
+	public ResponseEntity<Response> ServerErrorReturn(HttpServerErrorException e) {
+		Response data = new Response();
+		data.setHttpStatus(e.getStatusCode());
+		data.setMessage(e.getMessage());
 
-    return new ResponseEntity<Response>(data,e.getStatusCode());
-  }
-  @ExceptionHandler(HttpClientErrorException.class)
-  public ResponseEntity<Response> ClientErrorReturn (HttpClientErrorException e){
-    Response data = new Response();
-    data.setHttpStatus(e.getStatusCode());
-    data.setMessage(e.getMessage());
+		return new ResponseEntity<Response>(data, e.getStatusCode());
+	}
 
-    return new ResponseEntity<Response>(data,e.getStatusCode());
-  }
+	@ExceptionHandler(HttpClientErrorException.class)
+	public ResponseEntity<Response> ClientErrorReturn(HttpClientErrorException e) {
+		Response data = new Response();
+		data.setHttpStatus(e.getStatusCode());
+		data.setMessage(e.getMessage());
+
+		return new ResponseEntity<Response>(data, e.getStatusCode());
+	}
 }

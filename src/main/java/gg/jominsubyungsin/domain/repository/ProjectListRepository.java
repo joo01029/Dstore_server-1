@@ -9,5 +9,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import java.util.List;
 
 public interface ProjectListRepository extends PagingAndSortingRepository<ProjectEntity, Long> {
-  Page<ProjectEntity> findByUsers(UserEntity user, Pageable pageable);
+	Page<ProjectEntity> findByUsers(UserEntity user, Pageable pageable);
 }
