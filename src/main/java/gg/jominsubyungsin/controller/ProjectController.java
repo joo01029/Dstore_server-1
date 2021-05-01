@@ -46,11 +46,11 @@ public class ProjectController {
 	프로젝트 생성
 	 */
 	@PostMapping("/create")
-	public Response createProject(@RequestBody GetProjectDto projectDto, @RequestParam List<MultipartFile> multipartFiles, HttpServletRequest request) {
+	public Response createProject(@ModelAttribute GetProjectDto projectDto, HttpServletRequest request) {
 		Response response = new Response();
 
 		List<UserEntity> userEntities = new ArrayList<>();
-		if (multipartFiles.isEmpty()) {
+		if (projectDto.getFiles().isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일은 무조건 1개 이상 보내야 합니다");
 		}
 
@@ -71,7 +71,7 @@ public class ProjectController {
 			}
 			//파일 업로드
 			List<FileDto> files;
-			files = multipartService.uploadMulti(multipartFiles);
+			files = multipartService.uploadMulti(projectDto.getFiles());
 			List<FileEntity> fileEntities = fileService.createFiles(files);
 
 			ProjectEntity projectEntity = projectDto.toEntity(userEntities, fileEntities);
@@ -92,13 +92,15 @@ public class ProjectController {
 	public GetProjectResponse projectList(Pageable pageable) {
 		GetProjectResponse response = new GetProjectResponse();
 		List<SelectProjectDto> projects;
-
+		Long projectNumber;
 		try {
 			projects = projectService.getProjects(pageable);
+			projectNumber = projectService.countProject();
 		} catch (Exception e) {
 			throw e;
 		}
-		Boolean end = projects.size() < pageable.getPageSize();
+
+		Boolean end = projectNumber < (long) pageable.getPageSize() *(pageable.getPageNumber()+1);
 
 		response.setHttpStatus(HttpStatus.OK);
 		response.setMessage("성공");
@@ -116,7 +118,7 @@ public class ProjectController {
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
 		try {
-			ProjectDto project = projectService.projectDetail(id);
+			ProjectDto project = projectService.projectDetail(id, user);
 
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
@@ -125,7 +127,21 @@ public class ProjectController {
 		} catch (Exception e) {
 			throw e;
 		}
+	}
 
+	@PutMapping("/like/{id}")
+	public Response changeLikeStateProject(HttpServletRequest request, @PathVariable("id") Long id){
+		Response response = new Response();
 
+		UserEntity user = (UserEntity) request.getAttribute("user");
+		try{
+			projectService.changeLikeState(id, user);
+
+			response.setHttpStatus(HttpStatus.OK);
+			response.setMessage("성공");
+			return response;
+		}catch (Exception e){
+			throw e;
+		}
 	}
 }

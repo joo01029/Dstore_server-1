@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -45,6 +46,14 @@ public class UserEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Role role;
+
+	@OneToMany(mappedBy = "project")
+	private List<LikeEntity> likes = new ArrayList<>();
+
+	public void add(LikeEntity like){
+		like.setUser(this);
+		likes.add(like);
+	}
 
 	public void add(ProjectEntity project) {
 		projects.add(project);
