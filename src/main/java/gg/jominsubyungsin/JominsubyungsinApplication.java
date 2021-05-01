@@ -10,9 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class JominsubyungsinApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(JominsubyungsinApplication.class, args);
 	}
-
 }

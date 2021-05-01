@@ -20,6 +20,8 @@ public class GetProjectDto {
 	private String content;
 	@NotBlank
 	private List<Long> users;
+	@NotBlank
+	private List<MultipartFile> files;
 
 	public ProjectEntity toEntity(List<UserEntity> userEntities, List<FileEntity> fileEntities) {
 		return ProjectEntity.builder()

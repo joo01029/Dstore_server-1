@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -14,7 +15,7 @@ public class SelectProjectDetailDto {
 	private Long id;
 	private String title;
 	private String content;
-
+	private Date createAt;
 	private FileEntity mainPhoto;
 	private List<FileEntity> files = new ArrayList<>();
 
@@ -24,6 +25,7 @@ public class SelectProjectDetailDto {
 		this.id = projectEntity.getId();
 		this.title = projectEntity.getTitle();
 		this.content = projectEntity.getContent();
+		this.createAt = projectEntity.getCreateAt();
 		this.mainPhoto = projectEntity.getFiles().get(0);
 		this.files = projectEntity.getFiles();
 		this.users = selectUserDto;

@@ -1,6 +1,7 @@
 package gg.jominsubyungsin.domain.repository;
 
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
+import gg.jominsubyungsin.domain.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +13,6 @@ import java.util.Optional;
 
 public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
 	Optional<ProjectEntity> findById(Long id);
-
+	Long countByUsers(UserEntity user);
 	List<ProjectEntity> findByUsers(Long id);
 }

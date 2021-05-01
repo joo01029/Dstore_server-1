@@ -172,11 +172,12 @@ public class UserController {
 			//내 프로필인지 검사
 			boolean myProfile = userService.checkUserSame(user.getEmail(), id);
 			UserEntity profile = userService.findUserById(id);
-			List<SelectProjectDto> selectProjectDetailDtos = projectService.getProjects(pageable, profile);
 
+			List<SelectProjectDto> selectProjectDetailDtos = projectService.getProjects(pageable, profile);
 			userDetailResponseDto = new UserDetailResponseDto(profile, myProfile, selectProjectDetailDtos);
 
-			Boolean end = selectProjectDetailDtos.size() < pageable.getPageSize();
+			Long projectNumber = projectService.countProject(user);
+			Boolean end = projectNumber < (long) pageable.getPageSize() *(pageable.getPageNumber()+1);
 
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
