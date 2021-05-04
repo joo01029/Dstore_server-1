@@ -1,10 +1,12 @@
 package gg.jominsubyungsin.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @NoArgsConstructor
 @Getter
@@ -14,10 +16,26 @@ import javax.persistence.*;
 public class CommentEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 
 	@Column
-	String comment;
+	private String comment;
 
+	@Column
+	private Date createAt = new Date();
 
+	@JsonIgnore
+	@ManyToOne
+	@JoinColumn(nullable = false)
+	private ProjectEntity project;
+
+	@ManyToOne
+	@JoinColumn(nullable = false)
+	private UserEntity user;
+
+	public CommentEntity(String comment,ProjectEntity project, UserEntity user){
+		this.comment = comment;
+		this.project = project;
+		this.user = user;
+	}
 }

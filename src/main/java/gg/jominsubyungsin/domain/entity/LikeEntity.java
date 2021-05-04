@@ -19,12 +19,11 @@ public class LikeEntity {
 
 	@JsonIgnore
 	@ManyToOne
-	@JoinColumn
+	@JoinColumn(nullable = false)
 	ProjectEntity project;
 
-	@JsonIgnore
 	@ManyToOne
-	@JoinColumn
+	@JoinColumn(nullable = false)
 	UserEntity user;
 
 	@Column

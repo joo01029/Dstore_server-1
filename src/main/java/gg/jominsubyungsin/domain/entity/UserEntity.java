@@ -47,12 +47,17 @@ public class UserEntity {
 	@Column(nullable = false)
 	private Role role;
 
-	@OneToMany(mappedBy = "project")
+	@OneToMany(mappedBy = "user")
 	private List<LikeEntity> likes = new ArrayList<>();
 
+	@OneToMany(mappedBy = "user")
+	private List<CommentEntity> comments = new ArrayList<>();
+
 	public void add(LikeEntity like){
-		like.setUser(this);
 		likes.add(like);
+	}
+	public void add(CommentEntity comment){
+		comments.add(comment);
 	}
 
 	public void add(ProjectEntity project) {

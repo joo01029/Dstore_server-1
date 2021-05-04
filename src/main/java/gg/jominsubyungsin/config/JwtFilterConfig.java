@@ -14,8 +14,10 @@ public class JwtFilterConfig {
 		try {
 			FilterRegistrationBean registrationBean = new FilterRegistrationBean(new JwtAuthorizationFilter());
 			registrationBean.addUrlPatterns("/user/*");
-			registrationBean.addUrlPatterns("/project/create");
-			registrationBean.addUrlPatterns("/project/detail");
+			registrationBean.addUrlPatterns("/project/*");
+			registrationBean.addUrlPatterns("/comment/*");
+			registrationBean.addUrlPatterns("/like/*");
+			registrationBean.addUrlPatterns("/follow/*");
 			registrationBean.setOrder(2);
 
 			return registrationBean;

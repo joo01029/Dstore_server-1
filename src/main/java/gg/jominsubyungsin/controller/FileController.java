@@ -27,7 +27,7 @@ public class FileController {
 	@GetMapping("/see/{filename}")
 	public ResponseEntity<UrlResource> getImage(@PathVariable String filename, HttpServletRequest request) {
 		UrlResource resource = fileService.loadFile(filename);
-		String contentType = null;
+		String contentType;
 
 		try {
 			contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());

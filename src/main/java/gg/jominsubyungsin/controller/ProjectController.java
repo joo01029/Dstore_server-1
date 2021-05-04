@@ -1,15 +1,15 @@
 package gg.jominsubyungsin.controller;
 
-import gg.jominsubyungsin.domain.dto.file.FileDto;
-import gg.jominsubyungsin.domain.dto.project.GetProjectDto;
-import gg.jominsubyungsin.domain.dto.project.ProjectDto;
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.file.request.FileDto;
+import gg.jominsubyungsin.domain.dto.project.request.GetProjectDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.ProjectDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.response.Response;
-import gg.jominsubyungsin.domain.response.projects.GetProjectDetailResponse;
-import gg.jominsubyungsin.domain.response.projects.GetProjectResponse;
+import gg.jominsubyungsin.domain.dto.project.response.GetProjectDetailResponse;
+import gg.jominsubyungsin.domain.dto.project.response.GetProjectResponse;
 import gg.jominsubyungsin.service.file.FileService;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.multipart.MultipartService;
@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.data.domain.Pageable;
 
@@ -75,6 +74,7 @@ public class ProjectController {
 			List<FileEntity> fileEntities = fileService.createFiles(files);
 
 			ProjectEntity projectEntity = projectDto.toEntity(userEntities, fileEntities);
+
 			projectService.saveProject(projectEntity);
 		} catch (Exception e) {
 			throw e;
@@ -89,18 +89,19 @@ public class ProjectController {
 	프로젝트 리스트 받기
 	 */
 	@GetMapping("/list")
-	public GetProjectResponse projectList(Pageable pageable) {
+	public GetProjectResponse projectList(Pageable pageable, HttpServletRequest request) {
 		GetProjectResponse response = new GetProjectResponse();
 		List<SelectProjectDto> projects;
 		Long projectNumber;
+		UserEntity user = (UserEntity) request.getAttribute("user");
 		try {
-			projects = projectService.getProjects(pageable);
+			projects = projectService.getProjects(pageable, user);
 			projectNumber = projectService.countProject();
 		} catch (Exception e) {
 			throw e;
 		}
 
-		Boolean end = projectNumber < (long) pageable.getPageSize() *(pageable.getPageNumber()+1);
+		Boolean end = projectNumber <= (long) pageable.getPageSize() *(pageable.getPageNumber()+1);
 
 		response.setHttpStatus(HttpStatus.OK);
 		response.setMessage("성공");
@@ -125,22 +126,6 @@ public class ProjectController {
 			response.setProject(project);
 			return response;
 		} catch (Exception e) {
-			throw e;
-		}
-	}
-
-	@PutMapping("/like/{id}")
-	public Response changeLikeStateProject(HttpServletRequest request, @PathVariable("id") Long id){
-		Response response = new Response();
-
-		UserEntity user = (UserEntity) request.getAttribute("user");
-		try{
-			projectService.changeLikeState(id, user);
-
-			response.setHttpStatus(HttpStatus.OK);
-			response.setMessage("성공");
-			return response;
-		}catch (Exception e){
 			throw e;
 		}
 	}

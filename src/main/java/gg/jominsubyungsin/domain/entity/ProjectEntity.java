@@ -36,6 +36,9 @@ public class ProjectEntity {
 	@OneToMany(mappedBy = "project")
 	private List<LikeEntity> likes = new ArrayList<>();
 
+	@OneToMany(mappedBy = "project")
+	private List<CommentEntity> comments = new ArrayList<>();
+
 	public void add(UserEntity user) {
 		users.add(user);
 	}
@@ -48,6 +51,10 @@ public class ProjectEntity {
 	public void add(LikeEntity like) {
 		likes.add(like);
 		like.setProject(this);
+	}
+	public void add(CommentEntity comment) {
+		comments.add(comment);
+		comment.setProject(this);
 	}
 
 	@Builder

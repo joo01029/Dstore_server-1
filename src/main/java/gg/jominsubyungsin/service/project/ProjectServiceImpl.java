@@ -1,19 +1,20 @@
 package gg.jominsubyungsin.service.project;
 
-import gg.jominsubyungsin.domain.dto.project.ProjectDto;
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.ProjectDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.LikeEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
 import gg.jominsubyungsin.domain.repository.LikeRepository;
 import gg.jominsubyungsin.domain.repository.ProjectListRepository;
 import gg.jominsubyungsin.domain.repository.ProjectRepository;
-import org.apache.catalina.User;
+import gg.jominsubyungsin.service.comment.CommentService;
+import gg.jominsubyungsin.service.follow.FollowService;
+import gg.jominsubyungsin.service.like.LikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -30,6 +31,12 @@ public class ProjectServiceImpl implements ProjectService {
 	ProjectListRepository projectListRepository;
 	@Autowired
 	LikeRepository likeRepository;
+	@Autowired
+	LikeService likeService;
+	@Autowired
+	CommentService commentService;
+	@Autowired
+	FollowService followService;
 
 	/*
 	프로젝트 저장
@@ -48,7 +55,7 @@ public class ProjectServiceImpl implements ProjectService {
 	프로젝트 받아오기
 	 */
 	@Override
-	public List<SelectProjectDto> getProjects(Pageable pageable) {
+	public List<SelectProjectDto> getProjects(Pageable pageable,UserEntity me) {
 		List<SelectProjectDto> projectDtos = new ArrayList<>();
 
 		try {
@@ -59,7 +66,8 @@ public class ProjectServiceImpl implements ProjectService {
 				List<SelectUserDto> userDtos = new ArrayList<>();
 
 				for (UserEntity userEntity : projectEntity.getUsers()) {
-					SelectUserDto userDto = new SelectUserDto(userEntity);
+
+					SelectUserDto userDto = new SelectUserDto(userEntity,followService.followState(userEntity, me));
 					userDtos.add(userDto);
 				}
 
@@ -77,7 +85,7 @@ public class ProjectServiceImpl implements ProjectService {
 	유저의 프로젝트 받아오기
 	 */
 	@Override
-	public List<SelectProjectDto> getProjects(Pageable pageable, UserEntity user) {
+	public List<SelectProjectDto> getProjects(Pageable pageable,UserEntity me, UserEntity user) {
 		List<SelectProjectDto> projectDtos = new ArrayList<>();
 
 		try {
@@ -92,7 +100,7 @@ public class ProjectServiceImpl implements ProjectService {
 				List<SelectUserDto> userDtos = new ArrayList<>();
 
 				for (UserEntity userEntity : projectEntity.getUsers()) {
-					SelectUserDto userDto = new SelectUserDto(userEntity);
+					SelectUserDto userDto = new SelectUserDto(userEntity,followService.followState(userEntity, me));
 					userDtos.add(userDto);
 				}
 
@@ -140,30 +148,17 @@ public class ProjectServiceImpl implements ProjectService {
 			ProjectEntity project = projectRepository.findById(id).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
-			Long likeNum = likeRepository.countByProjectAndState(project,true);
+			Long likeNum = likeService.LikeNum(id);
 			LikeEntity likeState = likeRepository.findByProjectAndUser(project,user).orElse(new LikeEntity(project,user,false));
-			return new ProjectDto(project, likeNum, likeState.getState());
+			Long commentNum = commentService.commentNum(id);
+
+			List<SelectUserDto> users = new ArrayList<>();
+			for(UserEntity userEntity: project.getUsers()){
+				users.add(new SelectUserDto( userEntity,followService.followState(userEntity,user)));
+			}
+
+			return new ProjectDto(project, users, likeNum, likeState.getState(), commentNum, user);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
-		}
-	}
-
-	/*
-	* 게시글 좋아요
-	*/
-	@Override
-	public void changeLikeState(Long id, UserEntity user) {
-		try{
-			ProjectEntity project = projectRepository.findById(id).orElseGet(()->{
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글");
-			});
-
-			LikeEntity likeEntity = likeRepository.findByProjectAndUser(project, user).orElse(new LikeEntity(project,user,false));
-			likeEntity.setState(!likeEntity.getState());
-
-			likeRepository.save(likeEntity);
-		}catch (Exception e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
