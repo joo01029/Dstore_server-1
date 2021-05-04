@@ -16,5 +16,9 @@ public interface ProjectService {
 
 	List<SelectProjectDto> getProjects(Pageable pageable, UserEntity user);
 
-	ProjectDto projectDetail(Long id);
+	Long countProject();
+	Long countProject(UserEntity user);
+
+	ProjectDto projectDetail(Long id, UserEntity user);
+	void changeLikeState(Long id, UserEntity user);
 }

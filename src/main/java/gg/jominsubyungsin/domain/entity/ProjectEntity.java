@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -23,11 +24,17 @@ public class ProjectEntity {
 	@Column
 	private String content;
 
+	@Column
+	private Date createAt = new Date();
+
 	@ManyToMany(mappedBy = "projects")
 	private List<UserEntity> users = new ArrayList<>();
 
 	@OneToMany(mappedBy = "projectId")
 	private List<FileEntity> files = new ArrayList<>();
+
+	@OneToMany(mappedBy = "project")
+	private List<LikeEntity> likes = new ArrayList<>();
 
 	public void add(UserEntity user) {
 		users.add(user);
@@ -36,6 +43,11 @@ public class ProjectEntity {
 	public void add(FileEntity fileEntity) {
 		files.add(fileEntity);
 		fileEntity.setProjectId(this);
+	}
+
+	public void add(LikeEntity like) {
+		likes.add(like);
+		like.setProject(this);
 	}
 
 	@Builder
