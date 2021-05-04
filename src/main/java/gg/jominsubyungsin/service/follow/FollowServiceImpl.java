@@ -1,6 +1,6 @@
 package gg.jominsubyungsin.service.follow;
 
-import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.FollowEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.FollowListRepository;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;

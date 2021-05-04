@@ -1,9 +1,8 @@
 package gg.jominsubyungsin.controller;
 
-import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.repository.FollowRepository;
-import gg.jominsubyungsin.domain.response.user.ShowUserListResponse;
+import gg.jominsubyungsin.domain.dto.user.response.ShowUserListResponse;
 import gg.jominsubyungsin.service.follow.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;

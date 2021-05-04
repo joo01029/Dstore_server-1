@@ -1,15 +1,10 @@
-package gg.jominsubyungsin.domain.dto.project;
+package gg.jominsubyungsin.domain.dto.project.dataIgnore;
 
-import gg.jominsubyungsin.domain.dto.query.SelectCommentDto;
-import gg.jominsubyungsin.domain.dto.query.SelectLikeDto;
-import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.*;
-import gg.jominsubyungsin.service.follow.FollowService;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,7 +23,7 @@ public class ProjectDto {
 	private Long commentNum;
 	private Integer commentsNum = 0;
 
-	public ProjectDto(ProjectEntity projectEntity, List<SelectUserDto> users, Long likeNum,Boolean likeState, Long commentNum, UserEntity me) {
+	public ProjectDto(ProjectEntity projectEntity, List<SelectUserDto> users, Long likeNum, Boolean likeState, Long commentNum, UserEntity me) {
 		id = projectEntity.getId();
 		title = projectEntity.getTitle();
 		content = projectEntity.getContent();

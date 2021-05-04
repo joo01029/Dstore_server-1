@@ -1,6 +1,6 @@
 package gg.jominsubyungsin.service.comment;
 
-import gg.jominsubyungsin.domain.dto.query.SelectCommentDto;
+import gg.jominsubyungsin.domain.dto.comment.dataIgnore.SelectCommentDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import org.springframework.data.domain.Pageable;
 

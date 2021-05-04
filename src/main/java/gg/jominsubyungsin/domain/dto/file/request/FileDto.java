@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.domain.dto.file;
+package gg.jominsubyungsin.domain.dto.file.request;
 
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import lombok.Getter;

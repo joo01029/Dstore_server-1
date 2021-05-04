@@ -1,5 +1,6 @@
-package gg.jominsubyungsin.domain.dto.query;
+package gg.jominsubyungsin.domain.dto.project.dataIgnore;
 
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import lombok.Getter;

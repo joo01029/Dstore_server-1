@@ -1,11 +1,11 @@
 package gg.jominsubyungsin.service.project;
 
-import gg.jominsubyungsin.domain.dto.project.ProjectDto;
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.ProjectDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.LikeEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
 import gg.jominsubyungsin.domain.repository.LikeRepository;
 import gg.jominsubyungsin.domain.repository.ProjectListRepository;
 import gg.jominsubyungsin.domain.repository.ProjectRepository;

@@ -1,6 +1,6 @@
 package gg.jominsubyungsin.service.multipart;
 
-import gg.jominsubyungsin.domain.dto.file.FileDto;
+import gg.jominsubyungsin.domain.dto.file.request.FileDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

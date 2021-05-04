@@ -1,5 +1,6 @@
-package gg.jominsubyungsin.domain.dto.query;
+package gg.jominsubyungsin.domain.dto.comment.dataIgnore;
 
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.CommentEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.service.follow.FollowService;

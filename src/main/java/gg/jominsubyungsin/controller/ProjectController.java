@@ -1,15 +1,15 @@
 package gg.jominsubyungsin.controller;
 
-import gg.jominsubyungsin.domain.dto.file.FileDto;
-import gg.jominsubyungsin.domain.dto.project.GetProjectDto;
-import gg.jominsubyungsin.domain.dto.project.ProjectDto;
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.file.request.FileDto;
+import gg.jominsubyungsin.domain.dto.project.request.GetProjectDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.ProjectDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.response.Response;
-import gg.jominsubyungsin.domain.response.projects.GetProjectDetailResponse;
-import gg.jominsubyungsin.domain.response.projects.GetProjectResponse;
+import gg.jominsubyungsin.domain.dto.project.response.GetProjectDetailResponse;
+import gg.jominsubyungsin.domain.dto.project.response.GetProjectResponse;
 import gg.jominsubyungsin.service.file.FileService;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.multipart.MultipartService;
@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.data.domain.Pageable;
 

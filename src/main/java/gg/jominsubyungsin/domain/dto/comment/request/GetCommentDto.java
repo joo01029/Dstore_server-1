@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.domain.dto.comment;
+package gg.jominsubyungsin.domain.dto.comment.request;
 
 import lombok.Getter;
 import lombok.Setter;

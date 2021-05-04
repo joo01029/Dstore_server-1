@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.domain.dto.project;
+package gg.jominsubyungsin.domain.dto.project.request;
 
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;

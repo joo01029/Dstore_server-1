@@ -1,11 +1,9 @@
 package gg.jominsubyungsin.controller;
 
-import gg.jominsubyungsin.domain.dto.query.SelectLikeDto;
-import gg.jominsubyungsin.domain.entity.LikeEntity;
+import gg.jominsubyungsin.domain.dto.like.dataIgnore.SelectLikeDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.response.Response;
-import gg.jominsubyungsin.domain.response.lke.GetLikeListResponse;
-import gg.jominsubyungsin.domain.response.user.ShowUserListResponse;
+import gg.jominsubyungsin.domain.dto.like.response.GetLikeListResponse;
 import gg.jominsubyungsin.service.like.LikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;

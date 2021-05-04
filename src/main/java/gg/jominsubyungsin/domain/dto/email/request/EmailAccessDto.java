@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.domain.dto.email;
+package gg.jominsubyungsin.domain.dto.email.request;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
-package gg.jominsubyungsin.domain.response.lke;
+package gg.jominsubyungsin.domain.dto.like.response;
 
-import gg.jominsubyungsin.domain.dto.query.SelectLikeDto;
+import gg.jominsubyungsin.domain.dto.like.dataIgnore.SelectLikeDto;
 import gg.jominsubyungsin.domain.response.Response;
 import lombok.Getter;
 import lombok.Setter;

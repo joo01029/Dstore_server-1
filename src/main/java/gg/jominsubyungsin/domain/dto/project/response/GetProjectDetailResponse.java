@@ -1,6 +1,6 @@
-package gg.jominsubyungsin.domain.response.projects;
+package gg.jominsubyungsin.domain.dto.project.response;
 
-import gg.jominsubyungsin.domain.dto.project.ProjectDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.ProjectDto;
 import gg.jominsubyungsin.domain.response.Response;
 import lombok.Getter;
 import lombok.Setter;

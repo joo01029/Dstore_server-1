@@ -1,17 +1,17 @@
 package gg.jominsubyungsin.controller;
 
-import gg.jominsubyungsin.domain.dto.file.FileDto;
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
-import gg.jominsubyungsin.domain.dto.user.UserDto;
-import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
-import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.file.request.FileDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserUpdateDto;
 import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponseDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.lib.Hash;
 import gg.jominsubyungsin.domain.response.Response;
-import gg.jominsubyungsin.domain.response.user.ShowUserListResponse;
-import gg.jominsubyungsin.domain.response.user.ShowUserResponse;
-import gg.jominsubyungsin.domain.response.user.UserDetailResponse;
+import gg.jominsubyungsin.domain.dto.user.response.ShowUserListResponse;
+import gg.jominsubyungsin.domain.dto.user.response.ShowUserResponse;
+import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponse;
 import gg.jominsubyungsin.service.file.FileService;
 import gg.jominsubyungsin.service.follow.FollowService;
 import gg.jominsubyungsin.service.jwt.JwtService;

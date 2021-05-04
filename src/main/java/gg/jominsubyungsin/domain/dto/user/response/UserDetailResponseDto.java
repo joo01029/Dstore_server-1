@@ -1,6 +1,6 @@
 package gg.jominsubyungsin.domain.dto.user.response;
 
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,11 +1,9 @@
 package gg.jominsubyungsin.service.user;
 
-import gg.jominsubyungsin.domain.dto.user.UserDto;
-import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
-import gg.jominsubyungsin.domain.entity.FollowEntity;
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserUpdateDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
-import gg.jominsubyungsin.domain.repository.FollowRepository;
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import gg.jominsubyungsin.service.follow.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;

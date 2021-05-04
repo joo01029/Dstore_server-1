@@ -1,7 +1,6 @@
-package gg.jominsubyungsin.domain.response.comment;
+package gg.jominsubyungsin.domain.dto.comment.response;
 
-import gg.jominsubyungsin.domain.dto.query.SelectCommentDto;
-import gg.jominsubyungsin.domain.entity.CommentEntity;
+import gg.jominsubyungsin.domain.dto.comment.dataIgnore.SelectCommentDto;
 import gg.jominsubyungsin.domain.response.Response;
 import lombok.Getter;
 import lombok.Setter;

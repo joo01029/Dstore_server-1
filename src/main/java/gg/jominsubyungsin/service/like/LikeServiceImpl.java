@@ -1,6 +1,6 @@
 package gg.jominsubyungsin.service.like;
 
-import gg.jominsubyungsin.domain.dto.query.SelectLikeDto;
+import gg.jominsubyungsin.domain.dto.like.dataIgnore.SelectLikeDto;
 import gg.jominsubyungsin.domain.entity.LikeEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
