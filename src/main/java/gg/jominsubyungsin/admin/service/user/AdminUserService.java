@@ -1,8 +1,7 @@
 package gg.jominsubyungsin.admin.service.user;
 
 import gg.jominsubyungsin.admin.domain.dto.query.SelectUserForAdminDto;
-import gg.jominsubyungsin.domain.dto.user.UserDto;
-import gg.jominsubyungsin.domain.entity.UserEntity;
+import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 
 import java.util.List;
 

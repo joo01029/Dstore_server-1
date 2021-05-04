@@ -1,7 +1,6 @@
 package gg.jominsubyungsin.service.multipart;
 
-import gg.jominsubyungsin.domain.dto.file.FileDto;
-import org.springframework.web.bind.annotation.RequestParam;
+import gg.jominsubyungsin.domain.dto.file.request.FileDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

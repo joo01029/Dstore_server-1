@@ -1,12 +1,12 @@
 package gg.jominsubyungsin.service.user;
 
-import gg.jominsubyungsin.domain.dto.user.UserDto;
-import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserUpdateDto;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
 
 
-import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
@@ -19,13 +19,13 @@ public interface UserService {
 
 	boolean userUpdateIntroduce(UserDto userDto);
 
-	SelectUserDto findUser(Long id);
+	SelectUserDto findUser(Long id, UserEntity user);
 
 	UserEntity findUserById(Long id);
 
 	UserEntity findUser(String email);
 
-	List<SelectUserDto> findUserLikeName(String name, String email);
+	List<SelectUserDto> findUserLikeName(String name, String email, UserEntity user);
 
 	boolean checkUserSame(String email, Long id);
 

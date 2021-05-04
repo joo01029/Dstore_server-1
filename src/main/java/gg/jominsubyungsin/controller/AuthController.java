@@ -1,12 +1,12 @@
 package gg.jominsubyungsin.controller;
 
-import gg.jominsubyungsin.domain.dto.email.SendEmailDto;
-import gg.jominsubyungsin.domain.dto.user.UserDto;
+import gg.jominsubyungsin.domain.dto.email.request.SendEmailDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.enums.JwtAuth;
 import gg.jominsubyungsin.lib.Hash;
 import gg.jominsubyungsin.domain.response.Response;
-import gg.jominsubyungsin.domain.response.user.LoginResponse;
+import gg.jominsubyungsin.domain.dto.user.response.LoginResponse;
 import gg.jominsubyungsin.service.auth.AuthService;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.user.UserService;

@@ -1,7 +1,6 @@
 package gg.jominsubyungsin.service.auth;
 
-import gg.jominsubyungsin.domain.dto.email.EmailDto;
-import gg.jominsubyungsin.domain.dto.user.UserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 
 public interface AuthService {

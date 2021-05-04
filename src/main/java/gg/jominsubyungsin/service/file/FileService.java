@@ -1,6 +1,6 @@
 package gg.jominsubyungsin.service.file;
 
-import gg.jominsubyungsin.domain.dto.file.FileDto;
+import gg.jominsubyungsin.domain.dto.file.request.FileDto;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import org.springframework.core.io.UrlResource;
 

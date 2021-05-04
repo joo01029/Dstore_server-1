@@ -1,14 +1,11 @@
 package gg.jominsubyungsin.admin.service.user;
 import gg.jominsubyungsin.admin.domain.dto.query.SelectUserForAdminDto;
 import gg.jominsubyungsin.admin.domain.repository.UserDetailRepository;
-import gg.jominsubyungsin.domain.dto.user.UserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.repository.UserRepository;
 import gg.jominsubyungsin.admin.domain.repository.UserListRepository;
 import gg.jominsubyungsin.enums.Role;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;

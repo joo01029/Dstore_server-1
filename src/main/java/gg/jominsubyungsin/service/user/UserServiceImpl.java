@@ -1,10 +1,11 @@
 package gg.jominsubyungsin.service.user;
 
-import gg.jominsubyungsin.domain.dto.user.UserDto;
-import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserUpdateDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
 import gg.jominsubyungsin.domain.repository.UserRepository;
+import gg.jominsubyungsin.service.follow.FollowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,9 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 	@Autowired
-	private UserRepository userRepository;
+	UserRepository userRepository;
+	@Autowired
+	FollowService followService;
 
 	@Override
 	public boolean userUpdate(UserUpdateDto userUpdateDto) throws HttpServerErrorException {
@@ -75,13 +78,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public SelectUserDto findUser(Long id) {
+	public SelectUserDto findUser(Long id, UserEntity user) {
 		try {
-			Optional<UserEntity> findUser = userRepository.findById(id);
-
-			return new SelectUserDto(findUser.orElseGet(() -> {
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
-			}));
+			UserEntity userEntity = userRepository.findById(id).orElseGet(() -> {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 유저");
+			});
+			return new SelectUserDto(userEntity, followService.followState(userEntity, user));
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
@@ -117,14 +119,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<SelectUserDto> findUserLikeName(String name, String email) {
+	public List<SelectUserDto> findUserLikeName(String name, String email, UserEntity user) {
 		try {
 			List<UserEntity> findUsers = userRepository.findByNameLike(name, email);
 			List<SelectUserDto> userList = new ArrayList<>();
 
-			for (UserEntity findUser : findUsers)
-				userList.add(new SelectUserDto(findUser));
-
+			for (UserEntity userEntity : findUsers) {
+				userList.add(new SelectUserDto(userEntity, followService.followState(userEntity, user)));
+			}
 			return userList;
 		} catch (Exception e) {
 			e.printStackTrace();

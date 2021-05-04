@@ -1,18 +1,19 @@
 package gg.jominsubyungsin.controller;
 
-import gg.jominsubyungsin.domain.dto.file.FileDto;
-import gg.jominsubyungsin.domain.dto.query.SelectProjectDto;
-import gg.jominsubyungsin.domain.dto.user.UserDto;
-import gg.jominsubyungsin.domain.dto.user.UserUpdateDto;
-import gg.jominsubyungsin.domain.dto.query.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.file.request.FileDto;
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
+import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserDto;
+import gg.jominsubyungsin.domain.dto.user.request.UserUpdateDto;
 import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponseDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.lib.Hash;
 import gg.jominsubyungsin.domain.response.Response;
-import gg.jominsubyungsin.domain.response.user.ShowUserListResponse;
-import gg.jominsubyungsin.domain.response.user.ShowUserResponse;
-import gg.jominsubyungsin.domain.response.user.UserDetailResponse;
+import gg.jominsubyungsin.domain.dto.user.response.ShowUserListResponse;
+import gg.jominsubyungsin.domain.dto.user.response.ShowUserResponse;
+import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponse;
 import gg.jominsubyungsin.service.file.FileService;
+import gg.jominsubyungsin.service.follow.FollowService;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.multipart.MultipartService;
 import gg.jominsubyungsin.service.project.ProjectService;
@@ -43,6 +44,8 @@ public class UserController {
 	MultipartService multipartService;
 	@Autowired
 	FileService fileService;
+	@Autowired
+	FollowService followService;
 	@Autowired
 	Hash hash;
 
@@ -127,10 +130,11 @@ public class UserController {
 	유저 보기
 	 */
 	@GetMapping("/show")
-	public ShowUserResponse showUser(@RequestParam Long id) {
+	public ShowUserResponse showUser(@RequestParam Long id, HttpServletRequest request) {
 		ShowUserResponse showUserResponse = new ShowUserResponse();
+		UserEntity user = (UserEntity) request.getAttribute("user");
 		try {
-			SelectUserDto selectUser = userService.findUser(id);
+			SelectUserDto selectUser = userService.findUser(id,user);
 
 			showUserResponse.setHttpStatus(HttpStatus.OK);
 			showUserResponse.setMessage("성공");
@@ -149,7 +153,7 @@ public class UserController {
 		ShowUserListResponse showUserListResponse = new ShowUserListResponse();
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
-			List<SelectUserDto> userList = userService.findUserLikeName(name, user.getEmail());
+			List<SelectUserDto> userList = userService.findUserLikeName(name, user.getEmail(), user);
 
 			showUserListResponse.setHttpStatus(HttpStatus.OK);
 			showUserListResponse.setMessage("성공");
@@ -173,8 +177,10 @@ public class UserController {
 			boolean myProfile = userService.checkUserSame(user.getEmail(), id);
 			UserEntity profile = userService.findUserById(id);
 
-			List<SelectProjectDto> selectProjectDetailDtos = projectService.getProjects(pageable, profile);
-			userDetailResponseDto = new UserDetailResponseDto(profile, myProfile, selectProjectDetailDtos);
+			List<SelectProjectDto> selectProjectDetailDtos = projectService.getProjects(pageable, user, profile);
+			Long follower = followService.countFollower(id);
+			Long following = followService.countFollowing(id);
+			userDetailResponseDto = new UserDetailResponseDto(profile, myProfile, selectProjectDetailDtos, follower,following);
 
 			Long projectNumber = projectService.countProject(user);
 			Boolean end = projectNumber < (long) pageable.getPageSize() *(pageable.getPageNumber()+1);
@@ -213,5 +219,23 @@ public class UserController {
 			throw e;
 		}
 	}
+	/*
+	팔로우
+	 */
+	@PutMapping("/follow/{id}")
+	public Response follow(HttpServletRequest request,@PathVariable Long id){
+		Response response = new Response();
+		UserEntity user = (UserEntity) request.getAttribute("user");
+		try{
+			followService.ChangeFollowState(user, id);
+
+			response.setHttpStatus(HttpStatus.OK);
+			response.setMessage("성공");
+			return response;
+		}catch (Exception e) {
+			throw e;
+		}
+	}
+
 }
 
