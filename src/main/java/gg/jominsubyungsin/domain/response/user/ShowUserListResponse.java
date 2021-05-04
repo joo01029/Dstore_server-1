@@ -11,4 +11,5 @@ import java.util.List;
 @Setter
 public class ShowUserListResponse extends Response {
 	List<SelectUserDto> userList;
+	Boolean end;
 }

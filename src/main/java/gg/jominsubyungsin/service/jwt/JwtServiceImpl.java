@@ -79,7 +79,6 @@ public class JwtServiceImpl implements JwtService {
 	public UserEntity accessTokenDecoding(String token) {
 		try {
 			Claims claims = decodingToken(token, ACCESSSECRET_KEY);
-			System.out.println(claims.getSubject());
 			return userRepository.findByEmail(claims.getSubject()).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 유저");
 			});

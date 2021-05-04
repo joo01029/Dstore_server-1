@@ -19,13 +19,13 @@ public interface UserService {
 
 	boolean userUpdateIntroduce(UserDto userDto);
 
-	SelectUserDto findUser(Long id);
+	SelectUserDto findUser(Long id,UserEntity user);
 
 	UserEntity findUserById(Long id);
 
 	UserEntity findUser(String email);
 
-	List<SelectUserDto> findUserLikeName(String name, String email);
+	List<SelectUserDto> findUserLikeName(String name, String email, UserEntity user);
 
 	boolean checkUserSame(String email, Long id);
 

@@ -75,6 +75,7 @@ public class ProjectController {
 			List<FileEntity> fileEntities = fileService.createFiles(files);
 
 			ProjectEntity projectEntity = projectDto.toEntity(userEntities, fileEntities);
+
 			projectService.saveProject(projectEntity);
 		} catch (Exception e) {
 			throw e;
@@ -89,18 +90,19 @@ public class ProjectController {
 	프로젝트 리스트 받기
 	 */
 	@GetMapping("/list")
-	public GetProjectResponse projectList(Pageable pageable) {
+	public GetProjectResponse projectList(Pageable pageable, HttpServletRequest request) {
 		GetProjectResponse response = new GetProjectResponse();
 		List<SelectProjectDto> projects;
 		Long projectNumber;
+		UserEntity user = (UserEntity) request.getAttribute("user");
 		try {
-			projects = projectService.getProjects(pageable);
+			projects = projectService.getProjects(pageable, user);
 			projectNumber = projectService.countProject();
 		} catch (Exception e) {
 			throw e;
 		}
 
-		Boolean end = projectNumber < (long) pageable.getPageSize() *(pageable.getPageNumber()+1);
+		Boolean end = projectNumber <= (long) pageable.getPageSize() *(pageable.getPageNumber()+1);
 
 		response.setHttpStatus(HttpStatus.OK);
 		response.setMessage("성공");
@@ -125,22 +127,6 @@ public class ProjectController {
 			response.setProject(project);
 			return response;
 		} catch (Exception e) {
-			throw e;
-		}
-	}
-
-	@PutMapping("/like/{id}")
-	public Response changeLikeStateProject(HttpServletRequest request, @PathVariable("id") Long id){
-		Response response = new Response();
-
-		UserEntity user = (UserEntity) request.getAttribute("user");
-		try{
-			projectService.changeLikeState(id, user);
-
-			response.setHttpStatus(HttpStatus.OK);
-			response.setMessage("성공");
-			return response;
-		}catch (Exception e){
 			throw e;
 		}
 	}

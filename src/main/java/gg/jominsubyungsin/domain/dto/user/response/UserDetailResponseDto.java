@@ -14,19 +14,19 @@ public class UserDetailResponseDto {
 	private String name;
 	private String introduce;
 	private String profileImage;
-	private int follower;
-	private int following;
+	private Long follower;
+	private Long following;
 	private List<SelectProjectDto> projects;
 	private boolean yourProfile;
 
-	public UserDetailResponseDto(UserEntity userEntity, boolean yourProfile, List<SelectProjectDto> projects) {
+	public UserDetailResponseDto(UserEntity userEntity, boolean yourProfile, List<SelectProjectDto> projects,Long follower, Long following) {
 		this.id = userEntity.getId();
 		this.name = userEntity.getName();
 		this.introduce = userEntity.getIntroduce();
 		this.profileImage = userEntity.getProfileImage();
 		this.yourProfile = yourProfile;
-		this.follower = 0;
-		this.following = 0;
+		this.follower = follower;
+		this.following = following;
 		this.projects = projects;
 	}
 }

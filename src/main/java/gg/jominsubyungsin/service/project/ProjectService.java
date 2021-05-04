@@ -12,13 +12,12 @@ import java.util.List;
 public interface ProjectService {
 	void saveProject(ProjectEntity projectEntity);
 
-	List<SelectProjectDto> getProjects(Pageable pageable);
+	List<SelectProjectDto> getProjects(Pageable pageable,UserEntity me);
 
-	List<SelectProjectDto> getProjects(Pageable pageable, UserEntity user);
+	List<SelectProjectDto> getProjects(Pageable pageable,UserEntity me, UserEntity user);
 
 	Long countProject();
 	Long countProject(UserEntity user);
 
 	ProjectDto projectDetail(Long id, UserEntity user);
-	void changeLikeState(Long id, UserEntity user);
 }
