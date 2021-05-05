@@ -53,6 +53,12 @@ public class UserEntity {
 	@OneToMany(mappedBy = "user")
 	private List<CommentEntity> comments = new ArrayList<>();
 
+	@OneToMany(mappedBy = "follower")
+	private List<FollowEntity> follower = new ArrayList<>();
+
+	@OneToMany(mappedBy = "following")
+	private List<FollowEntity> following = new ArrayList<>();
+
 	public void add(LikeEntity like){
 		likes.add(like);
 	}
@@ -62,6 +68,16 @@ public class UserEntity {
 
 	public void add(ProjectEntity project) {
 		projects.add(project);
+	}
+
+	public void addFollower(FollowEntity follower){
+		this.follower.add(follower);
+		follower.setFollower(this);
+	}
+
+	public void addFollowing(FollowEntity following){
+		this.following.add(following);
+		following.setFollowing(this);
 	}
 
 	@Builder

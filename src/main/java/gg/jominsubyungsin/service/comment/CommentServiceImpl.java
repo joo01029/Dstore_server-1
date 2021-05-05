@@ -34,7 +34,7 @@ public class CommentServiceImpl implements CommentService{
 			});
 			CommentEntity commentEntity = new CommentEntity(comment,project,user);
 			project.add(commentEntity);
-
+			user.add(commentEntity);
 			commentRepository.save(commentEntity);
 		}catch (Exception e){
 			e.printStackTrace();

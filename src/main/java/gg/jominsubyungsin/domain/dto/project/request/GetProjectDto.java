@@ -2,6 +2,7 @@ package gg.jominsubyungsin.domain.dto.project.request;
 
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
+import gg.jominsubyungsin.domain.entity.TagEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,13 +23,16 @@ public class GetProjectDto {
 	private List<Long> users;
 	@NotBlank
 	private List<MultipartFile> files;
+	@NotBlank
+	private List<String> tags;
 
-	public ProjectEntity toEntity(List<UserEntity> userEntities, List<FileEntity> fileEntities) {
+	public ProjectEntity toEntity(List<UserEntity> userEntities, List<FileEntity> fileEntities, List<TagEntity> tagEntities) {
 		return ProjectEntity.builder()
 				.title(title)
 				.content(content)
 				.users(userEntities)
 				.files(fileEntities)
+				.tags(tagEntities)
 				.build();
 	}
 }
