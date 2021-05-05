@@ -23,7 +23,7 @@ public class GetProjectDto {
 	private List<Long> users;
 	@NotBlank
 	private List<MultipartFile> files;
-	@NotBlank
+
 	private List<String> tags;
 
 	public ProjectEntity toEntity(List<UserEntity> userEntities, List<FileEntity> fileEntities, List<TagEntity> tagEntities) {
