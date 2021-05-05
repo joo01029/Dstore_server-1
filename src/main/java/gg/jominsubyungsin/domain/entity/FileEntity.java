@@ -19,11 +19,11 @@ public class FileEntity {
 	@Column(unique = true, name = "file_location")
 	private String fileLocation;
 
-	@Column(name = "file_type")
+	@Column(name = "file_type",nullable = false)
 	private String type;
 
 	@Column(name = "Thumnail")
-	private Integer thumnail;
+	private Boolean thumnail;
 
 	@JsonIgnore
 	@ManyToOne
@@ -31,7 +31,7 @@ public class FileEntity {
 	private ProjectEntity projectId;
 
 	@Builder
-	public FileEntity(Long id, Integer thumnail, String type, String fileLocation) {
+	public FileEntity(Long id, Boolean thumnail, String type, String fileLocation) {
 		this.id = id;
 		this.type = type;
 		this.thumnail = thumnail;

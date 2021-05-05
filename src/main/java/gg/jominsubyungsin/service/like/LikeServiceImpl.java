@@ -63,8 +63,11 @@ public class LikeServiceImpl implements LikeService{
 
 			LikeEntity likeEntity = likeRepository.findByProjectAndUser(project, user)
 					.orElse(new LikeEntity(project,user,false));
+			user.getLikes().remove(likeEntity);
+
 			likeEntity.setState(!likeEntity.getState());
 			project.add(likeEntity);
+			user.add(likeEntity);
 
 			likeRepository.save(likeEntity);
 		}catch (Exception e) {

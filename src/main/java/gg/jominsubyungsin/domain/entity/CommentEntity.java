@@ -18,10 +18,10 @@ public class CommentEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column
+	@Column(nullable = false)
 	private String comment;
 
-	@Column
+	@Column(nullable = false)
 	private Date createAt = new Date();
 
 	@JsonIgnore
