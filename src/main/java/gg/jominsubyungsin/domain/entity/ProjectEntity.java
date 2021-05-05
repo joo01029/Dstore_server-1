@@ -39,6 +39,10 @@ public class ProjectEntity {
 	@OneToMany(mappedBy = "project")
 	private List<CommentEntity> comments = new ArrayList<>();
 
+	@ManyToMany(mappedBy = "projects")
+	private List<TagEntity> tags = new ArrayList<>();
+
+
 	public void add(UserEntity user) {
 		users.add(user);
 	}
@@ -57,8 +61,12 @@ public class ProjectEntity {
 		comment.setProject(this);
 	}
 
+	public void add(TagEntity tag){
+		tags.add(tag);
+	}
+
 	@Builder
-	public ProjectEntity(Long id, String title, String content, List<UserEntity> users, List<FileEntity> files) {
+	public ProjectEntity(Long id, String title, String content, List<UserEntity> users, List<FileEntity> files, List<TagEntity> tags) {
 		this.id = id;
 		this.title = title;
 		this.content = content;
@@ -68,6 +76,10 @@ public class ProjectEntity {
 		}
 		for (FileEntity file : files) {
 			this.add(file);
+		}
+		for(TagEntity tag: tags){
+			this.add(tag);
+			tag.add(this);
 		}
 	}
 }

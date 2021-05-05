@@ -6,6 +6,7 @@ import gg.jominsubyungsin.domain.dto.project.dataIgnore.ProjectDto;
 import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
+import gg.jominsubyungsin.domain.entity.TagEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.response.Response;
 import gg.jominsubyungsin.domain.dto.project.response.GetProjectDetailResponse;
@@ -14,6 +15,7 @@ import gg.jominsubyungsin.service.file.FileService;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.multipart.MultipartService;
 import gg.jominsubyungsin.service.project.ProjectService;
+import gg.jominsubyungsin.service.tag.TagService;
 import gg.jominsubyungsin.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.data.domain.Pageable;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.text.html.HTML;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +43,8 @@ public class ProjectController {
 	JwtService jwtService;
 	@Autowired
 	FileService fileService;
+	@Autowired
+	TagService tagService;
 
 	/*
 	프로젝트 생성
@@ -54,9 +59,8 @@ public class ProjectController {
 		}
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
-		UserEntity mainUser;
 		try {
-			mainUser = userService.findUser(user.getEmail());
+			UserEntity mainUser = userService.findUser(user.getEmail());
 			userEntities.add(mainUser);
 			//id로 유저 찾기
 			for (Long id : projectDto.getUsers()) {
@@ -69,11 +73,12 @@ public class ProjectController {
 				userEntities.add(saveUser);
 			}
 			//파일 업로드
-			List<FileDto> files;
-			files = multipartService.uploadMulti(projectDto.getFiles());
+			List<FileDto> files = multipartService.uploadMulti(projectDto.getFiles());
 			List<FileEntity> fileEntities = fileService.createFiles(files);
 
-			ProjectEntity projectEntity = projectDto.toEntity(userEntities, fileEntities);
+			List<TagEntity> tags = tagService.createTag(projectDto.getTags());
+
+			ProjectEntity projectEntity = projectDto.toEntity(userEntities, fileEntities, tags);
 
 			projectService.saveProject(projectEntity);
 		} catch (Exception e) {

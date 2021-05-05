@@ -26,7 +26,7 @@ public class LikeEntity {
 	@JoinColumn(nullable = false)
 	UserEntity user;
 
-	@Column
+	@Column(nullable = false)
 	Boolean state;
 
 	public LikeEntity (ProjectEntity project, UserEntity user, Boolean state){

@@ -17,14 +17,14 @@ public class FollowEntity {
 	private Long Id;
 
 	@ManyToOne
-	@JoinColumn
+	@JoinColumn(nullable = false)
 	private UserEntity follower;
 
 	@ManyToOne
-	@JoinColumn
+	@JoinColumn(nullable = false)
 	private UserEntity following;
 
-	@Column
+	@Column(nullable = false)
 	private Boolean followState;
 
 	public FollowEntity(UserEntity follower, UserEntity following, Boolean followState){

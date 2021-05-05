@@ -76,8 +76,12 @@ public class FollowServiceImpl implements FollowService{
 
 			FollowEntity follow = followRepository.findByFollowerAndFollowingAndFollowState(follower,following,true)
 					.orElse(new FollowEntity(follower,following,false));
+			follower.getFollowing().remove(follow);
+			following.getFollower().remove(follow);
 
 			follow.setFollowState(!follow.getFollowState());
+			follower.addFollowing(follow);
+			following.addFollower(follow);
 			followRepository.save(follow);
 		}catch (HttpClientErrorException e){
 			throw e;
