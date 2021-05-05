@@ -9,7 +9,7 @@ import lombok.Setter;
 public class FileDto {
 	private String fileLocation;
 	private String type;
-	private Integer thumnail;
+	private Boolean thumnail;
 	private Long id;
 
 	public FileEntity toEntity() {

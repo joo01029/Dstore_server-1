@@ -52,10 +52,10 @@ public class FileServiceImpl implements FileService {
 
 		for (FileDto file : files) {
 			if (!thumnail) {
-				file.setThumnail(1);
+				file.setThumnail(true);
 				thumnail = true;
 			} else {
-				file.setThumnail(0);
+				file.setThumnail(false);
 			}
 
 			file.setFileLocation(file.getFileLocation());

@@ -22,7 +22,7 @@ public class TagEntity {
 	private String tag;
 
 	@ManyToMany
-	@JoinTable(name = "user_project_connect",
+	@JoinTable(name = "tag_project_connect",
 			joinColumns = @JoinColumn(name = "tag_Id", nullable = false),
 			inverseJoinColumns = @JoinColumn(name = "project_id", nullable = false))
 	private List<ProjectEntity> projects = new ArrayList<>();
