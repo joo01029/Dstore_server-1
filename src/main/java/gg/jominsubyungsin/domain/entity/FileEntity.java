@@ -27,7 +27,7 @@ public class FileEntity {
 
 	@JsonIgnore
 	@ManyToOne
-	@JoinColumn(nullable = false)
+	@JoinColumn
 	private ProjectEntity projectId;
 
 	@Builder
