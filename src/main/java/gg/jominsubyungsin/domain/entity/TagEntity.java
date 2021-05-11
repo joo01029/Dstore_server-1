@@ -23,8 +23,8 @@ public class TagEntity {
 
 	@ManyToMany
 	@JoinTable(name = "tag_project_connect",
-			joinColumns = @JoinColumn(name = "tag_Id", nullable = false),
-			inverseJoinColumns = @JoinColumn(name = "project_id", nullable = false))
+			joinColumns = @JoinColumn(name = "tag_Id"),
+			inverseJoinColumns = @JoinColumn(name = "id"))
 	private List<ProjectEntity> projects = new ArrayList<>();
 
 	public void add(ProjectEntity projectEntity){

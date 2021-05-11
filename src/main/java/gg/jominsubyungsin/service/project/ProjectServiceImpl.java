@@ -5,13 +5,16 @@ import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.LikeEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
+import gg.jominsubyungsin.domain.entity.TagEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.LikeRepository;
 import gg.jominsubyungsin.domain.repository.ProjectListRepository;
 import gg.jominsubyungsin.domain.repository.ProjectRepository;
+import gg.jominsubyungsin.domain.repository.TagRepository;
 import gg.jominsubyungsin.service.comment.CommentService;
 import gg.jominsubyungsin.service.follow.FollowService;
 import gg.jominsubyungsin.service.like.LikeService;
+import gg.jominsubyungsin.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -37,6 +40,8 @@ public class ProjectServiceImpl implements ProjectService {
 	CommentService commentService;
 	@Autowired
 	FollowService followService;
+	@Autowired
+	TagRepository tagRepository;
 
 	/*
 	프로젝트 저장

@@ -14,7 +14,6 @@ import java.util.List;
 @Table(name = "project")
 public class ProjectEntity {
 	@Id
-	@Column(name = "project_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
@@ -78,8 +77,8 @@ public class ProjectEntity {
 			this.add(file);
 		}
 		for(TagEntity tag: tags){
-			this.add(tag);
 			tag.add(this);
+			this.add(tag);
 		}
 	}
 }
