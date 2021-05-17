@@ -19,16 +19,14 @@ public class SelectProjectDto {
 	private FileEntity mainPhoto;
 	private Date createAt;
 	private List<SelectUserDto> users;
-	private List<String> tags = new ArrayList<>();
+	private List<String> tags;
 
-	public SelectProjectDto(ProjectEntity projectEntity, List<SelectUserDto> selectUserDto) {
+	public SelectProjectDto(ProjectEntity projectEntity, List<SelectUserDto> selectUserDto,List<String> tags) {
 		this.id = projectEntity.getId();
 		this.title = projectEntity.getTitle();
 		this.createAt = projectEntity.getCreateAt();
 		this.mainPhoto = projectEntity.getFiles().get(0);
-		for(TagEntity tagEntity: projectEntity.getTags()){
-			tags.add(tagEntity.getTag());
-		}
+		this.tags = tags;
 		this.users = selectUserDto;
 	}
 }

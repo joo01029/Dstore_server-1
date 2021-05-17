@@ -19,24 +19,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CommentServiceImpl implements CommentService{
+public class CommentServiceImpl implements CommentService {
 	@Autowired
 	ProjectRepository projectRepository;
 	@Autowired
 	CommentRepository commentRepository;
 	@Autowired
 	CommentListRepository commentListRepository;
+
 	@Override
 	public void createComment(String comment, Long id, UserEntity user) {
 		try {
-			ProjectEntity project = projectRepository.findById(id).orElseGet(()->{
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글");
+			ProjectEntity project = projectRepository.findById(id).orElseGet(() -> {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
-			CommentEntity commentEntity = new CommentEntity(comment,project,user);
+			CommentEntity commentEntity = new CommentEntity(comment, project, user);
 			project.add(commentEntity);
 			user.add(commentEntity);
 			commentRepository.save(commentEntity);
-		}catch (Exception e){
+		} catch (HttpClientErrorException e) {
+			throw e;
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -45,18 +48,20 @@ public class CommentServiceImpl implements CommentService{
 	@Override
 	public List<SelectCommentDto> getCommentList(Long id, Pageable pageable, UserEntity me) {
 		List<SelectCommentDto> comments = new ArrayList<>();
-		try{
-			ProjectEntity project = projectRepository.findById(id).orElseGet(()->{
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"존재하지 않는 게시글");
+		try {
+			ProjectEntity project = projectRepository.findById(id).orElseGet(() -> {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
 			Page<CommentEntity> pageComments = commentListRepository.findByProject(project, pageable);
-			for(CommentEntity comment:pageComments){
+			for (CommentEntity comment : pageComments) {
 				comments.add(new SelectCommentDto(comment, me));
 			}
 			return comments;
-		}catch (Exception e){
+		}catch (HttpClientErrorException e) {
+			throw e;
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -67,9 +72,11 @@ public class CommentServiceImpl implements CommentService{
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
 			return commentRepository.countByProject(project);
-		}catch (Exception e){
+		}catch (HttpClientErrorException e) {
+			throw e;
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 }

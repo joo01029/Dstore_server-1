@@ -5,7 +5,7 @@ import gg.jominsubyungsin.domain.repository.UserRepository;
 import gg.jominsubyungsin.enums.JwtAuth;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,10 +17,11 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.Date;
 
+@RequiredArgsConstructor
 @Service
 public class JwtServiceImpl implements JwtService {
-	@Autowired
-	UserRepository userRepository;
+
+	private final UserRepository userRepository;
 
 	@Value("${auth.access}")
 	String ACCESSSECRET_KEY;

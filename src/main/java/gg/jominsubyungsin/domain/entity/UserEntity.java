@@ -37,26 +37,23 @@ public class UserEntity {
 	@Column
 	private String profileImage;
 
-	@ManyToMany
-	@JoinTable(name = "user_project_connect",
-			joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "project_id"))
-	private List<ProjectEntity> projects;
+	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+	private List<ProjectUserConnectEntity> projects;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Role role;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	private List<LikeEntity> likes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	private List<CommentEntity> comments = new ArrayList<>();
 
-	@OneToMany(mappedBy = "follower")
+	@OneToMany(mappedBy = "follower", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	private List<FollowEntity> follower = new ArrayList<>();
 
-	@OneToMany(mappedBy = "following")
+	@OneToMany(mappedBy = "following", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
 	private List<FollowEntity> following = new ArrayList<>();
 
 	public void add(LikeEntity like){
@@ -65,11 +62,9 @@ public class UserEntity {
 	public void add(CommentEntity comment){
 		comments.add(comment);
 	}
-
-	public void add(ProjectEntity project) {
+	public void add(ProjectUserConnectEntity project){
 		projects.add(project);
 	}
-
 	public void addFollower(FollowEntity follower){
 		this.follower.add(follower);
 		follower.setFollower(this);

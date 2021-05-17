@@ -6,8 +6,8 @@ import lombok.*;
 import javax.persistence.*;
 
 @NoArgsConstructor
-@Setter
 @Getter
+@Setter
 @Entity(name = "file")
 
 public class FileEntity {
@@ -37,4 +37,5 @@ public class FileEntity {
 		this.thumnail = thumnail;
 		this.fileLocation = fileLocation;
 	}
+
 }

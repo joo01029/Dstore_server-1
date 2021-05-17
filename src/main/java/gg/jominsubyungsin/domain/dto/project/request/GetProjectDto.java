@@ -26,13 +26,11 @@ public class GetProjectDto {
 
 	private List<String> tags;
 
-	public ProjectEntity toEntity(List<UserEntity> userEntities, List<FileEntity> fileEntities, List<TagEntity> tagEntities) {
+	public ProjectEntity toEntity(List<FileEntity> fileEntities) {
 		return ProjectEntity.builder()
 				.title(title)
 				.content(content)
-				.users(userEntities)
 				.files(fileEntities)
-				.tags(tagEntities)
 				.build();
 	}
 }
