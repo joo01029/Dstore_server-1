@@ -3,28 +3,24 @@ package gg.jominsubyungsin.controller;
 import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.dto.user.response.ShowUserListResponse;
+import gg.jominsubyungsin.lib.PageEnd;
 import gg.jominsubyungsin.service.follow.FollowService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@Controller
-@ResponseBody
+@RequiredArgsConstructor
+@RestController
 @RequestMapping("/follow")
 public class FolllowController {
-	@Autowired
-	FollowService followService;
-
+	private final FollowService followService;
+	private final PageEnd pageEnd;
 	/*
-	* 팔로워 리스트
+	 * 팔로워 리스트
 	 */
 	@GetMapping("/follower/list/{id}")
 	public ShowUserListResponse showFollowers(HttpServletRequest request, @PathVariable Long id, Pageable pageable) {
@@ -36,7 +32,7 @@ public class FolllowController {
 			Long followers = followService.countFollower(id);
 
 			response.setEnd(false);
-			if(followers <= (long) (pageable.getPageNumber() + 1) *pageable.getPageSize()){
+			if (followers <= (long) (pageable.getPageNumber() + 1) * pageable.getPageSize()) {
 				response.setEnd(true);
 			}
 			response.setHttpStatus(HttpStatus.OK);
@@ -49,7 +45,7 @@ public class FolllowController {
 	}
 
 	/*
-	팔로잉 리스트
+	 *팔로잉 리스트
 	 */
 	@GetMapping("/following/list/{id}")
 	public ShowUserListResponse showFollowing(HttpServletRequest request, @PathVariable Long id, Pageable pageable) {
@@ -60,10 +56,9 @@ public class FolllowController {
 			response.setUserList(users);
 			Long followings = followService.countFollowing(id);
 
-			response.setEnd(false);
-			if(followings <= (long) (pageable.getPageNumber() + 1) *pageable.getPageSize()){
-				response.setEnd(true);
-			}
+			Boolean end = pageEnd.pageEnd(pageable.getPageSize(), pageable.getPageNumber(), followings);
+
+			response.setEnd(end);
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
 

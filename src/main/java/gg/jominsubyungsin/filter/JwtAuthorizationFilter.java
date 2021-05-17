@@ -35,7 +35,7 @@ public class JwtAuthorizationFilter implements Filter {
 		System.out.println(token);
 
 		if (!request1.getMethod().equals("OPTIONS")) {
-			if (token.equals(null))
+			if (token == null)
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "토큰이 비었음");
 
 			token = token.replace("Bearer ", "");

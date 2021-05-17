@@ -16,14 +16,14 @@ public class ProjectDto {
 	private String title;
 	private String content;
 	private Date createAt;
+	private List<String> tags;
 	private List<SelectUserDto> users;
 	private List<FileEntity> files;
 	private Boolean likeState;
 	private Long likeNum;
 	private Long commentNum;
-	private Integer commentsNum = 0;
 
-	public ProjectDto(ProjectEntity projectEntity, List<SelectUserDto> users, Long likeNum, Boolean likeState, Long commentNum, UserEntity me) {
+	public ProjectDto(ProjectEntity projectEntity, List<SelectUserDto> users, Long likeNum, Boolean likeState, Long commentNum, List<String> tags) {
 		id = projectEntity.getId();
 		title = projectEntity.getTitle();
 		content = projectEntity.getContent();
@@ -33,6 +33,6 @@ public class ProjectDto {
 		this.likeState = likeState;
 		this.commentNum = commentNum;
 		this.users = users;
-
+		this.tags = tags;
 	}
 }

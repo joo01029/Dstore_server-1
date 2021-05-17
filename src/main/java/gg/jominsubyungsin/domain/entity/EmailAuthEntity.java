@@ -1,16 +1,13 @@
 package gg.jominsubyungsin.domain.entity;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @NoArgsConstructor
-@Setter
 @Getter
+@Setter
 @Entity(name = "email_access")
 public class EmailAuthEntity {
 	@Id

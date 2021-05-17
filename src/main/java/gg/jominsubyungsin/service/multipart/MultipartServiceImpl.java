@@ -8,7 +8,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,13 +33,13 @@ public class MultipartServiceImpl implements MultipartService {
 	@Override
 	public FileDto uploadSingle(MultipartFile file) {
 		if (file.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일이 비었음");
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일이 비었음");
 		}
 		//파일 이름 재 생
 		String fileName = StringUtils.cleanPath(UUID.randomUUID().toString() + "-" + Objects.requireNonNull(file.getOriginalFilename()));
 		try {
 			if (fileName.contains("..")) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
 			}
 
 			String type = fileName.substring(fileName.lastIndexOf(".") + 1);
@@ -51,7 +50,7 @@ public class MultipartServiceImpl implements MultipartService {
 			} else if (type.equals("mp4") || type.equals("AVI")) {
 				fileDto.setType("video");
 			} else {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
 			}
 
 			//저장할 파일 위치
@@ -66,6 +65,8 @@ public class MultipartServiceImpl implements MultipartService {
 			fileDto.setFileLocation(server + "/file/see/" + fileName);
 			fileDto.setType(type);
 			return fileDto;
+		} catch (HttpClientErrorException e) {
+			throw e;
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
@@ -77,17 +78,17 @@ public class MultipartServiceImpl implements MultipartService {
 	 */
 	@Override
 	public List<FileDto> uploadMulti(List<MultipartFile> files) {
-		for (MultipartFile file : files)
-			if (file.isEmpty())
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일이 비었음");
-
-		List<FileDto> fileDtos = new ArrayList<>();
-		List<String> fileNames = new ArrayList<>();
-		for (MultipartFile file : files)
-			//파일 이름 재생성
-			fileNames.add(StringUtils.cleanPath(UUID.randomUUID().toString() + "-" + Objects.requireNonNull(file.getOriginalFilename())));
-
 		try {
+			for (MultipartFile file : files)
+				if (file.isEmpty())
+					throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일이 비었음");
+
+			List<FileDto> fileDtos = new ArrayList<>();
+			List<String> fileNames = new ArrayList<>();
+			for (MultipartFile file : files)
+				//파일 이름 재생성
+				fileNames.add(StringUtils.cleanPath(UUID.randomUUID().toString() + "-" + Objects.requireNonNull(file.getOriginalFilename())));
+
 			for (int i = 0; i < files.toArray().length; i++) {
 				if (fileNames.get(i).contains(".."))
 					throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
@@ -120,9 +121,11 @@ public class MultipartServiceImpl implements MultipartService {
 				fileDtos.add(fileDto);
 			}
 			return fileDtos;
+		} catch (HttpClientErrorException e) {
+			throw e;
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
 		}
-	}//adsadsad
+	}
 }

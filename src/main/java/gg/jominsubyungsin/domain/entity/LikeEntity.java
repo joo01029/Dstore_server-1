@@ -1,13 +1,14 @@
 package gg.jominsubyungsin.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
-@NoArgsConstructor
+@Data@NoArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -29,7 +30,7 @@ public class LikeEntity {
 	@Column(nullable = false)
 	Boolean state;
 
-	public LikeEntity (ProjectEntity project, UserEntity user, Boolean state){
+	public LikeEntity(ProjectEntity project, UserEntity user, Boolean state) {
 		this.project = project;
 		this.user = user;
 		this.state = state;
