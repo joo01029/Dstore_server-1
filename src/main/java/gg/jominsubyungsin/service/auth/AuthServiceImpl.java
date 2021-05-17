@@ -7,6 +7,7 @@ import gg.jominsubyungsin.domain.repository.EmailAuthRepository;
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import gg.jominsubyungsin.lib.EmailSender;
 import gg.jominsubyungsin.lib.Hash;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,16 +19,14 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
-	@Autowired
-	UserRepository userRepository;
-	@Autowired
-	EmailAuthRepository emailAuthRepository;
-	@Autowired
-	Hash hash;
-	@Autowired
-	EmailSender emailSender;
+	private final UserRepository userRepository;
+	private final EmailAuthRepository emailAuthRepository;
+
+	private final Hash hash;
+	private final EmailSender emailSender;
 
 	@Override
 	@Transactional
@@ -45,6 +44,8 @@ public class AuthServiceImpl implements AuthService {
 
 			UserEntity saveUser = userDto.toEntity();
 			userRepository.save(saveUser);
+		} catch (HttpClientErrorException e) {
+			throw e;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
@@ -61,6 +62,8 @@ public class AuthServiceImpl implements AuthService {
 			return findUserByEmailAndPassword.orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
 			});
+		} catch (HttpClientErrorException e) {
+			throw e;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
@@ -69,12 +72,19 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public void checkEmail(String email) {
-		if (email == null || email.trim().isEmpty()) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "메일 비었음");
-		}
-		Optional<UserEntity> user = userRepository.findByEmail(email);
-		if (user.isPresent()) {
-			throw new HttpClientErrorException(HttpStatus.CONFLICT, "중복된 이메일");
+		try {
+			if (email == null || email.trim().isEmpty()) {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "메일 비었음");
+			}
+			Optional<UserEntity> user = userRepository.findByEmail(email);
+			if (user.isPresent()) {
+				throw new HttpClientErrorException(HttpStatus.CONFLICT, "중복된 이메일");
+			}
+		} catch (HttpClientErrorException e) {
+			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -94,6 +104,8 @@ public class AuthServiceImpl implements AuthService {
 
 			emailAuthRepository.save(emailAuth.get());
 			return true;
+		} catch (HttpClientErrorException e) {
+			throw e;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");

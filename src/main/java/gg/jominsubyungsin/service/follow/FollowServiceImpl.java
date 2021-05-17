@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class FollowServiceImpl implements FollowService{
+public class FollowServiceImpl implements FollowService {
 	@Autowired
 	FollowRepository followRepository;
 	@Autowired
@@ -28,37 +28,42 @@ public class FollowServiceImpl implements FollowService{
 	FollowListRepository followListRepository;
 	@Autowired
 	FollowService followService;
+
 	@Override
 	public Long countFollower(Long userId) {
-		try{
-			UserEntity user = userRepository.findById(userId).orElseGet(()->{
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"존재하지 않는 유저");
+		try {
+			UserEntity user = userRepository.findById(userId).orElseGet(() -> {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 유저");
 			});
-			return followRepository.countByFollowingAndFollowState(user,true);
-		}catch (Exception e){
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
+			return followRepository.countByFollowingAndFollowState(user, true);
+		} catch (HttpClientErrorException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
 	@Override
 	public Long countFollowing(Long userId) {
-		try{
-			UserEntity user = userRepository.findById(userId).orElseGet(()->{
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"존재하지 않는 유저");
+		try {
+			UserEntity user = userRepository.findById(userId).orElseGet(() -> {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 유저");
 			});
-			return followRepository.countByFollowerAndFollowState(user,true);
-		}catch (Exception e){
+			return followRepository.countByFollowerAndFollowState(user, true);
+		} catch (HttpClientErrorException e) {
+			throw e;
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
 	@Override
 	public Boolean followState(UserEntity following, UserEntity user) {
-		try{
-			Optional<FollowEntity> follow = followRepository.findByFollowerAndFollowingAndFollowState(user,following,true);
+		try {
+			Optional<FollowEntity> follow = followRepository.findByFollowerAndFollowingAndFollowState(user, following, true);
 			return follow.isPresent();
-		}catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -66,16 +71,16 @@ public class FollowServiceImpl implements FollowService{
 
 	@Override
 	public void ChangeFollowState(UserEntity follower, Long followingId) {
-		try{
-			if(follower.getId().equals(followingId))
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"자기자신은 팔로우 불가능");
+		try {
+			if (follower.getId().equals(followingId))
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "자기자신은 팔로우 불가능");
 
-			UserEntity following = userRepository.findById(followingId).orElseGet(()->{
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"존재하지 않는 유저");
+			UserEntity following = userRepository.findById(followingId).orElseGet(() -> {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 유저");
 			});
 
-			FollowEntity follow = followRepository.findByFollowerAndFollowingAndFollowState(follower,following,true)
-					.orElse(new FollowEntity(follower,following,false));
+			FollowEntity follow = followRepository.findByFollowerAndFollowingAndFollowState(follower, following, true)
+					.orElse(new FollowEntity(follower, following, false));
 			follower.getFollowing().remove(follow);
 			following.getFollower().remove(follow);
 
@@ -83,11 +88,11 @@ public class FollowServiceImpl implements FollowService{
 			follower.addFollowing(follow);
 			following.addFollower(follow);
 			followRepository.save(follow);
-		}catch (HttpClientErrorException e){
+		} catch (HttpClientErrorException e) {
 			throw e;
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -105,9 +110,11 @@ public class FollowServiceImpl implements FollowService{
 			}
 
 			return follower;
-		}catch (Exception e){
+		} catch (HttpClientErrorException e) {
+			throw e;
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -125,9 +132,11 @@ public class FollowServiceImpl implements FollowService{
 			}
 
 			return following;
-		}catch (Exception e) {
+		} catch (HttpClientErrorException e) {
+			throw e;
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 }

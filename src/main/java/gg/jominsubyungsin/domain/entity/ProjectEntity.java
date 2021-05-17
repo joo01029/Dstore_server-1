@@ -1,16 +1,15 @@
 package gg.jominsubyungsin.domain.entity;
 
 import lombok.*;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
-@Entity
-@Setter
 @Getter
+@Setter
+@Entity
 @Table(name = "project")
 public class ProjectEntity {
 	@Id
@@ -26,24 +25,23 @@ public class ProjectEntity {
 	@Column
 	private Date createAt = new Date();
 
-	@ManyToMany(mappedBy = "projects")
-	private List<UserEntity> users = new ArrayList<>();
+	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+	private List<ProjectUserConnectEntity> users = new ArrayList<>();
 
-	@OneToMany(mappedBy = "projectId")
+	@OneToMany(mappedBy = "projectId", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
 	private List<FileEntity> files = new ArrayList<>();
 
-	@OneToMany(mappedBy = "project")
+	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
 	private List<LikeEntity> likes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "project")
+	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
 	private List<CommentEntity> comments = new ArrayList<>();
 
-	@ManyToMany(mappedBy = "projects")
-	private List<TagEntity> tags = new ArrayList<>();
+	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+	private List<ProjectTagConnectEntity> tags = new ArrayList<>();
 
-
-	public void add(UserEntity user) {
-		users.add(user);
+	public void addUsers(ProjectUserConnectEntity projectUserConnectEntity) {
+		this.users.add(projectUserConnectEntity);
 	}
 
 	public void add(FileEntity fileEntity) {
@@ -60,25 +58,19 @@ public class ProjectEntity {
 		comment.setProject(this);
 	}
 
-	public void add(TagEntity tag){
-		tags.add(tag);
+	public void addTags(ProjectTagConnectEntity projectTagConnectEntity){
+		this.tags.add(projectTagConnectEntity);
 	}
 
 	@Builder
-	public ProjectEntity(Long id, String title, String content, List<UserEntity> users, List<FileEntity> files, List<TagEntity> tags) {
+	public ProjectEntity(Long id, String title, String content, List<FileEntity> files) {
 		this.id = id;
 		this.title = title;
 		this.content = content;
-		for (UserEntity user : users) {
-			this.add(user);
-			user.add(this);
-		}
+		//addUsers(users);
 		for (FileEntity file : files) {
 			this.add(file);
 		}
-		for(TagEntity tag: tags){
-			tag.add(this);
-			this.add(tag);
-		}
+		//(tags);
 	}
 }

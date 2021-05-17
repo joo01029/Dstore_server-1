@@ -6,6 +6,7 @@ import gg.jominsubyungsin.domain.dto.user.request.UserUpdateDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import gg.jominsubyungsin.service.follow.FollowService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,12 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
-	@Autowired
-	UserRepository userRepository;
-	@Autowired
-	FollowService followService;
+	private final FollowService followService;
+
+	private final UserRepository userRepository;
 
 	@Override
 	public boolean userUpdate(UserUpdateDto userUpdateDto) throws HttpServerErrorException {

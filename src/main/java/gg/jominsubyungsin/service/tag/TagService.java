@@ -1,6 +1,7 @@
 package gg.jominsubyungsin.service.tag;
 
 import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
+import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.TagEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import org.springframework.data.domain.Pageable;
@@ -12,4 +13,6 @@ public interface TagService {
 	List<String> TagList(String tag, Pageable pageable);
 	List<SelectProjectDto> projectList(List<String> tags, UserEntity user, Pageable pageable);
 	Long projectListCount(List<String> tags);
+
+	void rmProjectTagConnect(String tag, ProjectEntity project);
 }

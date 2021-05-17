@@ -10,6 +10,7 @@ import gg.jominsubyungsin.domain.dto.user.response.LoginResponse;
 import gg.jominsubyungsin.service.auth.AuthService;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.user.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -20,25 +21,21 @@ import org.springframework.web.client.HttpServerErrorException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+@RequiredArgsConstructor
 @Controller
 @ResponseBody
 @RequestMapping("/auth")
 public class AuthController {
-	@Autowired
-	UserService userService;
-	@Autowired
-	JwtService jwtService;
-	@Autowired
-	AuthService authService;
-	@Autowired
-	Hash hash;
+	private final JwtService jwtService;
+	private final AuthService authService;
+	private final Hash hash;
 
 	/*
-	  회원가입
+	 *회원가입
 	 */
 	@PostMapping("/create")
 	public Response userCreate(@RequestBody UserDto userDto) {
-		Response response = new /**/Response();
+		Response response = new Response();
 
 		try {
 			String hashPassword = hash.hashText(userDto.getPassword());
@@ -103,7 +100,7 @@ public class AuthController {
 	}
 
 	/*
-	토큰 재생성
+	 *토큰 재생성
 	 */
 	@GetMapping("/refresh")
 	public LoginResponse tokenRefresh(@RequestHeader String Authorization) {
@@ -140,7 +137,7 @@ public class AuthController {
 	}
 
 	/*
-	이메일 인증 주소 보내기
+	 *이메일 인증 주소 보내기
 	 */
 	@PostMapping("/send/email")
 	public Response sendEmail(@RequestBody SendEmailDto sendEmailDto) {
