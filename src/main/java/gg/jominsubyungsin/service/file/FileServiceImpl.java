@@ -1,9 +1,11 @@
 package gg.jominsubyungsin.service.file;
 
 import gg.jominsubyungsin.domain.dto.file.request.FileDto;
+import gg.jominsubyungsin.domain.entity.BennerEntity;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
+import gg.jominsubyungsin.domain.repository.BennerRepository;
 import gg.jominsubyungsin.domain.repository.FileRepository;
 import gg.jominsubyungsin.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ import java.util.List;
 public class FileServiceImpl implements FileService {
 	private final Path fileStorageLocation = Paths.get("static/").toAbsolutePath().normalize();
 	private final FileRepository fileRepository;
-
+	private final BennerRepository bennerRepository;
 	@Override
 	@Transactional
 	public List<FileEntity> createFiles(List<FileDto> files) {
@@ -119,5 +121,12 @@ public class FileServiceImpl implements FileService {
 		}
 	}
 
-
+	@Override
+	public List<BennerEntity> getBennerList(){
+		try{
+			return bennerRepository.findAll();
+		}catch (Exception e){
+			throw new HttpServerErrorException(HttpStatus.BAD_REQUEST, "서버 에러");
+		}
+	}
 }

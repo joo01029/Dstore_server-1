@@ -1,5 +1,7 @@
 package gg.jominsubyungsin.controller;
 
+import gg.jominsubyungsin.domain.dto.file.response.BennerResponse;
+import gg.jominsubyungsin.domain.entity.BennerEntity;
 import gg.jominsubyungsin.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -41,5 +44,18 @@ public class FileController {
 			throw e;
 		}
 
+	}@GetMapping("/benner/locations")
+	public BennerResponse getBennerLocations(){
+		BennerResponse response = new BennerResponse();
+		try{
+			List<BennerEntity> benners = fileService.getBennerList();
+
+			response.setBennerLocation(benners);
+			response.setHttpStatus(HttpStatus.OK);
+			response.setMessage("성공");
+			return response;
+		}catch (Exception e){
+			throw e;
+		}
 	}
 }
