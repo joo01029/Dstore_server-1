@@ -1,6 +1,7 @@
 package gg.jominsubyungsin.service.file;
 
 import gg.jominsubyungsin.domain.dto.file.request.FileDto;
+import gg.jominsubyungsin.domain.entity.BannerEntity;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import org.springframework.core.io.UrlResource;
@@ -12,9 +13,13 @@ public interface FileService {
 
 	UrlResource loadFile(String filename);
 
+	UrlResource loadBannerFile(String filename);
+
 	FileEntity findFileByProject(Long id, ProjectEntity project);
 
 	void rmFile(Long id);
 
 	ProjectEntity addFile(ProjectEntity project, List<FileDto> files, Boolean thumnail);
+
+	List<BannerEntity> getBannerList();
 }
