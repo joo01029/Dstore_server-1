@@ -7,5 +7,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface CommentListRepository extends PagingAndSortingRepository<CommentEntity,Long> {
-	Page<CommentEntity> findByProject(ProjectEntity projectEntity, Pageable pageable);
+	Page<CommentEntity> findByProjectAndOnDeleteOrderByIdDesc(ProjectEntity projectEntity, Boolean onDelete, Pageable pageable);
 }

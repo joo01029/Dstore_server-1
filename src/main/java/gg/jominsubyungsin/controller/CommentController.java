@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -31,7 +32,11 @@ public class CommentController {
 		Response response = new Response();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
+		if(user == null){
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요합니다.");
+		}
 		try {
+
 			commentService.createComment(commentDto.getComment(), commentDto.getProjectId(), user);
 
 			response.setHttpStatus(HttpStatus.OK);
@@ -61,6 +66,24 @@ public class CommentController {
 			response.setHttpStatus(HttpStatus.OK);
 			return response;
 		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	@DeleteMapping("/{id}")
+	public Response deleteComment(@PathVariable Long id, HttpServletRequest request){
+		Response response = new Response();
+		UserEntity user = (UserEntity) request.getAttribute("user");
+		if(user == null){
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+		}
+		try{
+			commentService.deleteComement(id, user);
+
+			response.setHttpStatus(HttpStatus.OK);
+			response.setMessage("성공");
+			return response;
+		}catch (Exception e){
 			throw e;
 		}
 	}

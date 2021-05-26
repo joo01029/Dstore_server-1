@@ -49,11 +49,12 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ProjectListRepository projectListRepository;
 	private final ProjectUserConnectRepository projectUserConnectRepository;
 	private final ProjectTagConnectRepository projectTagConnectRepository;
-
+	private final CommentRepository commentRepository;
 	/*
 	프로젝트 저장
 	 */
 	@Override
+	@Transactional
 	public void saveProject(GetProjectDto projectDto, UserEntity mainUser) {
 		List<UserEntity> userEntities = new ArrayList<>();
 		try {
@@ -82,6 +83,7 @@ public class ProjectServiceImpl implements ProjectService {
 			for (UserEntity user : userEntities) {
 				Leader role = !setLeader ? Leader.LEADER : Leader.MEMBER;
 				ProjectUserConnectEntity projectUserConnectEntity = new ProjectUserConnectEntity(projectEntity, user, role);
+				projectUserConnectRepository.save(projectUserConnectEntity);
 				setLeader = true;
 
 				user.add(projectUserConnectEntity);
@@ -113,7 +115,7 @@ public class ProjectServiceImpl implements ProjectService {
 		List<SelectProjectDto> projectDtos = new ArrayList<>();
 
 		try {
-			Page<ProjectEntity> projectEntityPage = projectListRepository.findAll(pageable);
+			Page<ProjectEntity> projectEntityPage = projectListRepository.findAllByOnDeleteOrderByIdDesc(false, pageable);
 			List<ProjectEntity> projectEntities = projectEntityPage.getContent();
 
 			for (ProjectEntity projectEntity : projectEntities) {
@@ -121,8 +123,10 @@ public class ProjectServiceImpl implements ProjectService {
 
 				for (ProjectUserConnectEntity connectEntity : projectEntity.getUsers()) {
 
-					SelectUserDto userDto = new SelectUserDto(connectEntity.getUser(), followService.followState(connectEntity.getUser(), me));
-					userDtos.add(userDto);
+					if(!connectEntity.getGetOut()) {
+						SelectUserDto userDto = new SelectUserDto(connectEntity.getUser(), followService.followState(connectEntity.getUser(), me));
+						userDtos.add(userDto);
+					}
 				}
 				List<String> tags = new ArrayList<>();
 				for (ProjectTagConnectEntity connectEntity : projectEntity.getTags()) {
@@ -149,7 +153,7 @@ public class ProjectServiceImpl implements ProjectService {
 		List<SelectProjectDto> projectDtos = new ArrayList<>();
 
 		try {
-			Page<ProjectEntity> projectEntityPage = projectListRepository.findByUsers(user, pageable);
+			Page<ProjectEntity> projectEntityPage = projectListRepository.findByUsersAndOnDeleteOrderByIdDesc(user, false, pageable);
 			if (projectEntityPage.isEmpty())
 				return projectDtos;
 
@@ -160,8 +164,10 @@ public class ProjectServiceImpl implements ProjectService {
 				List<SelectUserDto> userDtos = new ArrayList<>();
 
 				for (ProjectUserConnectEntity connectEntity : projectEntity.getUsers()) {
-					SelectUserDto userDto = new SelectUserDto(connectEntity.getUser(), followService.followState(connectEntity.getUser(), me));
-					userDtos.add(userDto);
+					if(!connectEntity.getGetOut()) {
+						SelectUserDto userDto = new SelectUserDto(connectEntity.getUser(), followService.followState(connectEntity.getUser(), me));
+						userDtos.add(userDto);
+					}
 				}
 				List<String> tags = new ArrayList<>();
 				for (ProjectTagConnectEntity connectEntity : projectEntity.getTags()) {
@@ -186,7 +192,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Long countProject() {
 		try {
-			return projectRepository.count();
+			return projectRepository.countByOnDelete(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
@@ -199,7 +205,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public Long countProject(UserEntity user) {
 		try {
-			return projectRepository.countByUsers(user);
+			return projectRepository.countByUsersAndOnDelete(user, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
@@ -212,7 +218,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public ProjectDto projectDetail(Long id, UserEntity user) {
 		try {
-			ProjectEntity project = projectRepository.findById(id).orElseGet(() -> {
+			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
 			Long likeNum = likeService.LikeNum(id);
@@ -241,7 +247,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Transactional
 	public void projectUpdate(Long id, UserEntity user, PutProjectDto putProjectDto) {
 		try {
-			ProjectEntity project = projectRepository.findById(id).orElseGet(() -> {
+			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
 
@@ -257,7 +263,7 @@ public class ProjectServiceImpl implements ProjectService {
 			}
 
 			//파일 삭제
-			Boolean mainPhoto = true;
+			boolean mainPhoto = true;
 			if (rmFileSize != 0) {
 				for (Long fileId : putProjectDto.getRmFiles()) {
 					FileEntity file = fileService.findFileByProject(fileId, project);
@@ -324,7 +330,45 @@ public class ProjectServiceImpl implements ProjectService {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
-
-
 	}
+
+	@Override
+	@Transactional
+	public void deleteProject(Long id, UserEntity user) {
+		try {
+			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 프로젝트");
+			});
+			ProjectUserConnectEntity connect = projectUserConnectRepository.findByProjectAndUser(project, user).orElseGet(() -> {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이 유저의 포르젝트가 아님");
+			});
+
+			if (connect.getRole() != Leader.LEADER) {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이프로젝트 리더가 아님");
+			}
+
+			project.setOnDelete(true);
+
+			for(CommentEntity comment: project.getComments()){
+				comment.setOnDelete(true);
+				commentRepository.save(comment);
+			}
+
+			for(LikeEntity like: project.getLikes()){
+				likeService.setLikeFalse(like);
+			}
+			for(ProjectUserConnectEntity userConnect: project.getUsers()){
+				userConnect.setGetOut(true);
+				projectUserConnectRepository.save(userConnect);
+			}
+			project.setOnDelete(true);
+			projectRepository.save(project);
+		} catch (HttpClientErrorException e) {
+			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+		}
+	}
+
 }

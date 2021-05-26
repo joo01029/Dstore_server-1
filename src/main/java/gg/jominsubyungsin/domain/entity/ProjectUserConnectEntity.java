@@ -29,6 +29,9 @@ public class ProjectUserConnectEntity {
 	@Enumerated(EnumType.STRING)
 	private Leader role;
 
+	@Column
+	private Boolean getOut = false;
+
 	public ProjectUserConnectEntity(ProjectEntity project, UserEntity user, Leader role){
 		this.project = project;
 		this.user = user;

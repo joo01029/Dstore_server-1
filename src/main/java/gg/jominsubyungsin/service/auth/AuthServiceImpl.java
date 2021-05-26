@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
 		String password = userDto.getPassword();
 		String Email = userDto.getEmail();
 		try {
-			Optional<UserEntity> findUserByEmailAndPassword = userRepository.findByEmailAndPassword(Email, password);
+			Optional<UserEntity> findUserByEmailAndPassword = userRepository.findByEmailAndPasswordAndOnDelete(Email, password, false);
 
 			return findUserByEmailAndPassword.orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");

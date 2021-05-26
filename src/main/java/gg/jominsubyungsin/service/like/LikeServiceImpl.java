@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,9 +58,10 @@ public class LikeServiceImpl implements LikeService {
 	 * 게시글 좋아요
 	 */
 	@Override
+	@Transactional
 	public void changeLikeState(Long id, UserEntity user) {
 		try {
-			ProjectEntity project = projectRepository.findById(id).orElseGet(() -> {
+			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
 
@@ -83,7 +85,7 @@ public class LikeServiceImpl implements LikeService {
 	@Override
 	public Long LikeNum(Long id) {
 		try {
-			ProjectEntity project = projectRepository.findById(id).orElseGet(() -> {
+			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
 
@@ -105,5 +107,12 @@ public class LikeServiceImpl implements LikeService {
 		} catch (Exception e) {
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
+	}
+
+	@Override
+	@Transactional
+	public void setLikeFalse(LikeEntity like) {
+		like.setState(false);
+		likeRepository.save(like);
 	}
 }

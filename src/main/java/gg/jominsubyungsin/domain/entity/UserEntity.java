@@ -37,23 +37,26 @@ public class UserEntity {
 	@Column
 	private String profileImage;
 
-	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
-	private List<ProjectUserConnectEntity> projects;
+	@Column
+	private Boolean onDelete = false;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+	private List<ProjectUserConnectEntity> projects = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Role role;
 
-	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
 	private List<LikeEntity> likes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
 	private List<CommentEntity> comments = new ArrayList<>();
 
-	@OneToMany(mappedBy = "follower", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+	@OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
 	private List<FollowEntity> follower = new ArrayList<>();
 
-	@OneToMany(mappedBy = "following", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+	@OneToMany(mappedBy = "following", cascade = CascadeType.REMOVE)
 	private List<FollowEntity> following = new ArrayList<>();
 
 	public void add(LikeEntity like){
@@ -62,6 +65,7 @@ public class UserEntity {
 	public void add(CommentEntity comment){
 		comments.add(comment);
 	}
+
 	public void add(ProjectUserConnectEntity project){
 		projects.add(project);
 	}
