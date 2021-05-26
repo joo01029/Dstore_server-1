@@ -1,6 +1,7 @@
 package gg.jominsubyungsin.service.file;
 
 import gg.jominsubyungsin.domain.dto.file.request.FileDto;
+import gg.jominsubyungsin.domain.entity.BennerEntity;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import org.springframework.core.io.UrlResource;
@@ -17,4 +18,6 @@ public interface FileService {
 	void rmFile(Long id);
 
 	ProjectEntity addFile(ProjectEntity project, List<FileDto> files, Boolean thumnail);
+
+	List<BennerEntity> getBennerList();
 }
