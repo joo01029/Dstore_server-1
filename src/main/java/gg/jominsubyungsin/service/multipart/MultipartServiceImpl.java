@@ -159,7 +159,7 @@ public class MultipartServiceImpl implements MultipartService {
 			//파일에 받아온 파일의 값 넣음
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-			return server + "/file/see/" + fileName;
+			return server + "/file/banner/" + fileName;
 		} catch (HttpClientErrorException e) {
 			throw e;
 		} catch (IOException e) {
