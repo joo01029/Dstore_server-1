@@ -23,7 +23,7 @@ import java.util.UUID;
 @Service
 public class MultipartServiceImpl implements MultipartService {
 	private Path fileStorageLocation = Paths.get("static/").toAbsolutePath().normalize();
-
+	private Path bannerStorageLocation = Paths.get("static/banner/").toAbsolutePath().normalize();
 	@Value("${server.get.url}")
 	String server;
 
@@ -121,6 +121,45 @@ public class MultipartServiceImpl implements MultipartService {
 				fileDtos.add(fileDto);
 			}
 			return fileDtos;
+		} catch (HttpClientErrorException e) {
+			throw e;
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
+		}
+	}
+
+	@Override
+	public String uploadBenner(MultipartFile file) {
+		if (file.isEmpty()) {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일이 비었음");
+		}
+		//파일 이름 재 생
+		String fileName = StringUtils.cleanPath(UUID.randomUUID().toString() + "-" + Objects.requireNonNull(file.getOriginalFilename()));
+		try {
+			if (fileName.contains("..")) {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일 이름 오류");
+			}
+
+			String type = fileName.substring(fileName.lastIndexOf(".") + 1);
+			FileDto fileDto = new FileDto();
+			//파일 타입
+			if (type.equals("jpeg") || type.equals("png") || type.equals("jpg")) {
+				fileDto.setType("image");
+			} else {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
+			}
+
+			//저장할 파일 위치
+			Path targetLocation = bannerStorageLocation.resolve(fileName);
+
+			//파일 생성
+			File newFile = new File(targetLocation.toString());
+			boolean result = newFile.createNewFile();
+			//파일에 받아온 파일의 값 넣음
+			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+			return server + "/file/see/" + fileName;
 		} catch (HttpClientErrorException e) {
 			throw e;
 		} catch (IOException e) {
