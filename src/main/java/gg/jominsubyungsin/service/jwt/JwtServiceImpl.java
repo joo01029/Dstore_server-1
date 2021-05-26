@@ -80,7 +80,7 @@ public class JwtServiceImpl implements JwtService {
 	public UserEntity accessTokenDecoding(String token) {
 		try {
 			Claims claims = decodingToken(token, ACCESSSECRET_KEY);
-			return userRepository.findByEmail(claims.getSubject()).orElseGet(() -> {
+			return userRepository.findByEmailAndOnDelete(claims.getSubject(), false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 유저");
 			});
 

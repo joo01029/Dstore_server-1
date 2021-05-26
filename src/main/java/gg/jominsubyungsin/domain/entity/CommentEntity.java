@@ -24,6 +24,8 @@ public class CommentEntity {
 
 	@Column(nullable = false)
 	private Date createAt = new Date();
+	@Column
+	private Boolean onDelete = false;
 
 	@JsonIgnore
 	@ManyToOne

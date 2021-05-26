@@ -15,4 +15,5 @@ public interface ProjectUserConnectRepository extends JpaRepository<ProjectUserC
 	List<ProjectUserConnectEntity> findByUser(UserEntity userEntity, Pageable pageable);
 	Optional<ProjectUserConnectEntity> findByProjectAndUserAndRole(ProjectEntity projectEntity, UserEntity userEntity, Leader role);
 	Optional<ProjectUserConnectEntity> findByProjectAndUser(ProjectEntity projectEntity,UserEntity userEntity);
+
 }

@@ -10,4 +10,5 @@ public interface CommentService {
 	void createComment (String comment, Long id, UserEntity user);
 	List<SelectCommentDto> getCommentList(Long id, Pageable pageable, UserEntity me);
 	Long commentNum(Long id);
+	void deleteComement(Long id, UserEntity user);
 }
