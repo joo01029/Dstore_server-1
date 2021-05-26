@@ -9,4 +9,6 @@ public interface MultipartService {
 	FileDto uploadSingle(MultipartFile file);
 
 	List<FileDto> uploadMulti(List<MultipartFile> files);
+
+	String uploadBenner(MultipartFile file);
 }

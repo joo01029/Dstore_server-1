@@ -1,13 +1,11 @@
 package gg.jominsubyungsin.service.file;
 
 import gg.jominsubyungsin.domain.dto.file.request.FileDto;
-import gg.jominsubyungsin.domain.entity.BennerEntity;
+import gg.jominsubyungsin.domain.entity.BannerEntity;
 import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
-import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.domain.repository.BennerRepository;
+import gg.jominsubyungsin.domain.repository.BannerRepository;
 import gg.jominsubyungsin.domain.repository.FileRepository;
-import gg.jominsubyungsin.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -26,8 +24,9 @@ import java.util.List;
 @Service
 public class FileServiceImpl implements FileService {
 	private final Path fileStorageLocation = Paths.get("static/").toAbsolutePath().normalize();
+	private final Path bannerFileStorageLocation = Paths.get("static/banner/").toAbsolutePath().normalize();
 	private final FileRepository fileRepository;
-	private final BennerRepository bennerRepository;
+	private final BannerRepository bannerRepository;
 	@Override
 	@Transactional
 	public List<FileEntity> createFiles(List<FileDto> files) {
@@ -62,6 +61,24 @@ public class FileServiceImpl implements FileService {
 
 		try {
 			Path file = fileStorageLocation.resolve(filename).normalize();
+			UrlResource resource = new UrlResource(file.toUri());
+
+			if (!resource.exists())
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
+
+			return resource;
+		} catch (HttpClientErrorException e) {
+			throw e;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
+		}
+	}
+
+	@Override
+	public UrlResource loadBannerFile(String filename) {
+		try {
+			Path file = bannerFileStorageLocation.resolve(filename).normalize();
 			UrlResource resource = new UrlResource(file.toUri());
 
 			if (!resource.exists())
@@ -122,9 +139,9 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public List<BennerEntity> getBennerList(){
+	public List<BannerEntity> getBannerList(){
 		try{
-			return bennerRepository.findAll();
+			return bannerRepository.findAll();
 		}catch (Exception e){
 			throw new HttpServerErrorException(HttpStatus.BAD_REQUEST, "서버 에러");
 		}
