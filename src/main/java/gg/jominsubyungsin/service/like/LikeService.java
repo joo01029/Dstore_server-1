@@ -14,4 +14,5 @@ public interface LikeService {
 	void changeLikeState(Long id, UserEntity user);
 	Long LikeNum(Long id);
 	LikeEntity getLikeState(ProjectEntity project, UserEntity user);
+	void setLikeFalse(LikeEntity like);
 }

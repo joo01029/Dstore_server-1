@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +27,6 @@ public class FollowServiceImpl implements FollowService {
 	UserRepository userRepository;
 	@Autowired
 	FollowListRepository followListRepository;
-	@Autowired
-	FollowService followService;
 
 	@Override
 	public Long countFollower(Long userId) {
@@ -70,6 +69,7 @@ public class FollowServiceImpl implements FollowService {
 	}
 
 	@Override
+	@Transactional
 	public void ChangeFollowState(UserEntity follower, Long followingId) {
 		try {
 			if (follower.getId().equals(followingId))
@@ -106,7 +106,7 @@ public class FollowServiceImpl implements FollowService {
 			Page<FollowEntity> followers = followListRepository.findByFollowingAndFollowState(following, true, pageable);
 			List<SelectUserDto> follower = new ArrayList<>();
 			for (FollowEntity followEntity : followers) {
-				follower.add(new SelectUserDto(followEntity.getFollower(), followService.followState(followEntity.getFollower(), user)));
+				follower.add(new SelectUserDto(followEntity.getFollower(), followState(followEntity.getFollower(), user)));
 			}
 
 			return follower;
@@ -128,7 +128,7 @@ public class FollowServiceImpl implements FollowService {
 			Page<FollowEntity> followings = followListRepository.findByFollowerAndFollowState(follower, true, pageable);
 			List<SelectUserDto> following = new ArrayList<>();
 			for (FollowEntity followEntity : followings) {
-				following.add(new SelectUserDto(followEntity.getFollower(), followService.followState(followEntity.getFollower(), user)));
+				following.add(new SelectUserDto(followEntity.getFollower(), followState(followEntity.getFollower(), user)));
 			}
 
 			return following;
@@ -138,5 +138,12 @@ public class FollowServiceImpl implements FollowService {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
+	}
+
+	@Override
+	@Transactional
+	public void setFollowFalse(FollowEntity follow) {
+		follow.setFollowState(false);
+		followRepository.save(follow);
 	}
 }
