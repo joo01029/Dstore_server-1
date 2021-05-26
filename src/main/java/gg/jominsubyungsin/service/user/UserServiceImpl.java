@@ -3,10 +3,18 @@ package gg.jominsubyungsin.service.user;
 import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 import gg.jominsubyungsin.domain.dto.user.request.UserUpdateDto;
-import gg.jominsubyungsin.domain.entity.UserEntity;
+import gg.jominsubyungsin.domain.entity.*;
+import gg.jominsubyungsin.domain.repository.FollowRepository;
+import gg.jominsubyungsin.domain.repository.LikeRepository;
+import gg.jominsubyungsin.domain.repository.ProjectUserConnectRepository;
 import gg.jominsubyungsin.domain.repository.UserRepository;
+import gg.jominsubyungsin.enums.Leader;
+import gg.jominsubyungsin.service.comment.CommentService;
 import gg.jominsubyungsin.service.follow.FollowService;
+import gg.jominsubyungsin.service.like.LikeService;
+import gg.jominsubyungsin.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,8 +30,10 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 	private final FollowService followService;
-
+	private final ProjectUserConnectRepository projectUserConnectRepository;
 	private final UserRepository userRepository;
+	private final CommentService commentService;
+	private final LikeService likeService;
 
 	@Override
 	public boolean userUpdate(UserUpdateDto userUpdateDto) throws HttpServerErrorException {
@@ -31,7 +41,7 @@ public class UserServiceImpl implements UserService {
 			String changePassword = userUpdateDto.getChangePassword();
 			String changeName = userUpdateDto.getChangeName();
 
-			return userRepository.findByEmailAndPassword(userUpdateDto.getEmail(), userUpdateDto.getPassword())
+			return userRepository.findByEmailAndPasswordAndOnDelete(userUpdateDto.getEmail(), userUpdateDto.getPassword(), false)
 					.map(found -> {
 						found.setPassword(Optional.ofNullable(changePassword).orElse(found.getPassword()));
 						found.setName(Optional.ofNullable(changeName).orElse(found.getName()));
@@ -49,7 +59,7 @@ public class UserServiceImpl implements UserService {
 	public boolean userUpdateIntroduce(UserDto userDto) {
 		String introduce = userDto.getIntroduce();
 		try {
-			return userRepository.findByEmail(userDto.getEmail())
+			return userRepository.findByEmailAndOnDelete(userDto.getEmail(), false)
 					.map(found -> {
 						found.setIntroduce(introduce);
 						userRepository.save(found);
@@ -65,12 +75,33 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public boolean userDelete(UserDto userDto) {
 		try {
-			Optional<UserEntity> findUser = userRepository.findByEmailAndPassword(userDto.getEmail(), userDto.getPassword());
-
-			if (findUser.isEmpty())
+			UserEntity findUser = userRepository.findByEmailAndPasswordAndOnDelete(userDto.getEmail(), userDto.getPassword(), false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
+			});
 
-			userRepository.deleteByEmail(userDto.getEmail());
+			findUser.setOnDelete(true);
+			//댓글 삭제
+			for (CommentEntity comment : findUser.getComments()) {
+				commentService.deleteComement(comment.getId(), findUser);
+			}
+			//팔로워 없애기
+			for (FollowEntity follow : findUser.getFollower()) {
+				followService.setFollowFalse(follow);
+			}
+			//팔로윙 없애기
+			for (FollowEntity follow : findUser.getFollowing()) {
+				followService.setFollowFalse(follow);
+			}
+			//좋아요 삭제
+			for (LikeEntity like : findUser.getLikes()){
+				likeService.setLikeFalse(like);
+			}
+
+			for(ProjectUserConnectEntity connect : findUser.getProjects()){
+				connect.setGetOut(true);
+				projectUserConnectRepository.save(connect);
+			}
+
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -81,7 +112,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public SelectUserDto findUser(Long id, UserEntity user) {
 		try {
-			UserEntity userEntity = userRepository.findById(id).orElseGet(() -> {
+			UserEntity userEntity = userRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 유저");
 			});
 			return new SelectUserDto(userEntity, followService.followState(userEntity, user));
@@ -94,7 +125,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserEntity findUserById(Long id) {
 		try {
-			Optional<UserEntity> findUser = userRepository.findById(id);
+			Optional<UserEntity> findUser = userRepository.findByIdAndOnDelete(id, false);
 
 			return findUser.orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
@@ -108,7 +139,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserEntity findUser(String email) {
 		try {
-			Optional<UserEntity> findUser = userRepository.findByEmail(email);
+			Optional<UserEntity> findUser = userRepository.findByEmailAndOnDelete(email, false);
 
 			return findUser.orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
@@ -139,7 +170,7 @@ public class UserServiceImpl implements UserService {
 	public boolean checkUserSame(String email, Long id) {
 		UserEntity findUser;
 		try {
-			findUser = userRepository.findByEmail(email).orElseGet(() -> {
+			findUser = userRepository.findByEmailAndOnDelete(email, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "유저 못찾음");
 			});
 			if (findUser.getId().equals(id))
@@ -157,7 +188,7 @@ public class UserServiceImpl implements UserService {
 	public void updateProfileImage(String email, String fileUrl) {
 		UserEntity findUser;
 		try {
-			findUser = userRepository.findByEmail(email).orElseGet(() -> {
+			findUser = userRepository.findByEmailAndOnDelete(email, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "유저 못찾음");
 			});
 			findUser.setProfileImage(fileUrl);

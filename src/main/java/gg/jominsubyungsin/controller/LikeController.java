@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -53,6 +54,9 @@ public class LikeController {
 		Response response = new Response();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
+		if(user == null){
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+		}
 		try {
 			likeService.changeLikeState(id, user);
 

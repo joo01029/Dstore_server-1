@@ -164,8 +164,11 @@ public class UserController {
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
 			//내 프로필인지 검사
-			boolean myProfile = userService.checkUserSame(user.getEmail(), id);
-			UserEntity profile = userService.findUserById(id);
+			Boolean myProfile = false;
+			UserEntity profile = userService.findUserById(id);;
+			if(user != null) {
+				myProfile = userService.checkUserSame(user.getEmail(), id);
+			}
 
 			List<SelectProjectDto> selectProjectDetailDtos = projectService.getProjects(pageable, user, profile);
 			Long follower = followService.countFollower(id);
@@ -198,6 +201,9 @@ public class UserController {
 
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
+			if(user == null){
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"토큰이 필요함");
+			}
 
 			FileDto profileImage = multipartService.uploadSingle(file);
 			userService.updateProfileImage(user.getEmail(), profileImage.getFileLocation());
@@ -217,6 +223,9 @@ public class UserController {
 	public Response follow(HttpServletRequest request, @PathVariable Long id) {
 		Response response = new Response();
 		UserEntity user = (UserEntity) request.getAttribute("user");
+		if(user == null){
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+		}
 		try {
 			followService.ChangeFollowState(user, id);
 

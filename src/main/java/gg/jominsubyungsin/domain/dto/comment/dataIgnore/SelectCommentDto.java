@@ -14,8 +14,6 @@ import java.util.Date;
 @Getter
 @Setter
 public class SelectCommentDto {
-	@Autowired
-	FollowService followService;
 	@NotBlank
 	private Long id;
 	@NotBlank
@@ -25,10 +23,10 @@ public class SelectCommentDto {
 
 	private SelectUserDto user;
 
-	public SelectCommentDto(CommentEntity commentEntity, UserEntity me){
+	public SelectCommentDto(CommentEntity commentEntity, SelectUserDto user){
 		id = commentEntity.getId();
 		comment = commentEntity.getComment();
 		createAt = commentEntity.getCreateAt();
-		user = new SelectUserDto(commentEntity.getUser(), followService.followState(commentEntity.getUser(), me));
+		this.user = user;
 	}
 }

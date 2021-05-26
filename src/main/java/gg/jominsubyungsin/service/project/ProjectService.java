@@ -23,4 +23,5 @@ public interface ProjectService {
 	ProjectDto projectDetail(Long id, UserEntity user);
 
 	void projectUpdate(Long id, UserEntity user, PutProjectDto putProjectDto);
+	void deleteProject(Long id, UserEntity user);
 }

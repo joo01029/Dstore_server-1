@@ -11,9 +11,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProjectListRepository extends PagingAndSortingRepository<ProjectEntity, Long> {
-	Page<ProjectEntity> findByUsers(UserEntity user, Pageable pageable);
+	Page<ProjectEntity> findAllByOnDeleteOrderByIdDesc(Boolean onDelete, Pageable pageable);
+	Page<ProjectEntity> findByUsersAndOnDeleteOrderByIdDesc(UserEntity user, Boolean onDelete, Pageable pageable);
 	@Query(
-			value = "select project FROM project_tag_connect where tag in (:tags) group by project having(count(tag) >= :length)",
+			value = "select c.project FROM project_tag_connect as c where c.tag in (:tags) and c.project in (select id from project where onDelete != 1) group by c.project having(count(c.tag) >= :length) order by id desc",
 			countQuery = "select count (*) from project",
 			nativeQuery = true
 

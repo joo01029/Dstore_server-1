@@ -17,6 +17,7 @@ import gg.jominsubyungsin.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.data.domain.Pageable;
 
@@ -40,6 +41,9 @@ public class ProjectController {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일은 무조건 1개 이상 보내야 합니다");
 		}
 		UserEntity mainUser = (UserEntity) request.getAttribute("user");
+		if(mainUser == null){
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+		}
 		try {
 			projectService.saveProject(projectDto, mainUser);
 		} catch (Exception e) {
@@ -100,7 +104,9 @@ public class ProjectController {
 		Response response = new Response();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
-
+		if(user == null){
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+		}
 		try {
 			projectService.projectUpdate(id, user, putProjectDto);
 
@@ -110,6 +116,24 @@ public class ProjectController {
 		} catch (Exception e) {
 			throw e;
 		}
-
 	}
+	@DeleteMapping("/{id}")
+	public Response projectDelete(HttpServletRequest request, @PathVariable Long id){
+		Response response = new Response();
+
+		UserEntity user = (UserEntity) request.getAttribute("user");
+		if(user == null){
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+		}
+		try{
+			projectService.deleteProject(id, user);
+
+			response.setHttpStatus(HttpStatus.OK);
+			response.setMessage("성공");
+			return response;
+		}catch (Exception e){
+			throw e;
+		}
+	}
+
 }

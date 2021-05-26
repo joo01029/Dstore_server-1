@@ -25,19 +25,22 @@ public class ProjectEntity {
 	@Column
 	private Date createAt = new Date();
 
-	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+	@Column
+	private Boolean onDelete = false;
+
+	@OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
 	private List<ProjectUserConnectEntity> users = new ArrayList<>();
 
-	@OneToMany(mappedBy = "projectId", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+	@OneToMany(mappedBy = "projectId", cascade = CascadeType.REMOVE)
 	private List<FileEntity> files = new ArrayList<>();
 
-	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+	@OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
 	private List<LikeEntity> likes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+	@OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
 	private List<CommentEntity> comments = new ArrayList<>();
 
-	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+	@OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
 	private List<ProjectTagConnectEntity> tags = new ArrayList<>();
 
 	public void addUsers(ProjectUserConnectEntity projectUserConnectEntity) {
