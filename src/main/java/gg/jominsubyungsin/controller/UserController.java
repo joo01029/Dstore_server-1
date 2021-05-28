@@ -12,17 +12,14 @@ import gg.jominsubyungsin.domain.response.Response;
 import gg.jominsubyungsin.domain.dto.user.response.ShowUserListResponse;
 import gg.jominsubyungsin.domain.dto.user.response.ShowUserResponse;
 import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponse;
-import gg.jominsubyungsin.service.file.FileService;
 import gg.jominsubyungsin.service.follow.FollowService;
-import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.multipart.MultipartService;
 import gg.jominsubyungsin.service.project.ProjectService;
 import gg.jominsubyungsin.service.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -44,12 +41,17 @@ public class UserController {
 	/*
 	 *자기 소개 변경
 	 */
-	@PutMapping("/set/introduce")
+	@PutMapping("/introduce")
+	@Transactional
 	public Response setIntroduce(@RequestBody UserDto userDto, HttpServletRequest request) {
 		Response response = new Response();
 
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
+			if(user == null){
+				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
+			}
+
 			userDto.setEmail(user.getEmail());
 
 			boolean setIntruduceResult = userService.userUpdateIntroduce(userDto);
@@ -69,7 +71,8 @@ public class UserController {
 	/*
 	 *비밀번호 또는 이름 변경
 	 */
-	@PutMapping("/update")
+	@PutMapping("/password-and-name")
+	@Transactional
 	public Response userUpdate(@RequestBody UserUpdateDto userUpdateDto) {
 		Response response = new Response();
 
@@ -95,7 +98,8 @@ public class UserController {
 	/*
 	 *유저 삭제
 	 */
-	@DeleteMapping("/delete")
+	@DeleteMapping
+	@Transactional
 	public Response userDelete(@RequestBody UserDto userDto) {
 		Response response = new Response();
 
@@ -116,30 +120,13 @@ public class UserController {
 		}
 	}
 
-	/*
-	 *유저 보기
-	 */
-	@GetMapping("/show")
-	public ShowUserResponse showUser(@RequestParam Long id, HttpServletRequest request) {
-		ShowUserResponse showUserResponse = new ShowUserResponse();
-		UserEntity user = (UserEntity) request.getAttribute("user");
-		try {
-			SelectUserDto selectUser = userService.findUser(id, user);
-
-			showUserResponse.setHttpStatus(HttpStatus.OK);
-			showUserResponse.setMessage("성공");
-			showUserResponse.setUser(selectUser);
-			return showUserResponse;
-		} catch (Exception e) {
-			throw e;
-		}
-	}
 
 	/*
 	 *유저 이름으로 찾기
 	 */
-	@GetMapping("/find/name")
-	public ShowUserListResponse showUserList(@RequestParam String name, HttpServletRequest request) {
+	@GetMapping
+	@Transactional(readOnly = true)
+	public ShowUserListResponse showUserList(@RequestParam("name") String name, HttpServletRequest request) {
 		ShowUserListResponse showUserListResponse = new ShowUserListResponse();
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
@@ -157,8 +144,9 @@ public class UserController {
 	/*
 	 *유저 상세 페이지
 	 */
-	@GetMapping("/detail/{id}")
-	public UserDetailResponse detailUser(@PathVariable("id") Long id, Pageable pageable, HttpServletRequest request) {
+	@GetMapping("/{userId}")
+	@Transactional(readOnly = true)
+	public UserDetailResponse detailUser(@PathVariable("userId") Long id, Pageable pageable, HttpServletRequest request) {
 		UserDetailResponse response = new UserDetailResponse();
 		UserDetailResponseDto userDetailResponseDto;
 		try {
@@ -173,7 +161,8 @@ public class UserController {
 			List<SelectProjectDto> selectProjectDetailDtos = projectService.getProjects(pageable, user, profile);
 			Long follower = followService.countFollower(id);
 			Long following = followService.countFollowing(id);
-			userDetailResponseDto = new UserDetailResponseDto(profile, myProfile, selectProjectDetailDtos, follower, following);
+			Boolean follow = followService.followState(profile, user);
+			userDetailResponseDto = new UserDetailResponseDto(profile, myProfile, selectProjectDetailDtos, follower, following, follow);
 
 			Long projectNumber = projectService.countProject(user);
 			Boolean end = projectNumber < (long) pageable.getPageSize() * (pageable.getPageNumber() + 1);
@@ -191,7 +180,7 @@ public class UserController {
 	/*
 	 *프로필 이미지 변경
 	 */
-	@PutMapping("/profile/image")
+	@PutMapping("/image")
 	public Response updateProfileImage(HttpServletRequest request, @ModelAttribute MultipartFile file) {
 		Response response = new Response();
 
@@ -215,27 +204,5 @@ public class UserController {
 			throw e;
 		}
 	}
-
-	/*
-	 *팔로우
-	 */
-	@PutMapping("/follow/{id}")
-	public Response follow(HttpServletRequest request, @PathVariable Long id) {
-		Response response = new Response();
-		UserEntity user = (UserEntity) request.getAttribute("user");
-		if(user == null){
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
-		}
-		try {
-			followService.ChangeFollowState(user, id);
-
-			response.setHttpStatus(HttpStatus.OK);
-			response.setMessage("성공");
-			return response;
-		} catch (Exception e) {
-			throw e;
-		}
-	}
-
 }
 

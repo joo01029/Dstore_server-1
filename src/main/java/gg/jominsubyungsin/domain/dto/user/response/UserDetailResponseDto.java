@@ -16,10 +16,11 @@ public class UserDetailResponseDto {
 	private String profileImage;
 	private Long follower;
 	private Long following;
+	private Boolean follow;
 	private List<SelectProjectDto> projects;
-	private boolean yourProfile;
+	private Boolean yourProfile;
 
-	public UserDetailResponseDto(UserEntity userEntity, boolean yourProfile, List<SelectProjectDto> projects,Long follower, Long following) {
+	public UserDetailResponseDto(UserEntity userEntity, Boolean yourProfile, List<SelectProjectDto> projects,Long follower, Long following, Boolean follow) {
 		this.id = userEntity.getId();
 		this.name = userEntity.getName();
 		this.introduce = userEntity.getIntroduce();

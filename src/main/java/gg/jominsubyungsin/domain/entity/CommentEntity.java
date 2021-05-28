@@ -32,13 +32,13 @@ public class CommentEntity {
 	@JoinColumn(nullable = false)
 	private ProjectEntity project;
 
+
 	@ManyToOne
 	@JoinColumn(nullable = false)
 	private UserEntity user;
 
-	public CommentEntity(String comment,ProjectEntity project, UserEntity user){
+	public CommentEntity(String comment){
 		this.comment = comment;
-		this.project = project;
-		this.user = user;
+
 	}
 }

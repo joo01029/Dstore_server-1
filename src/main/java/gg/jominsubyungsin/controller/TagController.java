@@ -23,7 +23,7 @@ public class TagController {
 	private final TagService tagService;
 	private final PageEnd pageEnd;
 
-	@GetMapping("/find/like/{tag}")
+	@GetMapping("/similar/{tag}")
 	public FindTagResponse findTagLike(@PathVariable String tag, Pageable pageable) {
 		FindTagResponse response = new FindTagResponse();
 		try {
@@ -38,7 +38,7 @@ public class TagController {
 		}
 	}
 
-	@GetMapping("/find/projects")
+	@GetMapping("/projects")
 	public GetProjectResponse findByTags(@RequestParam List<String> tags, HttpServletRequest request, Pageable pageable) {
 		GetProjectResponse response = new GetProjectResponse();
 

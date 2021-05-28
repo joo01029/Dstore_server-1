@@ -1,8 +1,10 @@
 package gg.jominsubyungsin.service.user;
 
+import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 import gg.jominsubyungsin.domain.dto.user.request.UserUpdateDto;
+import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponseDto;
 import gg.jominsubyungsin.domain.entity.*;
 import gg.jominsubyungsin.domain.repository.FollowRepository;
 import gg.jominsubyungsin.domain.repository.LikeRepository;
@@ -16,6 +18,9 @@ import gg.jominsubyungsin.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -34,6 +39,11 @@ public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final CommentService commentService;
 	private final LikeService likeService;
+
+	@Autowired
+	@Lazy
+	private ProjectService projectService;
+
 
 	@Override
 	public boolean userUpdate(UserUpdateDto userUpdateDto) throws HttpServerErrorException {
@@ -197,5 +207,21 @@ public class UserServiceImpl implements UserService {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
+	}
+
+	@Override
+	public UserDetailResponseDto getUserDetail(Long id, UserEntity user, Pageable pageable){
+		Boolean myProfile = false;
+		UserEntity profile = findUserById(id);;
+		if(user != null) {
+			myProfile = checkUserSame(user.getEmail(), id);
+		}
+
+		List<SelectProjectDto> selectProjectDetailDtos = projectService.getProjects(pageable, user, profile);
+		Long follower = followService.countFollower(id);
+		Long following = followService.countFollowing(id);
+		Boolean follow = followService.followState(profile, user);
+		UserDetailResponseDto userDetailResponseDto = new UserDetailResponseDto(profile, myProfile, selectProjectDetailDtos, follower, following, follow);
+		return userDetailResponseDto;
 	}
 }
