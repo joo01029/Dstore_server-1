@@ -18,9 +18,8 @@ public interface ProjectListRepository extends PagingAndSortingRepository<Projec
 			countQuery = "select count (*) from project",
 			nativeQuery = true
 
-			)
+	)
 	List<Long> findProjectTags(Pageable pageable, @Param("tags") List<Long> tags, @Param("length") int length);
-
 }
 
 //select p.*, t.* FROM jmsbs.project as p join jmsbs.tag_project_connect as pt on p.id = pt.project_id join jmsbs.tag as t on t.id = pt.tag_id where pt.tag_id in (:tags)group by pt.project_id, p.id having(count(pt.tag_id) = :length)

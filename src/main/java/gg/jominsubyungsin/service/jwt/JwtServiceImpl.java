@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
@@ -29,6 +30,7 @@ public class JwtServiceImpl implements JwtService {
 	String REFRESHSECRET_KEY;
 
 	@Override
+	@Transactional(readOnly = true)
 	public String createToken(String subject, long ttlMillis, JwtAuth authType) {
 		if (ttlMillis <= 0)
 			throw new RuntimeException("Expiry time must be greater than Zero : [" + ttlMillis + "] ");
@@ -77,6 +79,7 @@ public class JwtServiceImpl implements JwtService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserEntity accessTokenDecoding(String token) {
 		try {
 			Claims claims = decodingToken(token, ACCESSSECRET_KEY);

@@ -27,16 +27,16 @@ public class CommentController {
 	/*
 	 *댓글 작성
 	 */
-	@PostMapping("/create")
+
+	@PostMapping
 	public Response makeComment(HttpServletRequest request, @RequestBody GetCommentDto commentDto) {
 		Response response = new Response();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
 		if(user == null){
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요합니다.");
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요합니다.");
 		}
 		try {
-
 			commentService.createComment(commentDto.getComment(), commentDto.getProjectId(), user);
 
 			response.setHttpStatus(HttpStatus.OK);
@@ -50,13 +50,13 @@ public class CommentController {
 	/*
 	 *댓글 리스트
 	 */
-	@GetMapping("/list/{id}")
-	public GetCommentResponse GetCommentList(Pageable pageable, @PathVariable Long id, HttpServletRequest request) {
+	@GetMapping("/{projectId}")
+	public GetCommentResponse GetCommentList(Pageable pageable, @PathVariable Long projectId, HttpServletRequest request) {
 		GetCommentResponse response = new GetCommentResponse();
 		UserEntity user = (UserEntity) request.getAttribute("user");
 		try {
-			List<SelectCommentDto> comments = commentService.getCommentList(id, pageable, user);
-			Long commentNum = commentService.commentNum(id);
+			List<SelectCommentDto> comments = commentService.getCommentList(projectId, pageable, user);
+			Long commentNum = commentService.commentNum(projectId);
 
 			Boolean end = pageEnd.pageEnd(pageable.getPageSize(), pageable.getPageNumber(), commentNum);
 
@@ -70,15 +70,15 @@ public class CommentController {
 		}
 	}
 
-	@DeleteMapping("/{id}")
-	public Response deleteComment(@PathVariable Long id, HttpServletRequest request){
+	@DeleteMapping("/{commentId}")
+	public Response deleteComment(@PathVariable Long commentId, HttpServletRequest request){
 		Response response = new Response();
 		UserEntity user = (UserEntity) request.getAttribute("user");
 		if(user == null){
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 		}
 		try{
-			commentService.deleteComement(id, user);
+			commentService.deleteComement(commentId, user);
 
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");

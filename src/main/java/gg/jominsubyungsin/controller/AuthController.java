@@ -1,6 +1,8 @@
 package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.email.request.SendEmailDto;
+import gg.jominsubyungsin.domain.dto.token.LoginJwtDto;
+import gg.jominsubyungsin.domain.dto.user.request.LoginDto;
 import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.enums.JwtAuth;
@@ -28,7 +30,6 @@ import java.util.Date;
 public class AuthController {
 	private final JwtService jwtService;
 	private final AuthService authService;
-	private final Hash hash;
 
 	/*
 	 *회원가입
@@ -38,9 +39,6 @@ public class AuthController {
 		Response response = new Response();
 
 		try {
-			String hashPassword = hash.hashText(userDto.getPassword());
-			userDto.setPassword(hashPassword);
-
 			authService.userCreate(userDto);
 
 			response.setMessage("유저 저장 성공");
@@ -58,45 +56,22 @@ public class AuthController {
 	 * 로그인
 	 */
 	@PostMapping("/login")
-	public LoginResponse login(@RequestBody UserDto userDto) {
+	public LoginResponse login(@RequestBody LoginDto loginDto) {
 		LoginResponse loginResponse = new LoginResponse();
 
-		UserEntity findUserResponse;
 		try {
-			//비밀번호 암호화
-			String hashPassword = hash.hashText(userDto.getPassword());
-			userDto.setPassword(hashPassword);
-
-			findUserResponse = authService.login(userDto);
+			LoginJwtDto tokens = authService.login(loginDto);
+			loginResponse.setMessage("로그인 성공");
+			loginResponse.setHttpStatus(HttpStatus.OK);
+			loginResponse.setTokens(tokens);
+			return loginResponse;
 		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 		//토큰
-		String subject;
-		String accessToken;
-		long accessExpiredTime = 40 * 60 * 1000L;
-		String refreshToken;
-		long refreshExpiredTime = 7 * 24 * 60 * 60 * 1000L;
-		//token발행
-		try {
-			subject = findUserResponse.getEmail();
-			accessToken = jwtService.createToken(subject, accessExpiredTime, JwtAuth.ACCESS);
-			refreshToken = jwtService.createToken(subject, refreshExpiredTime, JwtAuth.REFRESH);
-		} catch (Exception e) {
-			throw e;
-		}
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date time = new Date(System.currentTimeMillis() + accessExpiredTime);
-		String expiredTime = format.format(time);
 
-		loginResponse.setMessage("로그인 성공");
-		loginResponse.setHttpStatus(HttpStatus.OK);
-		loginResponse.setExepiration(expiredTime);
-		loginResponse.setAccessToken(accessToken);
-		loginResponse.setRefreshToken(refreshToken);
-		return loginResponse;
 	}
 
 	/*
@@ -109,37 +84,18 @@ public class AuthController {
 		String subject;
 		try {
 			subject = jwtService.refreshTokenDecoding(Authorization);
+			LoginJwtDto tokens = authService.MakeTokens(subject);
 		} catch (Exception e) {
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
 		}
 
-		long accessExpiredTime = 20 * 60 * 1000L;
-		String accessToken;
-		long refreshExpiredTime = 7 * 24 * 60 * 60 * 1000L;
-		String refreshTokenRemake;
-
-		try {
-			accessToken = jwtService.createToken(subject, accessExpiredTime, JwtAuth.ACCESS);
-			refreshTokenRemake = jwtService.createToken(subject, refreshExpiredTime, JwtAuth.REFRESH);
-		} catch (Exception e) {
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 재생성 실패");
-		}
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date time = new Date(System.currentTimeMillis() + accessExpiredTime);
-		String expiredTime = format.format(time);
-
-		loginResponse.setMessage("로그인 성공");
-		loginResponse.setHttpStatus(HttpStatus.OK);
-		loginResponse.setExepiration(expiredTime);
-		loginResponse.setAccessToken(accessToken);
-		loginResponse.setRefreshToken(refreshTokenRemake);
 		return loginResponse;
 	}
 
 	/*
 	 *이메일 인증 주소 보내기
 	 */
-	@PostMapping("/send/email")
+	@PostMapping("/email")
 	public Response sendEmail(@RequestBody SendEmailDto sendEmailDto) {
 		Response response = new Response();
 

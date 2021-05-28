@@ -3,6 +3,8 @@ package gg.jominsubyungsin.domain.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gg.jominsubyungsin.enums.Role;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -40,6 +42,7 @@ public class UserEntity {
 	@Column
 	private Boolean onDelete = false;
 
+	@Fetch(FetchMode.SELECT)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
 	private List<ProjectUserConnectEntity> projects = new ArrayList<>();
 
@@ -47,23 +50,30 @@ public class UserEntity {
 	@Column(nullable = false)
 	private Role role;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+	@Fetch(FetchMode.SELECT)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
 	private List<LikeEntity> likes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+	@Fetch(FetchMode.SELECT)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
 	private List<CommentEntity> comments = new ArrayList<>();
 
-	@OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
+	@Fetch(FetchMode.SELECT)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
 	private List<FollowEntity> follower = new ArrayList<>();
-
-	@OneToMany(mappedBy = "following", cascade = CascadeType.REMOVE)
+	@Fetch(FetchMode.SELECT)
+	@OneToMany(mappedBy = "following", cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
 	private List<FollowEntity> following = new ArrayList<>();
+	@Fetch(FetchMode.SELECT)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
+	private List<ReportEntity> reports = new ArrayList<>();
 
 	public void add(LikeEntity like){
 		likes.add(like);
 	}
 	public void add(CommentEntity comment){
-		comments.add(comment);
+		comment.setUser(this);
+		this.comments.add(comment);
 	}
 
 	public void add(ProjectUserConnectEntity project){
@@ -77,6 +87,11 @@ public class UserEntity {
 	public void addFollowing(FollowEntity following){
 		this.following.add(following);
 		following.setFollowing(this);
+	}
+
+	public void addReport(ReportEntity report){
+		reports.add(report);
+		report.setUser(this);
 	}
 
 	@Builder

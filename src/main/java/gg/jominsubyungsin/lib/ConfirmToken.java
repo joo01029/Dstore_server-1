@@ -9,6 +9,7 @@ import java.util.Enumeration;
 public class ConfirmToken {
 	public String removeStartString(HttpServletRequest request, String type){
 		Enumeration<String> token = request.getHeaders("Authorization");
+		System.out.println(token);
 		if(token.hasMoreElements()){
 			String value = token.nextElement();
 

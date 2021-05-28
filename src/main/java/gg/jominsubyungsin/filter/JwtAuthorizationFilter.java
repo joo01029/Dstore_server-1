@@ -1,22 +1,19 @@
 package gg.jominsubyungsin.filter;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
-import gg.jominsubyungsin.handler.GlobalExeptionHandler;
 import gg.jominsubyungsin.lib.ConfirmToken;
 import gg.jominsubyungsin.service.jwt.JwtServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @Component
 @Order(2)
@@ -36,9 +33,9 @@ public class JwtAuthorizationFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest request1 = (HttpServletRequest) request;
-
 		if (!request1.getMethod().equals("OPTIONS")) {
-			String token = confirmToken.removeStartString(request1, "Bearer");
+			String token = confirmToken.removeStartString(request1, "Bearer ");
+			System.out.println(token);
 			if (token == null) {
 				System.out.println("토큰이 비었음");
 				request1.setAttribute("user", null);
