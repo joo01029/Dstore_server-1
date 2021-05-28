@@ -66,7 +66,7 @@ public class FileController {
 
 	}
 
-	@GetMapping("/benner/locations")
+	@GetMapping("/locations/banner")
 	@ResponseBody
 	public BannerResponse getBannerLocations(){
 		BannerResponse response = new BannerResponse();

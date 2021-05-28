@@ -10,15 +10,14 @@ import gg.jominsubyungsin.domain.repository.CommentRepository;
 import gg.jominsubyungsin.domain.repository.ProjectRepository;
 import gg.jominsubyungsin.service.follow.FollowService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +33,11 @@ public class CommentServiceImpl implements CommentService {
 	@Transactional
 	public void createComment(String comment, Long id, UserEntity user) {
 		try {
+			System.out.println(user.getId());
 			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
-			CommentEntity commentEntity = new CommentEntity(comment, project, user);
+			CommentEntity commentEntity = new CommentEntity(comment);
 			project.add(commentEntity);
 			user.add(commentEntity);
 			commentRepository.save(commentEntity);

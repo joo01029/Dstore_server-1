@@ -33,7 +33,7 @@ public class ProjectController {
 	/*
 	 *프로젝트 생성
 	 */
-	@PostMapping("/create")
+	@PostMapping
 	public Response createProject(@ModelAttribute GetProjectDto projectDto, HttpServletRequest request) {
 		Response response = new Response();
 
@@ -42,7 +42,7 @@ public class ProjectController {
 		}
 		UserEntity mainUser = (UserEntity) request.getAttribute("user");
 		if(mainUser == null){
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 		}
 		try {
 			projectService.saveProject(projectDto, mainUser);
@@ -57,7 +57,7 @@ public class ProjectController {
 	/*
 	 *프로젝트 리스트 받기
 	 */
-	@GetMapping("/list")
+	@GetMapping
 	public GetProjectResponse projectList(Pageable pageable, HttpServletRequest request) {
 		GetProjectResponse response = new GetProjectResponse();
 		List<SelectProjectDto> projects;
@@ -82,8 +82,8 @@ public class ProjectController {
 	/*
 	 *프로젝트 상세 페이지
 	 */
-	@GetMapping("/detail/{id}")
-	public GetProjectDetailResponse projectDetail(HttpServletRequest request, @PathVariable("id") Long id) {
+	@GetMapping("/{projectId}")
+	public GetProjectDetailResponse projectDetail(HttpServletRequest request, @PathVariable("projectId") Long id) {
 		GetProjectDetailResponse response = new GetProjectDetailResponse();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
@@ -99,13 +99,13 @@ public class ProjectController {
 		}
 	}
 
-	@PutMapping("/update/{id}")
-	public Response projectUpdate(HttpServletRequest request, @ModelAttribute PutProjectDto putProjectDto, @PathVariable Long id) {
+	@PutMapping("{projectId}")
+	public Response projectUpdate(HttpServletRequest request, @ModelAttribute PutProjectDto putProjectDto, @PathVariable("projectId") Long id) {
 		Response response = new Response();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
 		if(user == null){
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 		}
 		try {
 			projectService.projectUpdate(id, user, putProjectDto);
@@ -117,13 +117,13 @@ public class ProjectController {
 			throw e;
 		}
 	}
-	@DeleteMapping("/{id}")
-	public Response projectDelete(HttpServletRequest request, @PathVariable Long id){
+	@DeleteMapping("/{projectId}")
+	public Response projectDelete(HttpServletRequest request, @PathVariable("projectId") Long id){
 		Response response = new Response();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
 		if(user == null){
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 		}
 		try{
 			projectService.deleteProject(id, user);

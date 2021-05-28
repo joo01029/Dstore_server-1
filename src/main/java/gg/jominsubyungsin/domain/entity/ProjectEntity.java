@@ -43,10 +43,17 @@ public class ProjectEntity {
 	@OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
 	private List<ProjectTagConnectEntity> tags = new ArrayList<>();
 
+	@OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE)
+	private List<ReportEntity> reports = new ArrayList<>();
+
 	public void addUsers(ProjectUserConnectEntity projectUserConnectEntity) {
 		this.users.add(projectUserConnectEntity);
 	}
 
+	public void addReport(ReportEntity report){
+		this.reports.add(report);
+		report.setProject(this);
+	}
 	public void add(FileEntity fileEntity) {
 		files.add(fileEntity);
 		fileEntity.setProjectId(this);
