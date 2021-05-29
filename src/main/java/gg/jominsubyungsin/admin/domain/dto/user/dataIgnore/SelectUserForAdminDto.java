@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.admin.domain.dto.query;
+package gg.jominsubyungsin.admin.domain.dto.user.dataIgnore;
 
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.enums.Role;

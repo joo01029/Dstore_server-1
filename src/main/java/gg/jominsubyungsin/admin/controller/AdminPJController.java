@@ -1,6 +1,6 @@
 package gg.jominsubyungsin.admin.controller;
 
-import gg.jominsubyungsin.admin.domain.response.ProjectListResponse;
+import gg.jominsubyungsin.admin.domain.dto.project.response.ProjectListResponse;
 import gg.jominsubyungsin.admin.service.project.AdminPJService;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.response.Response;
