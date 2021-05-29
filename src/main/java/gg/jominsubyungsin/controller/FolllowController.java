@@ -25,11 +25,12 @@ public class FolllowController {
 	@PutMapping("/{userId}")
 	public Response follow(HttpServletRequest request, @PathVariable Long userId) {
 		Response response = new Response();
-		UserEntity user = (UserEntity) request.getAttribute("user");
-		if(user == null){
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
-		}
 		try {
+			UserEntity user = (UserEntity) request.getAttribute("user");
+			if(user == null){
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
+			}
+
 			followService.ChangeFollowState(user, userId);
 
 			response.setHttpStatus(HttpStatus.OK);
@@ -45,8 +46,8 @@ public class FolllowController {
 	@GetMapping("/followers/{userId}")
 	public ShowUserListResponse showFollowers(HttpServletRequest request, @PathVariable Long userId, Pageable pageable) {
 		ShowUserListResponse response = new ShowUserListResponse();
-		UserEntity user = (UserEntity) request.getAttribute("user");
 		try {
+			UserEntity user = (UserEntity) request.getAttribute("user");
 			List<SelectUserDto> users = followService.showFollower(userId, user, pageable);
 			response.setUserList(users);
 			Long followers = followService.countFollower(userId);
@@ -70,8 +71,8 @@ public class FolllowController {
 	@GetMapping("/followings/{userId}")
 	public ShowUserListResponse showFollowing(HttpServletRequest request, @PathVariable Long userId, Pageable pageable) {
 		ShowUserListResponse response = new ShowUserListResponse();
-		UserEntity user = (UserEntity) request.getAttribute("user");
 		try {
+			UserEntity user = (UserEntity) request.getAttribute("user");
 			List<SelectUserDto> users = followService.showFollowing(userId, user, pageable);
 			response.setUserList(users);
 			Long followings = followService.countFollowing(userId);

@@ -1,6 +1,7 @@
 package gg.jominsubyungsin.domain.repository;
 
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
+import gg.jominsubyungsin.domain.entity.ProjectUserConnectEntity;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,11 +12,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProjectListRepository extends PagingAndSortingRepository<ProjectEntity, Long> {
-	Page<ProjectEntity> findAllByOnDeleteOrderByIdDesc(Boolean onDelete, Pageable pageable);
-	Page<ProjectEntity> findByUsersAndOnDeleteOrderByIdDesc(UserEntity user, Boolean onDelete, Pageable pageable);
+	Page<ProjectEntity> findByOnDelete(Boolean onDelete, Pageable pageable);
+	Page<ProjectEntity> findByUsersInAndOnDelete(List<ProjectUserConnectEntity> user, Boolean onDelete, Pageable pageable);
 	@Query(
-			value = "select c.project FROM project_tag_connect as c where c.tag in (:tags) and c.project in (select id from project where onDelete != 1) group by c.project having(count(c.tag) >= :length) order by id desc",
-			countQuery = "select count (*) from project",
+			value = "select project_id FROM project_tag_connect where tag_id in (:tags) and project_id in (select id from project where on_delete = 0) group by project_id, id having(count(*) >= :length)",
+			countQuery = "select count(*) from project",
 			nativeQuery = true
 
 	)

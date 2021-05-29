@@ -14,8 +14,8 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
 	Long countByUsersAndOnDelete(UserEntity user, Boolean OnDelete);
 	void deleteById(Long id);
 	List<ProjectEntity> findByUsers(Long id);
-	@Query(value = "select count(*)FROM project_tag_connect where tag in (:tags) and c.project in (select id from project where onDelete != 1) group by project having(count(tag) >= :length)", nativeQuery = true)
-	Long countprojectTags(@Param("tags") List<Long> tag, @Param("length") Integer length);
+	@Query(value = "select count(DISTINCT project_id) FROM project_tag_connect where tag_id in (:tags) and project_id in (select id from project where on_delete = 0)", nativeQuery = true)
+	Long countProjectTags(@Param("tags") List<Long> tag);
 	Long countByOnDelete(Boolean onDelete);
 	List<ProjectEntity> findAllByIdIsInOrderByIdDesc(List<Long> id);
 

@@ -10,10 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +49,7 @@ public class TagServiceImpl implements TagService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<String> TagList(String tag, Pageable pageable) {
 		List<String> tagList = new ArrayList<>();
 		try {
@@ -67,6 +68,7 @@ public class TagServiceImpl implements TagService {
 	 * 태그들로 프로젝트 보기
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<SelectProjectDto> projectList(List<String> tags, UserEntity user, Pageable pageable) {
 		List<SelectProjectDto> projects = new ArrayList<>();
 		List<Long> tagEntities = new ArrayList<>();
@@ -102,6 +104,7 @@ public class TagServiceImpl implements TagService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Long projectListCount(List<String> tags) {
 		List<Long> tagEntities = new ArrayList<>();
 		try {
@@ -111,7 +114,7 @@ public class TagServiceImpl implements TagService {
 				});
 				tagEntities.add(tagEntity.getId());
 			}
-			return projectRepository.countprojectTags(tagEntities, tagEntities.size());
+			return projectRepository.countProjectTags(tagEntities);
 		} catch (HttpClientErrorException e) {
 			throw e;
 		} catch (Exception e) {

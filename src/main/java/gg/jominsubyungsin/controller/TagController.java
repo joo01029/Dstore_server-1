@@ -47,6 +47,7 @@ public class TagController {
 			List<SelectProjectDto> projectList = tagService.projectList(tags, user, pageable);
 			Long projectnumber = tagService.projectListCount(tags);
 
+			System.out.println(projectnumber);
 			Boolean end = pageEnd.pageEnd(pageable.getPageSize(), pageable.getPageNumber(), projectnumber);
 
 			response.setEnd(end);

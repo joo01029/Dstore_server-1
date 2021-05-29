@@ -120,6 +120,30 @@ public class UserController {
 		}
 	}
 
+	@GetMapping("/me")
+	@Transactional(readOnly = true)
+	public ShowUserResponse showUser(HttpServletRequest request) {
+		ShowUserResponse showUserResponse = new ShowUserResponse();
+		try {
+			UserEntity user = (UserEntity) request.getAttribute("user");
+			if(user == null){
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"토큰이 필요함");
+			}
+			SelectUserDto userDto = new SelectUserDto(user, false);
+
+			showUserResponse.setHttpStatus(HttpStatus.OK);
+			showUserResponse.setMessage("성공");
+			showUserResponse.setUser(userDto);
+			return showUserResponse;
+		}catch (HttpClientErrorException | HttpServerErrorException e){
+			throw e;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
+		}
+	}
+
 
 	/*
 	 *유저 이름으로 찾기
@@ -148,21 +172,9 @@ public class UserController {
 	@Transactional(readOnly = true)
 	public UserDetailResponse detailUser(@PathVariable("userId") Long id, Pageable pageable, HttpServletRequest request) {
 		UserDetailResponse response = new UserDetailResponse();
-		UserDetailResponseDto userDetailResponseDto;
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
-			//내 프로필인지 검사
-			Boolean myProfile = false;
-			UserEntity profile = userService.findUserById(id);;
-			if(user != null) {
-				myProfile = userService.checkUserSame(user.getEmail(), id);
-			}
-
-			List<SelectProjectDto> selectProjectDetailDtos = projectService.getProjects(pageable, user, profile);
-			Long follower = followService.countFollower(id);
-			Long following = followService.countFollowing(id);
-			Boolean follow = followService.followState(profile, user);
-			userDetailResponseDto = new UserDetailResponseDto(profile, myProfile, selectProjectDetailDtos, follower, following, follow);
+			UserDetailResponseDto userDetailResponseDto = userService.getUserDetail(id, user, pageable);
 
 			Long projectNumber = projectService.countProject(user);
 			Boolean end = projectNumber < (long) pageable.getPageSize() * (pageable.getPageNumber() + 1);
@@ -184,19 +196,18 @@ public class UserController {
 	public Response updateProfileImage(HttpServletRequest request, @ModelAttribute MultipartFile file) {
 		Response response = new Response();
 
-		if (file.isEmpty()) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일이 없음");
-		}
-
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
 			if(user == null){
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"토큰이 필요함");
 			}
 
-			FileDto profileImage = multipartService.uploadSingle(file);
-			userService.updateProfileImage(user.getEmail(), profileImage.getFileLocation());
-
+			if (file.isEmpty()) {
+				userService.updateProfileImage(user.getEmail(), null);
+			}else {
+				FileDto profileImage = multipartService.uploadSingle(file);
+				userService.updateProfileImage(user.getEmail(), profileImage.getFileLocation());
+			}
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
 			return response;
