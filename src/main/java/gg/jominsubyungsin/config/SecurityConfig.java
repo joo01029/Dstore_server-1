@@ -3,6 +3,7 @@ package gg.jominsubyungsin.config;
 import gg.jominsubyungsin.enums.Role;
 import gg.jominsubyungsin.filter.CorsFilter;
 import gg.jominsubyungsin.filter.JwtAuthorizationFilter;
+import gg.jominsubyungsin.handler.GlobalExeptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -13,6 +14,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	JwtAuthorizationFilter jwtAuthorizationFilter;
 	@Autowired
 	CorsFilter corsFilter;
+	@Autowired
+	GlobalExeptionHandler globalExeptionHandler;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {

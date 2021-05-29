@@ -6,27 +6,22 @@ import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 import gg.jominsubyungsin.domain.dto.user.request.UserUpdateDto;
 import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponseDto;
 import gg.jominsubyungsin.domain.entity.*;
-import gg.jominsubyungsin.domain.repository.FollowRepository;
-import gg.jominsubyungsin.domain.repository.LikeRepository;
 import gg.jominsubyungsin.domain.repository.ProjectUserConnectRepository;
 import gg.jominsubyungsin.domain.repository.UserRepository;
-import gg.jominsubyungsin.enums.Leader;
 import gg.jominsubyungsin.service.comment.CommentService;
 import gg.jominsubyungsin.service.follow.FollowService;
 import gg.jominsubyungsin.service.like.LikeService;
 import gg.jominsubyungsin.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,8 +39,8 @@ public class UserServiceImpl implements UserService {
 	@Lazy
 	private ProjectService projectService;
 
-
 	@Override
+	@Transactional
 	public boolean userUpdate(UserUpdateDto userUpdateDto) throws HttpServerErrorException {
 		try {
 			String changePassword = userUpdateDto.getChangePassword();
@@ -91,6 +86,7 @@ public class UserServiceImpl implements UserService {
 
 			findUser.setOnDelete(true);
 			//댓글 삭제
+
 			for (CommentEntity comment : findUser.getComments()) {
 				commentService.deleteComement(comment.getId(), findUser);
 			}
@@ -120,6 +116,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public SelectUserDto findUser(Long id, UserEntity user) {
 		try {
 			UserEntity userEntity = userRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
@@ -133,6 +130,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserEntity findUserById(Long id) {
 		try {
 			Optional<UserEntity> findUser = userRepository.findByIdAndOnDelete(id, false);
@@ -147,6 +145,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserEntity findUser(String email) {
 		try {
 			Optional<UserEntity> findUser = userRepository.findByEmailAndOnDelete(email, false);
@@ -161,6 +160,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<SelectUserDto> findUserLikeName(String name, String email, UserEntity user) {
 		try {
 			List<UserEntity> findUsers = userRepository.findByNameLike(name, email);
@@ -177,6 +177,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public boolean checkUserSame(String email, Long id) {
 		UserEntity findUser;
 		try {
@@ -210,6 +211,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserDetailResponseDto getUserDetail(Long id, UserEntity user, Pageable pageable){
 		Boolean myProfile = false;
 		UserEntity profile = findUserById(id);;

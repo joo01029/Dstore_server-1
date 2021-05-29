@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface ProjectUserConnectRepository extends JpaRepository<ProjectUserConnectEntity, Long> {
 	List<ProjectUserConnectEntity> findByProject(ProjectEntity projectEntity);
-	List<ProjectUserConnectEntity> findByUser(UserEntity userEntity, Pageable pageable);
+	List<ProjectUserConnectEntity> findByUserAndGetOut(UserEntity userEntity,Boolean getOut);
 	Optional<ProjectUserConnectEntity> findByProjectAndUserAndRole(ProjectEntity projectEntity, UserEntity userEntity, Leader role);
 	Optional<ProjectUserConnectEntity> findByProjectAndUser(ProjectEntity projectEntity,UserEntity userEntity);
 

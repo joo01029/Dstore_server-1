@@ -113,6 +113,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public void checkEmail(String email) {
 		try {
 			if (email == null || email.trim().isEmpty()) {

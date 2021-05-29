@@ -10,10 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,6 +27,7 @@ public class FileServiceImpl implements FileService {
 	private final Path bannerFileStorageLocation = Paths.get("static/banner/").toAbsolutePath().normalize();
 	private final FileRepository fileRepository;
 	private final BannerRepository bannerRepository;
+
 	@Override
 	@Transactional
 	public List<FileEntity> createFiles(List<FileDto> files) {
@@ -94,6 +95,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public FileEntity findFileByProject(Long id, ProjectEntity project) {
 		try {
 			return fileRepository.findByIdAndProjectId(id, project).orElseGet(() -> {
@@ -139,6 +141,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<BannerEntity> getBannerList(){
 		try{
 			return bannerRepository.findAll();

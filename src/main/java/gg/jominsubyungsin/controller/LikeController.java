@@ -29,8 +29,8 @@ public class LikeController {
 	@GetMapping("/users/{projectId}")
 	public GetLikeListResponse whoClickLikeUserList(Pageable pageable, @PathVariable("projectId") Long id, HttpServletRequest request) {
 		GetLikeListResponse response = new GetLikeListResponse();
-		UserEntity user = (UserEntity) request.getAttribute("user");
 		try {
+			UserEntity user = (UserEntity) request.getAttribute("user");
 			List<SelectUserDto> users = likeService.getUserList(id, pageable, user);
 			Long likeNum = likeService.LikeNum(id);
 
@@ -53,11 +53,11 @@ public class LikeController {
 	public Response changeLikeStateProject(HttpServletRequest request, @PathVariable("projectId") Long id) {
 		Response response = new Response();
 
-		UserEntity user = (UserEntity) request.getAttribute("user");
-		if(user == null){
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
-		}
 		try {
+			UserEntity user = (UserEntity) request.getAttribute("user");
+			if(user == null){
+				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
+			}
 			likeService.changeLikeState(id, user);
 
 			response.setHttpStatus(HttpStatus.OK);
