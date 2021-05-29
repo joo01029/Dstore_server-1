@@ -1,11 +1,13 @@
 package gg.jominsubyungsin.admin.controller;
 
-import gg.jominsubyungsin.admin.domain.dto.query.SelectUserForAdminDto;
-import gg.jominsubyungsin.admin.domain.response.UserListResponse;
+import gg.jominsubyungsin.admin.domain.dto.user.dataIgnore.SelectUserForAdminDto;
+import gg.jominsubyungsin.admin.domain.dto.user.response.UserListResponse;
 import gg.jominsubyungsin.admin.service.user.AdminUserService;
 import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 import gg.jominsubyungsin.domain.response.Response;
+import gg.jominsubyungsin.enums.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,59 +22,22 @@ import java.util.List;
 public class AdminUserController {
     private final AdminUserService adminUserService;
 
-//    /**
-//     * 유저 무한 스크롤
-//     * @param pageable
-//     * @return
-//     */
-//    @GetMapping("/list")
-//    public Response showUserList(Pageable pageable){
-//        UserListResponse response = new UserListResponse();
-//
-////        List<SelectUserForAdminDto> userList;
-////        Page<SelectUserForAdminDto> userEntityPage;
-//        List<SelectUserForAdminDto> allUserList;
-//
-//        System.out.println(pageable);
-//
-//        try {
-////            userEntityPage = adminService.getUserList(pageable);
-////            userList = userEntityPage.getContent();
-//            allUserList = adminUserService.getUserList();
-//        } catch (Exception e){
-//            throw e;
-//        }
-//
-//        response.setMessage("페이지의 유저 보내기 성공");
-//        response.setHttpStatus(HttpStatus.OK);
-//        response.setUserEntity(allUserList);
-//        response.setTotalPages(0);
-//
-//        return response;
-//    }
-
     @GetMapping("/general")
-    public Response generalUserList() {
-        UserListResponse response = new UserListResponse();
+    public Response getUser(Pageable pageable) {
+        Response result;
 
-        response.setHttpStatus(HttpStatus.OK);
-        response.setMessage("일반 유저 리스트 가져오기 성공");
-        response.setUserEntity(findGeneralUserListAsResponse());
-        response.setTotalPages(0);
+        result = findUserByRole(pageable, Role.USER);
 
-        return response;
+        return result;
     }
 
     @GetMapping("/adminUser")
-    public Response adminUserList() {
-        UserListResponse response = new UserListResponse();
+    public Response getAdmin(Pageable pageable) {
+        Response result;
 
-        response.setHttpStatus(HttpStatus.OK);
-        response.setMessage("어드민 유저 리스트 가져오기 성공");
-        response.setUserEntity(findAdminUserListAsResponse());
-        response.setTotalPages(0);
+        result = findUserByRole(pageable, Role.ADMIN);
 
-        return response;
+        return result;
     }
 
     /**
@@ -94,11 +59,13 @@ public class AdminUserController {
 
         response.setHttpStatus(HttpStatus.OK);
         response.setMessage("유저 삭제 성공");
-        response.setUserEntity(allUserList);
+        response.setUsers(allUserList);
         response.setTotalPages(0);
 
         return response;
     }
+
+    @DeleteMapping("/")
 
     /**
      * 유저 권한 추가
@@ -118,7 +85,7 @@ public class AdminUserController {
 
         response.setHttpStatus(HttpStatus.OK);
         response.setMessage("권한 주기 성공");
-        response.setUserEntity(findGeneralUserListAsResponse());
+        response.setUsers(findGeneralUserListAsResponse());
         response.setTotalPages(0);
 
         return response;
@@ -141,7 +108,7 @@ public class AdminUserController {
 
         response.setHttpStatus(HttpStatus.OK);
         response.setMessage("권한 삭제 성공");
-        response.setUserEntity(findAdminUserListAsResponse());
+        response.setUsers(findAdminUserListAsResponse());
         response.setTotalPages(0);
 
         return response;
@@ -181,5 +148,20 @@ public class AdminUserController {
             throw e;
         }
         return generalUserList;
+    }
+
+    private Response findUserByRole(Pageable pageable, Role role) {
+
+        Response result;
+
+
+        try {
+            result = adminUserService.getUserList(pageable, role);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+        return result;
     }
 }

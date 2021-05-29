@@ -1,11 +1,15 @@
 package gg.jominsubyungsin.admin.service.user;
-import gg.jominsubyungsin.admin.domain.dto.query.SelectUserForAdminDto;
+import gg.jominsubyungsin.admin.domain.dto.user.dataIgnore.SelectUserForAdminDto;
+import gg.jominsubyungsin.admin.domain.dto.user.response.UserListResponse;
 import gg.jominsubyungsin.admin.domain.repository.UserDetailRepository;
 import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.admin.domain.repository.UserListRepository;
+import gg.jominsubyungsin.domain.response.Response;
 import gg.jominsubyungsin.enums.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -19,27 +23,6 @@ import java.util.List;
 public class AdminUserServiceImpl implements AdminUserService {
     private final UserListRepository userListRepository;
     private final UserDetailRepository userRepository;
-
-
-//    /**
-//     * 유저 리스트
-//     * @return
-//     */
-//    @Override
-//    public List<SelectUserForAdminDto> getUserList(){
-//        List<SelectUserForAdminDto> userList;
-//        Page<SelectUserForAdminDto> userEntityPage;
-//        List<SelectUserForAdminDto> allUserList;
-//
-//        try {
-//            // userEntityPage = userListRepository.findAll(pageable);
-//
-//            return allUserList;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw e;
-//        }
-//    }
 
     @Override
     public List<SelectUserForAdminDto> getAdminUserList(){
@@ -83,6 +66,32 @@ public class AdminUserServiceImpl implements AdminUserService {
         }
 
         return generalUserList;
+    }
+
+    @Override
+    public Response getUserList(Pageable pageable, Role role) {
+        UserListResponse response = new UserListResponse();
+        Page<UserEntity> users;
+        List<SelectUserForAdminDto> generalUserList = new ArrayList<>();
+        Page<SelectUserForAdminDto> result;
+
+        try {
+            users = userListRepository.findByRole(pageable, role);
+            for (UserEntity u : users) {
+                SelectUserForAdminDto userDto = new SelectUserForAdminDto(u);
+                generalUserList.add(userDto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+        response.setHttpStatus(HttpStatus.OK);
+        response.setMessage("유저 보기 성공");
+        response.setUsers(generalUserList);
+        response.setTotalPages(users.getTotalPages());
+
+        return response;
     }
 
     /**

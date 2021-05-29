@@ -1,4 +1,4 @@
-package gg.jominsubyungsin.admin.domain.response;
+package gg.jominsubyungsin.admin.domain.dto.project.response;
 
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.response.Response;
