@@ -28,7 +28,6 @@ public class FileController {
 	@GetMapping("/banner/{filename}")
 	public ResponseEntity<UrlResource> getBanner(@PathVariable String filename, HttpServletRequest request) {
 		try {
-			System.out.println(filename);
 			UrlResource resource = fileService.loadBannerFile(filename);
 			String contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 
@@ -50,7 +49,6 @@ public class FileController {
 	@GetMapping("/see/{filename}")
 	public ResponseEntity<UrlResource> getImage(@PathVariable String filename, HttpServletRequest request) {
 		try {
-			System.out.println(filename);
 			UrlResource resource = fileService.loadFile(filename);
 			String contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 
@@ -72,7 +70,7 @@ public class FileController {
 		BannerResponse response = new BannerResponse();
 		try{
 			List<BannerEntity> banners = fileService.getBannerList();
-
+			System.out.println(banners.get(0).getId());
 			response.setBannerLocation(banners);
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");

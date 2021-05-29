@@ -50,13 +50,14 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<SelectCommentDto> getCommentList(Long id, Pageable pageable, UserEntity me) {
 		List<SelectCommentDto> comments = new ArrayList<>();
 		try {
 			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
-			Page<CommentEntity> pageComments = commentListRepository.findByProjectAndOnDeleteOrderByIdDesc(project,false, pageable);
+			Page<CommentEntity> pageComments = commentListRepository.findByProjectAndOnDelete(project,false, pageable);
 			for (CommentEntity comment : pageComments) {
 				SelectUserDto userDto = new SelectUserDto(comment.getUser(), followService.followState(comment.getUser(), me));
 				comments.add(new SelectCommentDto(comment, userDto));

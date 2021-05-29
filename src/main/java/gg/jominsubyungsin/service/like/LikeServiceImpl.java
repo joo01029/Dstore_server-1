@@ -1,6 +1,5 @@
 package gg.jominsubyungsin.service.like;
 
-import gg.jominsubyungsin.domain.dto.like.dataIgnore.SelectLikeDto;
 import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.LikeEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
@@ -14,10 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +30,7 @@ public class LikeServiceImpl implements LikeService {
 	private final LikeRepository likeRepository;
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<SelectUserDto> getUserList(Long id, Pageable pageable, UserEntity me) {
 
 		try {
@@ -83,6 +83,7 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Long LikeNum(Long id) {
 		try {
 			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
@@ -99,6 +100,7 @@ public class LikeServiceImpl implements LikeService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public LikeEntity getLikeState(ProjectEntity project, UserEntity user) {
 		try {
 			return likeRepository.findByProjectAndUser(project, user).orElse(

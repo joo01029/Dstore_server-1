@@ -6,15 +6,17 @@ import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.FollowListRepository;
 import gg.jominsubyungsin.domain.repository.FollowRepository;
 import gg.jominsubyungsin.domain.repository.UserRepository;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +31,7 @@ public class FollowServiceImpl implements FollowService {
 	FollowListRepository followListRepository;
 
 	@Override
+	@Transactional(readOnly = true)
 	public Long countFollower(Long userId) {
 		try {
 			UserEntity user = userRepository.findById(userId).orElseGet(() -> {
@@ -43,6 +46,7 @@ public class FollowServiceImpl implements FollowService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Long countFollowing(Long userId) {
 		try {
 			UserEntity user = userRepository.findById(userId).orElseGet(() -> {
@@ -58,6 +62,7 @@ public class FollowServiceImpl implements FollowService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Boolean followState(UserEntity following, UserEntity user) {
 		try {
 			Optional<FollowEntity> follow = followRepository.findByFollowerAndFollowingAndFollowState(user, following, true);
@@ -97,6 +102,7 @@ public class FollowServiceImpl implements FollowService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<SelectUserDto> showFollower(Long userId, UserEntity user, Pageable pageable) {
 		try {
 			UserEntity following = userRepository.findById(userId).orElseGet(() -> {
@@ -105,6 +111,7 @@ public class FollowServiceImpl implements FollowService {
 
 			Page<FollowEntity> followers = followListRepository.findByFollowingAndFollowState(following, true, pageable);
 			List<SelectUserDto> follower = new ArrayList<>();
+
 			for (FollowEntity followEntity : followers) {
 				follower.add(new SelectUserDto(followEntity.getFollower(), followState(followEntity.getFollower(), user)));
 			}
@@ -119,6 +126,7 @@ public class FollowServiceImpl implements FollowService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public List<SelectUserDto> showFollowing(Long userId, UserEntity user, Pageable pageable) {
 		try {
 			UserEntity follower = userRepository.findById(userId).orElseGet(() -> {

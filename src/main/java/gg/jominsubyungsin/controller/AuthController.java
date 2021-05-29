@@ -14,12 +14,15 @@ import gg.jominsubyungsin.service.jwt.JwtService;
 import gg.jominsubyungsin.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -58,7 +61,6 @@ public class AuthController {
 	@PostMapping("/login")
 	public LoginResponse login(@RequestBody LoginDto loginDto) {
 		LoginResponse loginResponse = new LoginResponse();
-
 		try {
 			LoginJwtDto tokens = authService.login(loginDto);
 			loginResponse.setMessage("로그인 성공");
@@ -78,18 +80,20 @@ public class AuthController {
 	 *토큰 재생성
 	 */
 	@GetMapping("/refresh")
-	public LoginResponse tokenRefresh(@RequestHeader String Authorization) {
+	public LoginResponse tokenRefresh(HttpServletRequest request) {
 		LoginResponse loginResponse = new LoginResponse();
-
-		String subject;
 		try {
-			subject = jwtService.refreshTokenDecoding(Authorization);
+			String Authorization = request.getHeader("Authorization");
+			String subject = jwtService.refreshTokenDecoding(Authorization);
 			LoginJwtDto tokens = authService.MakeTokens(subject);
-		} catch (Exception e) {
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 디코딩 에러");
-		}
 
-		return loginResponse;
+			loginResponse.setTokens(tokens);
+			loginResponse.setMessage("성공");
+			loginResponse.setHttpStatus(HttpStatus.OK);
+			return loginResponse;
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	/*
@@ -98,15 +102,16 @@ public class AuthController {
 	@PostMapping("/email")
 	public Response sendEmail(@RequestBody SendEmailDto sendEmailDto) {
 		Response response = new Response();
-
 		try {
 			authService.sendMail(sendEmailDto.getEmail());
+
+			response.setMessage("이메일 보내기 성공");
+			response.setHttpStatus(HttpStatus.OK);
+			return response;
 		} catch (HttpServerErrorException e) {
 			throw e;
 		}
-		response.setMessage("이메일 보내기 성공");
-		response.setHttpStatus(HttpStatus.OK);
-		return response;
+
 	}
 
 }

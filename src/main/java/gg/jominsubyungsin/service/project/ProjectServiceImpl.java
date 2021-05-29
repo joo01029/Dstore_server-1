@@ -26,12 +26,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -61,16 +61,19 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional
 	public void saveProject(GetProjectDto projectDto, UserEntity mainUser) {
+		if (projectDto.getFiles().isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일은 무조건 1개 이상 보내야 합니다");
+		}
+
 		List<UserEntity> userEntities = new ArrayList<>();
 		try {
 			userEntities.add(mainUser);
 
 			for (Long id : projectDto.getUsers()) {
 				UserEntity saveUser = userService.findUserById(id);
-				for (UserEntity compare : userEntities) {
-					if (saveUser.equals(compare)) {
-						throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "같은 유저 입니다");
-					}
+
+				if (userEntities.contains(saveUser)) {
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "같은 유저 입니다");
 				}
 				userEntities.add(saveUser);
 			}
@@ -116,11 +119,12 @@ public class ProjectServiceImpl implements ProjectService {
 	프로젝트 받아오기
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<SelectProjectDto> getProjects(Pageable pageable, UserEntity me) {
 		List<SelectProjectDto> projectDtos = new ArrayList<>();
 
 		try {
-			Page<ProjectEntity> projectEntityPage = projectListRepository.findAllByOnDeleteOrderByIdDesc(false, pageable);
+			Page<ProjectEntity> projectEntityPage = projectListRepository.findByOnDelete(false, pageable);
 			List<ProjectEntity> projectEntities = projectEntityPage.getContent();
 
 			for (ProjectEntity projectEntity : projectEntities) {
@@ -154,11 +158,13 @@ public class ProjectServiceImpl implements ProjectService {
 	유저의 프로젝트 받아오기
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public List<SelectProjectDto> getProjects(Pageable pageable, UserEntity me, UserEntity user) {
 		List<SelectProjectDto> projectDtos = new ArrayList<>();
 
 		try {
-			Page<ProjectEntity> projectEntityPage = projectListRepository.findByUsersAndOnDeleteOrderByIdDesc(user, false, pageable);
+			List<ProjectUserConnectEntity> connectEntities = projectUserConnectRepository.findByUserAndGetOut(user, false);
+			Page<ProjectEntity> projectEntityPage = projectListRepository.findByUsersInAndOnDelete(connectEntities, false, pageable);
 			if (projectEntityPage.isEmpty())
 				return projectDtos;
 
@@ -195,6 +201,7 @@ public class ProjectServiceImpl implements ProjectService {
 	 * 프로젝트 개수
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Long countProject() {
 		try {
 			return projectRepository.countByOnDelete(false);
@@ -208,6 +215,7 @@ public class ProjectServiceImpl implements ProjectService {
 	 * 유저의 프로젝트 개수
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public Long countProject(UserEntity user) {
 		try {
 			return projectRepository.countByUsersAndOnDelete(user, false);
@@ -221,6 +229,7 @@ public class ProjectServiceImpl implements ProjectService {
 	프로젝트 상세
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public ProjectDto projectDetail(Long id, UserEntity user) {
 		try {
 			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
@@ -256,7 +265,7 @@ public class ProjectServiceImpl implements ProjectService {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
 
-			ProjectUserConnectEntity connectEntity = projectUserConnectRepository.findByProjectAndUserAndRole(project, user, Leader.LEADER).orElseGet(() -> {
+			projectUserConnectRepository.findByProjectAndUserAndRole(project, user, Leader.LEADER).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "수정 권한이 없음");
 			});
 
@@ -375,5 +384,6 @@ public class ProjectServiceImpl implements ProjectService {
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
+
 
 }

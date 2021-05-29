@@ -42,7 +42,6 @@ public class UserEntity {
 	@Column
 	private Boolean onDelete = false;
 
-	@Fetch(FetchMode.SELECT)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
 	private List<ProjectUserConnectEntity> projects = new ArrayList<>();
 
@@ -50,22 +49,20 @@ public class UserEntity {
 	@Column(nullable = false)
 	private Role role;
 
-	@Fetch(FetchMode.SELECT)
-	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
 	private List<LikeEntity> likes = new ArrayList<>();
 
 	@Fetch(FetchMode.SELECT)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
 	private List<CommentEntity> comments = new ArrayList<>();
 
-	@Fetch(FetchMode.SELECT)
-	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
 	private List<FollowEntity> follower = new ArrayList<>();
-	@Fetch(FetchMode.SELECT)
-	@OneToMany(mappedBy = "following", cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
+
+	@OneToMany(mappedBy = "following", cascade = CascadeType.REMOVE)
 	private List<FollowEntity> following = new ArrayList<>();
-	@Fetch(FetchMode.SELECT)
-	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
 	private List<ReportEntity> reports = new ArrayList<>();
 
 	public void add(LikeEntity like){

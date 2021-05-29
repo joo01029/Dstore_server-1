@@ -31,12 +31,12 @@ public class CommentController {
 	@PostMapping
 	public Response makeComment(HttpServletRequest request, @RequestBody GetCommentDto commentDto) {
 		Response response = new Response();
-
-		UserEntity user = (UserEntity) request.getAttribute("user");
-		if(user == null){
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요합니다.");
-		}
 		try {
+			UserEntity user = (UserEntity) request.getAttribute("user");
+			if(user == null){
+				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요합니다.");
+			}
+
 			commentService.createComment(commentDto.getComment(), commentDto.getProjectId(), user);
 
 			response.setHttpStatus(HttpStatus.OK);
@@ -53,8 +53,9 @@ public class CommentController {
 	@GetMapping("/{projectId}")
 	public GetCommentResponse GetCommentList(Pageable pageable, @PathVariable Long projectId, HttpServletRequest request) {
 		GetCommentResponse response = new GetCommentResponse();
-		UserEntity user = (UserEntity) request.getAttribute("user");
 		try {
+			UserEntity user = (UserEntity) request.getAttribute("user");
+
 			List<SelectCommentDto> comments = commentService.getCommentList(projectId, pageable, user);
 			Long commentNum = commentService.commentNum(projectId);
 
@@ -73,11 +74,11 @@ public class CommentController {
 	@DeleteMapping("/{commentId}")
 	public Response deleteComment(@PathVariable Long commentId, HttpServletRequest request){
 		Response response = new Response();
-		UserEntity user = (UserEntity) request.getAttribute("user");
-		if(user == null){
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
-		}
 		try{
+			UserEntity user = (UserEntity) request.getAttribute("user");
+			if(user == null){
+				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
+			}
 			commentService.deleteComement(commentId, user);
 
 			response.setHttpStatus(HttpStatus.OK);

@@ -37,14 +37,11 @@ public class ProjectController {
 	public Response createProject(@ModelAttribute GetProjectDto projectDto, HttpServletRequest request) {
 		Response response = new Response();
 
-		if (projectDto.getFiles().isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일은 무조건 1개 이상 보내야 합니다");
-		}
-		UserEntity mainUser = (UserEntity) request.getAttribute("user");
-		if(mainUser == null){
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
-		}
 		try {
+			UserEntity mainUser = (UserEntity) request.getAttribute("user");
+			if(mainUser == null){
+				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
+			}
 			projectService.saveProject(projectDto, mainUser);
 		} catch (Exception e) {
 			throw e;
