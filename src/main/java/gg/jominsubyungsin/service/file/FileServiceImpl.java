@@ -6,6 +6,7 @@ import gg.jominsubyungsin.domain.entity.FileEntity;
 import gg.jominsubyungsin.domain.entity.ProjectEntity;
 import gg.jominsubyungsin.domain.repository.BannerRepository;
 import gg.jominsubyungsin.domain.repository.FileRepository;
+import gg.jominsubyungsin.lib.Log;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class FileServiceImpl implements FileService {
 	private final Path bannerFileStorageLocation = Paths.get("static/banner/").toAbsolutePath().normalize();
 	private final FileRepository fileRepository;
 	private final BannerRepository bannerRepository;
+	private final Log log;
 
 	@Override
 	@Transactional
@@ -49,6 +51,7 @@ public class FileServiceImpl implements FileService {
 			try {
 				fileRepository.save(fileEntity);
 			} catch (Exception e) {
+				log.error("create file error");
 				e.printStackTrace();
 				throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버에러");
 			}
@@ -69,8 +72,10 @@ public class FileServiceImpl implements FileService {
 
 			return resource;
 		} catch (HttpClientErrorException e) {
+			log.error("load file error");
 			throw e;
 		} catch (MalformedURLException e) {
+			log.error("load file error");
 			e.printStackTrace();
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
 		}
@@ -87,8 +92,10 @@ public class FileServiceImpl implements FileService {
 
 			return resource;
 		} catch (HttpClientErrorException e) {
+			log.error("load banner file error");
 			throw e;
 		} catch (MalformedURLException e) {
+			log.error("load banner file error");
 			e.printStackTrace();
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
 		}
@@ -102,8 +109,10 @@ public class FileServiceImpl implements FileService {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 파일");
 			});
 		} catch (HttpClientErrorException e) {
+			log.error("find file by id and project error");
 			throw e;
 		} catch (Exception e) {
+			log.error("find file by id and project error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -115,6 +124,7 @@ public class FileServiceImpl implements FileService {
 		try {
 			fileRepository.deleteById(id);
 		} catch (Exception e) {
+			log.error("delete file error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -135,6 +145,7 @@ public class FileServiceImpl implements FileService {
 
 			return project;
 		} catch (Exception e) {
+			log.error("add file error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -142,10 +153,11 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<BannerEntity> getBannerList(){
-		try{
+	public List<BannerEntity> getBannerList() {
+		try {
 			return bannerRepository.findAll();
-		}catch (Exception e){
+		} catch (Exception e) {
+			log.error("get banner list error");
 			throw new HttpServerErrorException(HttpStatus.BAD_REQUEST, "서버 에러");
 		}
 	}

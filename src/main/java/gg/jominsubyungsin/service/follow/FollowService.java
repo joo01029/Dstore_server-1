@@ -9,10 +9,16 @@ import java.util.List;
 
 public interface FollowService {
 	Long countFollower(Long userId);
+
 	Long countFollowing(Long userId);
+
 	Boolean followState(UserEntity following, UserEntity user);
+
 	void ChangeFollowState(UserEntity follower, Long followingId);
+
 	List<SelectUserDto> showFollower(Long userId, UserEntity user, Pageable pageable);
-	List<SelectUserDto> showFollowing(Long userId,UserEntity user, Pageable pageable);
+
+	List<SelectUserDto> showFollowing(Long userId, UserEntity user, Pageable pageable);
+
 	void setFollowFalse(FollowEntity follow);
 }

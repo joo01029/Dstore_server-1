@@ -1,6 +1,6 @@
 package gg.jominsubyungsin.lib;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -11,9 +11,10 @@ import org.springframework.web.client.HttpServerErrorException;
 import javax.mail.internet.MimeMessage;
 
 @Component
+@RequiredArgsConstructor
 public class EmailSender {
-	@Autowired
-	private JavaMailSender javaMailSender;
+	private final JavaMailSender javaMailSender;
+	private final Log log;
 
 	@Value("${spring.mail.username}")
 	private String senderEmail;
@@ -30,6 +31,7 @@ public class EmailSender {
 
 			javaMailSender.send(msg);
 		} catch (Exception e) {
+			log.error("send email error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 에러");
 		}

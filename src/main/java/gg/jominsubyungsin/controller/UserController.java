@@ -1,7 +1,6 @@
 package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.file.request.FileDto;
-import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.dto.user.request.UserDto;
 import gg.jominsubyungsin.domain.dto.user.request.UserUpdateDto;
@@ -12,6 +11,7 @@ import gg.jominsubyungsin.domain.response.Response;
 import gg.jominsubyungsin.domain.dto.user.response.ShowUserListResponse;
 import gg.jominsubyungsin.domain.dto.user.response.ShowUserResponse;
 import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponse;
+import gg.jominsubyungsin.lib.Log;
 import gg.jominsubyungsin.service.follow.FollowService;
 import gg.jominsubyungsin.service.multipart.MultipartService;
 import gg.jominsubyungsin.service.project.ProjectService;
@@ -22,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,8 +34,8 @@ public class UserController {
 	private final UserService userService;
 	private final ProjectService projectService;
 	private final MultipartService multipartService;
-	private final FollowService followService;
 	private final Hash hash;
+	private final Log log;
 
 	/*
 	 *자기 소개 변경
@@ -48,7 +47,7 @@ public class UserController {
 
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
-			if(user == null){
+			if (user == null) {
 				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 			}
 
@@ -64,6 +63,7 @@ public class UserController {
 			response.setMessage("자기 소개 변경 성공");
 			return response;
 		} catch (Exception e) {
+			log.error("error at PUT /user/introduce controller");
 			throw e;
 		}
 	}
@@ -91,6 +91,7 @@ public class UserController {
 			response.setMessage("유저 업데이트 성공");
 			return response;
 		} catch (Exception e) {
+			log.error("error at PUT /user/password-and-name controller");
 			throw e;
 		}
 	}
@@ -104,19 +105,14 @@ public class UserController {
 		Response response = new Response();
 
 		try {
-			String hashPassword = hash.hashText(userDto.getPassword());
-			userDto.setPassword(hashPassword);
-
 			boolean userDeleteReuslt = userService.userDelete(userDto);
 
 			response.setMessage("유저 삭제 성공");
 			response.setHttpStatus(HttpStatus.OK);
 			return response;
-		} catch (HttpServerErrorException | HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			log.error("error at DELETE /user controller");
+			throw e;
 		}
 	}
 
@@ -126,8 +122,9 @@ public class UserController {
 		ShowUserResponse showUserResponse = new ShowUserResponse();
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
-			if(user == null){
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"토큰이 필요함");
+
+			if (user == null) {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
 			}
 			SelectUserDto userDto = new SelectUserDto(user, false);
 
@@ -135,12 +132,9 @@ public class UserController {
 			showUserResponse.setMessage("성공");
 			showUserResponse.setUser(userDto);
 			return showUserResponse;
-		}catch (HttpClientErrorException | HttpServerErrorException e){
+		} catch (Exception e) {
+			log.error("error at GET /user/me controller");
 			throw e;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR,"서버 에러");
 		}
 	}
 
@@ -161,6 +155,7 @@ public class UserController {
 			showUserListResponse.setUserList(userList);
 			return showUserListResponse;
 		} catch (Exception e) {
+			log.error("error at GET /user controller");
 			throw e;
 		}
 	}
@@ -185,6 +180,7 @@ public class UserController {
 			response.setEnd(end);
 			return response;
 		} catch (Exception e) {
+			log.error("error at GET /user/{userId} controller");
 			throw e;
 		}
 	}
@@ -198,13 +194,13 @@ public class UserController {
 
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
-			if(user == null){
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,"토큰이 필요함");
+			if (user == null) {
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "토큰이 필요함");
 			}
 
 			if (file.isEmpty()) {
 				userService.updateProfileImage(user.getEmail(), null);
-			}else {
+			} else {
 				FileDto profileImage = multipartService.uploadSingle(file);
 				userService.updateProfileImage(user.getEmail(), profileImage.getFileLocation());
 			}
@@ -212,6 +208,7 @@ public class UserController {
 			response.setMessage("성공");
 			return response;
 		} catch (Exception e) {
+			log.error("error at PUT /user/image controller");
 			throw e;
 		}
 	}

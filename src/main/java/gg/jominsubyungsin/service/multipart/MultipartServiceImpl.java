@@ -62,7 +62,7 @@ public class MultipartServiceImpl implements MultipartService {
 			//파일에 받아온 파일의 값 넣음
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-			fileDto.setFileLocation("Http://"+server + "/file/see/" + fileName);
+			fileDto.setFileLocation("Http://" + server + "/file/see/" + fileName);
 			fileDto.setType(type);
 			return fileDto;
 		} catch (HttpClientErrorException e) {
@@ -116,7 +116,7 @@ public class MultipartServiceImpl implements MultipartService {
 				Files.copy(files.get(i).getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
 				fileDto.setType(type);
-				fileNames.set(i,"Http://"+ server + "/file/see/" + fileNames.get(i));
+				fileNames.set(i, "Http://" + server + "/file/see/" + fileNames.get(i));
 				fileDto.setFileLocation(fileNames.get(i));
 				fileDtos.add(fileDto);
 			}
@@ -130,7 +130,7 @@ public class MultipartServiceImpl implements MultipartService {
 	}
 
 	@Override
-	public String uploadBenner(MultipartFile file) {
+	public String uploadBanner(MultipartFile file) {
 		if (file.isEmpty()) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일이 비었음");
 		}
@@ -159,7 +159,7 @@ public class MultipartServiceImpl implements MultipartService {
 			//파일에 받아온 파일의 값 넣음
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-			return "Http://"+ server + "/file/see/" + fileName;
+			return "Http://" + server + "/file/see/" + fileName;
 		} catch (HttpClientErrorException e) {
 			throw e;
 		} catch (IOException e) {

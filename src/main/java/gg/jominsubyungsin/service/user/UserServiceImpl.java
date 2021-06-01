@@ -8,6 +8,7 @@ import gg.jominsubyungsin.domain.dto.user.response.UserDetailResponseDto;
 import gg.jominsubyungsin.domain.entity.*;
 import gg.jominsubyungsin.domain.repository.ProjectUserConnectRepository;
 import gg.jominsubyungsin.domain.repository.UserRepository;
+import gg.jominsubyungsin.lib.Hash;
 import gg.jominsubyungsin.service.comment.CommentService;
 import gg.jominsubyungsin.service.follow.FollowService;
 import gg.jominsubyungsin.service.like.LikeService;
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService {
 	private final CommentService commentService;
 	private final LikeService likeService;
 
+	private final Hash hash;
 	@Autowired
 	@Lazy
 	private ProjectService projectService;
@@ -80,6 +82,9 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public boolean userDelete(UserDto userDto) {
 		try {
+			String hashPassword = hash.hashText(userDto.getPassword());
+			userDto.setPassword(hashPassword);
+
 			UserEntity findUser = userRepository.findByEmailAndPasswordAndOnDelete(userDto.getEmail(), userDto.getPassword(), false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
 			});

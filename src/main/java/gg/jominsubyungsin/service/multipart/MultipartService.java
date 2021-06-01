@@ -10,5 +10,5 @@ public interface MultipartService {
 
 	List<FileDto> uploadMulti(List<MultipartFile> files);
 
-	String uploadBenner(MultipartFile file);
+	String uploadBanner(MultipartFile file);
 }

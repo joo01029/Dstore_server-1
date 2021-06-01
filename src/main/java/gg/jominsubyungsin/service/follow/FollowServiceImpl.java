@@ -6,12 +6,12 @@ import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.FollowListRepository;
 import gg.jominsubyungsin.domain.repository.FollowRepository;
 import gg.jominsubyungsin.domain.repository.UserRepository;
-import org.aspectj.lang.annotation.Aspect;
+import gg.jominsubyungsin.lib.Log;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
@@ -22,14 +22,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class FollowServiceImpl implements FollowService {
-	@Autowired
-	FollowRepository followRepository;
-	@Autowired
-	UserRepository userRepository;
-	@Autowired
-	FollowListRepository followListRepository;
-
+	private final FollowRepository followRepository;
+	private final UserRepository userRepository;
+	private final FollowListRepository followListRepository;
+	private final Log log;
 	@Override
 	@Transactional(readOnly = true)
 	public Long countFollower(Long userId) {
@@ -39,8 +37,10 @@ public class FollowServiceImpl implements FollowService {
 			});
 			return followRepository.countByFollowingAndFollowState(user, true);
 		} catch (HttpClientErrorException e) {
+			log.error("count follower number");
 			throw e;
 		} catch (Exception e) {
+			log.error("count follower number");
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
@@ -54,8 +54,10 @@ public class FollowServiceImpl implements FollowService {
 			});
 			return followRepository.countByFollowerAndFollowState(user, true);
 		} catch (HttpClientErrorException e) {
+			log.error("count following number");
 			throw e;
 		} catch (Exception e) {
+			log.error("count following number");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -68,6 +70,7 @@ public class FollowServiceImpl implements FollowService {
 			Optional<FollowEntity> follow = followRepository.findByFollowerAndFollowingAndFollowState(user, following, true);
 			return follow.isPresent();
 		} catch (Exception e) {
+			log.error("get follow state error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -94,8 +97,10 @@ public class FollowServiceImpl implements FollowService {
 			following.addFollower(follow);
 			followRepository.save(follow);
 		} catch (HttpClientErrorException e) {
+			log.error("change follow state error");
 			throw e;
 		} catch (Exception e) {
+			log.error("change follow state error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -118,8 +123,10 @@ public class FollowServiceImpl implements FollowService {
 
 			return follower;
 		} catch (HttpClientErrorException e) {
+			log.error("show followers error");
 			throw e;
 		} catch (Exception e) {
+			log.error("show followers error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -141,8 +148,10 @@ public class FollowServiceImpl implements FollowService {
 
 			return following;
 		} catch (HttpClientErrorException e) {
+			log.error("show followings error");
 			throw e;
 		} catch (Exception e) {
+			log.error("show followings error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -151,7 +160,13 @@ public class FollowServiceImpl implements FollowService {
 	@Override
 	@Transactional
 	public void setFollowFalse(FollowEntity follow) {
-		follow.setFollowState(false);
-		followRepository.save(follow);
+		try {
+			follow.setFollowState(false);
+			followRepository.save(follow);
+		}catch (Exception e){
+			log.error("set followState false error");
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+		}
 	}
 }

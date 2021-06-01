@@ -1,14 +1,13 @@
 package gg.jominsubyungsin.controller;
 
-import gg.jominsubyungsin.domain.dto.like.dataIgnore.SelectLikeDto;
 import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.response.Response;
 import gg.jominsubyungsin.domain.dto.like.response.GetLikeListResponse;
+import gg.jominsubyungsin.lib.Log;
 import gg.jominsubyungsin.lib.PageEnd;
 import gg.jominsubyungsin.service.like.LikeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +22,7 @@ import java.util.List;
 public class LikeController {
 	private final LikeService likeService;
 	private final PageEnd pageEnd;
+	private final Log log;
 	/*
 	 *좋아요 누른 사람 리스트
 	 */
@@ -42,6 +42,7 @@ public class LikeController {
 			response.setMessage("성공");
 			return response;
 		} catch (Exception e) {
+			log.error("error at GET /like/users/{projectId} controller");
 			throw e;
 		}
 	}
@@ -55,7 +56,7 @@ public class LikeController {
 
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
-			if(user == null){
+			if (user == null) {
 				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 			}
 			likeService.changeLikeState(id, user);
@@ -64,6 +65,7 @@ public class LikeController {
 			response.setMessage("성공");
 			return response;
 		} catch (Exception e) {
+			log.error("error at PUT /like/{projectId} controller");
 			throw e;
 		}
 	}

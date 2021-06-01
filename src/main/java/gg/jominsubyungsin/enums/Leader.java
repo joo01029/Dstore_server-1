@@ -8,5 +8,4 @@ import lombok.RequiredArgsConstructor;
 public enum Leader {
 	LEADER,
 	MEMBER;
-
 }

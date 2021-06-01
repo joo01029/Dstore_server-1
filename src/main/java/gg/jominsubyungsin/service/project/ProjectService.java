@@ -13,15 +13,17 @@ import java.util.List;
 public interface ProjectService {
 	void saveProject(GetProjectDto projectDto, UserEntity users);
 
-	List<SelectProjectDto> getProjects(Pageable pageable,UserEntity me);
+	List<SelectProjectDto> getProjects(Pageable pageable, UserEntity me);
 
-	List<SelectProjectDto> getProjects(Pageable pageable,UserEntity me, UserEntity user);
+	List<SelectProjectDto> getProjects(Pageable pageable, UserEntity me, UserEntity user);
 
 	Long countProject();
+
 	Long countProject(UserEntity user);
 
 	ProjectDto projectDetail(Long id, UserEntity user);
 
 	void projectUpdate(Long id, UserEntity user, PutProjectDto putProjectDto);
+
 	void deleteProject(Long id, UserEntity user);
 }

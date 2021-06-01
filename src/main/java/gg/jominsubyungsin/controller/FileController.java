@@ -2,6 +2,7 @@ package gg.jominsubyungsin.controller;
 
 import gg.jominsubyungsin.domain.dto.file.response.BannerResponse;
 import gg.jominsubyungsin.domain.entity.BannerEntity;
+import gg.jominsubyungsin.lib.Log;
 import gg.jominsubyungsin.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.UrlResource;
@@ -19,11 +20,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
+
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/file")
 public class FileController {
 	private final FileService fileService;
+	private final Log log;
 
 	@GetMapping("/banner/{filename}")
 	public ResponseEntity<UrlResource> getBanner(@PathVariable String filename, HttpServletRequest request) {
@@ -36,11 +39,17 @@ public class FileController {
 					.body(resource);
 		} catch (IOException e) {
 			e.printStackTrace();
+			log.error("-------------------------------------------------");
+			log.error("error at GET /file/banner/{filename} controller");
+			log.error("-------------------------------------------------");
+
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
 		} catch (Exception e) {
+			log.error("-------------------------------------------------");
+			log.error("error at /file/banner/{filename} controller");
+			log.error("-------------------------------------------------");
 			throw e;
 		}
-
 	}
 
 	/*
@@ -57,25 +66,27 @@ public class FileController {
 					.body(resource);
 		} catch (IOException e) {
 			e.printStackTrace();
+			log.error("error at GET /file/see/{filename} controller");
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
 		} catch (Exception e) {
+			log.error("error at GET /file/see/{filename} controller");
 			throw e;
 		}
-
 	}
 
 	@GetMapping("/locations/banner")
 	@ResponseBody
-	public BannerResponse getBannerLocations(){
+	public BannerResponse getBannerLocations() {
 		BannerResponse response = new BannerResponse();
-		try{
+		try {
 			List<BannerEntity> banners = fileService.getBannerList();
-			System.out.println(banners.get(0).getId());
+			log.info("banner first id = " + banners.get(0).getId());
 			response.setBannerLocation(banners);
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
 			return response;
-		}catch (Exception e){
+		} catch (Exception e) {
+			log.error("error at GET /file/locations/banner controller");
 			throw e;
 		}
 	}

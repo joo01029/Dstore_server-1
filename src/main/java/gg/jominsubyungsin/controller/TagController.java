@@ -4,6 +4,7 @@ import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.project.response.GetProjectResponse;
 import gg.jominsubyungsin.domain.dto.tag.response.FindTagResponse;
 import gg.jominsubyungsin.domain.entity.UserEntity;
+import gg.jominsubyungsin.lib.Log;
 import gg.jominsubyungsin.lib.PageEnd;
 import gg.jominsubyungsin.service.tag.TagService;
 
@@ -22,6 +23,7 @@ import java.util.List;
 public class TagController {
 	private final TagService tagService;
 	private final PageEnd pageEnd;
+	private final Log log;
 
 	@GetMapping("/similar/{tag}")
 	public FindTagResponse findTagLike(@PathVariable String tag, Pageable pageable) {
@@ -34,6 +36,7 @@ public class TagController {
 			response.setMessage("성공");
 			return response;
 		} catch (Exception e) {
+			log.error("error at GET /tag/similar/{tag} controller");
 			throw e;
 		}
 	}
@@ -56,6 +59,7 @@ public class TagController {
 			response.setMessage("성공");
 			return response;
 		} catch (Exception e) {
+			log.error("error at GET /tag/{projects} controller");
 			throw e;
 		}
 

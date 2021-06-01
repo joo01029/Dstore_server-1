@@ -39,10 +39,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class ProjectServiceImpl implements ProjectService {
-	@Autowired
-	@Lazy
-	private UserService userService;
-
+	private final UserService userService;
 	private final LikeService likeService;
 	private final FollowService followService;
 	private final CommentService commentService;
@@ -55,6 +52,7 @@ public class ProjectServiceImpl implements ProjectService {
 	private final ProjectUserConnectRepository projectUserConnectRepository;
 	private final ProjectTagConnectRepository projectTagConnectRepository;
 	private final CommentRepository commentRepository;
+
 	/*
 	프로젝트 저장
 	 */
@@ -64,7 +62,6 @@ public class ProjectServiceImpl implements ProjectService {
 		if (projectDto.getFiles().isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일은 무조건 1개 이상 보내야 합니다");
 		}
-
 		List<UserEntity> userEntities = new ArrayList<>();
 		try {
 			userEntities.add(mainUser);
@@ -132,7 +129,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 				for (ProjectUserConnectEntity connectEntity : projectEntity.getUsers()) {
 
-					if(!connectEntity.getGetOut()) {
+					if (!connectEntity.getGetOut()) {
 						SelectUserDto userDto = new SelectUserDto(connectEntity.getUser(), followService.followState(connectEntity.getUser(), me));
 						userDtos.add(userDto);
 					}
@@ -175,7 +172,7 @@ public class ProjectServiceImpl implements ProjectService {
 				List<SelectUserDto> userDtos = new ArrayList<>();
 
 				for (ProjectUserConnectEntity connectEntity : projectEntity.getUsers()) {
-					if(!connectEntity.getGetOut()) {
+					if (!connectEntity.getGetOut()) {
 						SelectUserDto userDto = new SelectUserDto(connectEntity.getUser(), followService.followState(connectEntity.getUser(), me));
 						userDtos.add(userDto);
 					}
@@ -363,15 +360,15 @@ public class ProjectServiceImpl implements ProjectService {
 
 			project.setOnDelete(true);
 
-			for(CommentEntity comment: project.getComments()){
+			for (CommentEntity comment : project.getComments()) {
 				comment.setOnDelete(true);
 				commentRepository.save(comment);
 			}
 
-			for(LikeEntity like: project.getLikes()){
+			for (LikeEntity like : project.getLikes()) {
 				likeService.setLikeFalse(like);
 			}
-			for(ProjectUserConnectEntity userConnect: project.getUsers()){
+			for (ProjectUserConnectEntity userConnect : project.getUsers()) {
 				userConnect.setGetOut(true);
 				projectUserConnectRepository.save(userConnect);
 			}

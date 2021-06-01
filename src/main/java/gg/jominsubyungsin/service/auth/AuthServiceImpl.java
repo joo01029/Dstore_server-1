@@ -10,6 +10,7 @@ import gg.jominsubyungsin.domain.repository.UserRepository;
 import gg.jominsubyungsin.enums.JwtAuth;
 import gg.jominsubyungsin.lib.EmailSender;
 import gg.jominsubyungsin.lib.Hash;
+import gg.jominsubyungsin.lib.Log;
 import gg.jominsubyungsin.service.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +24,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
+
 @RequiredArgsConstructor
 @Service
 public class AuthServiceImpl implements AuthService {
 	private final JwtService jwtService;
 	private final UserRepository userRepository;
 	private final EmailAuthRepository emailAuthRepository;
-
+	private final Log log;
 	private final Hash hash;
 	private final EmailSender emailSender;
 
@@ -55,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
 		} catch (HttpClientErrorException e) {
 			throw e;
 		} catch (Exception e) {
+			log.error("user create error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -74,18 +77,20 @@ public class AuthServiceImpl implements AuthService {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
 			});
 
-			String subject  = findUserByEmailAndPassword.getEmail();
+			String subject = findUserByEmailAndPassword.getEmail();
 			LoginJwtDto tokens = MakeTokens(subject);
 			return tokens;
 		} catch (HttpClientErrorException e) {
 			throw e;
 		} catch (Exception e) {
+			log.error("login error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
+
 	@Override
-	public LoginJwtDto MakeTokens(String subject){
+	public LoginJwtDto MakeTokens(String subject) {
 
 		String accessToken;
 		long accessExpiredTime = 40 * 60 * 1000L;
@@ -126,6 +131,7 @@ public class AuthServiceImpl implements AuthService {
 		} catch (HttpClientErrorException e) {
 			throw e;
 		} catch (Exception e) {
+			log.error("check email error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -149,8 +155,10 @@ public class AuthServiceImpl implements AuthService {
 			emailAuthRepository.save(emailAuth.get());
 			return true;
 		} catch (HttpClientErrorException e) {
+			log.error("auth email error");
 			throw e;
 		} catch (Exception e) {
+			log.error("auth email error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -190,6 +198,7 @@ public class AuthServiceImpl implements AuthService {
 			emailAuth.setExpireAt(expireAt);
 			emailAuthRepository.save(emailAuth);
 		} catch (Exception e) {
+			log.error("send email error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}

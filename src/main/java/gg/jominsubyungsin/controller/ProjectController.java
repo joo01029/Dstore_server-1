@@ -11,6 +11,7 @@ import gg.jominsubyungsin.domain.response.Response;
 import gg.jominsubyungsin.domain.dto.project.response.GetProjectDetailResponse;
 import gg.jominsubyungsin.domain.dto.project.response.GetProjectResponse;
 
+import gg.jominsubyungsin.lib.Log;
 import gg.jominsubyungsin.lib.PageEnd;
 import gg.jominsubyungsin.service.project.ProjectService;
 
@@ -18,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.data.domain.Pageable;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +30,8 @@ import java.util.List;
 public class ProjectController {
 	private final ProjectService projectService;
 	private final PageEnd pageEnd;
+	private final Log log;
+
 	/*
 	 *프로젝트 생성
 	 */
@@ -39,16 +41,17 @@ public class ProjectController {
 
 		try {
 			UserEntity mainUser = (UserEntity) request.getAttribute("user");
-			if(mainUser == null){
+			if (mainUser == null) {
 				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 			}
 			projectService.saveProject(projectDto, mainUser);
+			response.setHttpStatus(HttpStatus.OK);
+			response.setMessage("프로젝트 저장 성공");
+			return response;
 		} catch (Exception e) {
+			log.error("error at POST /project controller");
 			throw e;
 		}
-		response.setHttpStatus(HttpStatus.OK);
-		response.setMessage("프로젝트 저장 성공");
-		return response;
 	}
 
 	/*
@@ -72,6 +75,7 @@ public class ProjectController {
 			response.setEnd(end);
 			return response;
 		} catch (Exception e) {
+			log.error("error at GET /project controller");
 			throw e;
 		}
 	}
@@ -92,6 +96,7 @@ public class ProjectController {
 			response.setProject(project);
 			return response;
 		} catch (Exception e) {
+			log.error("error at GET /project/{projectId} controller");
 			throw e;
 		}
 	}
@@ -101,7 +106,7 @@ public class ProjectController {
 		Response response = new Response();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
-		if(user == null){
+		if (user == null) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 		}
 		try {
@@ -111,24 +116,27 @@ public class ProjectController {
 			response.setMessage("성공");
 			return response;
 		} catch (Exception e) {
+			log.error("error at PUT /project/{projectId} controller");
 			throw e;
 		}
 	}
+
 	@DeleteMapping("/{projectId}")
-	public Response projectDelete(HttpServletRequest request, @PathVariable("projectId") Long id){
+	public Response projectDelete(HttpServletRequest request, @PathVariable("projectId") Long id) {
 		Response response = new Response();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
-		if(user == null){
+		if (user == null) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 		}
-		try{
+		try {
 			projectService.deleteProject(id, user);
 
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
 			return response;
-		}catch (Exception e){
+		} catch (Exception e) {
+			log.error("error at DELETE /project/{projectId} controller");
 			throw e;
 		}
 	}

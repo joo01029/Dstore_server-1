@@ -12,9 +12,10 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 public class JwtFilterConfig {
 	private HandlerExceptionResolver handlerExceptionResolver;
 
-	public JwtFilterConfig(HandlerExceptionResolver handlerExceptionResolver){
+	public JwtFilterConfig(HandlerExceptionResolver handlerExceptionResolver) {
 		this.handlerExceptionResolver = handlerExceptionResolver;
 	}
+
 	@Bean
 	public FilterRegistrationBean authFilter() {
 		try {

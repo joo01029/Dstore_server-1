@@ -1,5 +1,6 @@
 package gg.jominsubyungsin.controller;
 
+import gg.jominsubyungsin.lib.Log;
 import gg.jominsubyungsin.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.client.HttpServerErrorException;
 @Controller
 public class TemplateController {
 	private final AuthService authService;
+	private final Log log;
 
 	/*
 	 *이메일 인증 페이지
@@ -24,6 +26,7 @@ public class TemplateController {
 			model.addAttribute("isConfirm", isExist);
 			return "email-auth";
 		} catch (Exception e) {
+			log.error("error at /email-auth controller");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.BAD_REQUEST, "서버 오류");
 		}

@@ -4,6 +4,7 @@ import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.dto.user.response.ShowUserListResponse;
 import gg.jominsubyungsin.domain.response.Response;
+import gg.jominsubyungsin.lib.Log;
 import gg.jominsubyungsin.lib.PageEnd;
 import gg.jominsubyungsin.service.follow.FollowService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.List;
 public class FolllowController {
 	private final FollowService followService;
 	private final PageEnd pageEnd;
+	private final Log log;
 
 	@PutMapping("/{userId}")
 	public Response follow(HttpServletRequest request, @PathVariable Long userId) {
@@ -37,6 +39,7 @@ public class FolllowController {
 			response.setMessage("성공");
 			return response;
 		} catch (Exception e) {
+			log.error("error at PUT /follow/{userId} controller");
 			throw e;
 		}
 	}
@@ -61,6 +64,7 @@ public class FolllowController {
 
 			return response;
 		} catch (Exception e) {
+			log.error("error at GET /follow/followers/{userId} controller");
 			throw e;
 		}
 	}
@@ -85,6 +89,7 @@ public class FolllowController {
 
 			return response;
 		} catch (Exception e) {
+			log.error("error at GET /follow/followings/{userId} controller");
 			throw e;
 		}
 	}

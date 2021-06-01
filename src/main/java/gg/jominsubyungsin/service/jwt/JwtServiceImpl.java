@@ -64,7 +64,6 @@ public class JwtServiceImpl implements JwtService {
 
 	private String encodingToken(String subject, Key secretKey, long ttlMillis, JwtAuth authType) {
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-
 		try {
 			return Jwts.builder()
 					.setSubject(subject)
@@ -90,7 +89,6 @@ public class JwtServiceImpl implements JwtService {
 		} catch (Exception e) {
 			throw e;
 		}
-
 	}
 
 	private Claims decodingToken(String token, String key) {
@@ -113,8 +111,6 @@ public class JwtServiceImpl implements JwtService {
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
-
-
 	}
 
 	@Override

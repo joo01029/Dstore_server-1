@@ -5,18 +5,18 @@ import gg.jominsubyungsin.domain.dto.comment.dataIgnore.SelectCommentDto;
 import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.response.Response;
 import gg.jominsubyungsin.domain.dto.comment.response.GetCommentResponse;
+import gg.jominsubyungsin.lib.Log;
 import gg.jominsubyungsin.lib.PageEnd;
 import gg.jominsubyungsin.service.comment.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -24,6 +24,7 @@ import java.util.List;
 public class CommentController {
 	private final CommentService commentService;
 	private final PageEnd pageEnd;
+	private final Log log;
 	/*
 	 *댓글 작성
 	 */
@@ -33,7 +34,7 @@ public class CommentController {
 		Response response = new Response();
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
-			if(user == null){
+			if (user == null) {
 				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요합니다.");
 			}
 
@@ -43,6 +44,7 @@ public class CommentController {
 			response.setMessage("성공");
 			return response;
 		} catch (Exception e) {
+			log.error("error at POST /comment controller");
 			throw e;
 		}
 	}
@@ -67,16 +69,17 @@ public class CommentController {
 			response.setHttpStatus(HttpStatus.OK);
 			return response;
 		} catch (Exception e) {
+			log.error("error at GET /comment/{projectId} controller");
 			throw e;
 		}
 	}
 
 	@DeleteMapping("/{commentId}")
-	public Response deleteComment(@PathVariable Long commentId, HttpServletRequest request){
+	public Response deleteComment(@PathVariable Long commentId, HttpServletRequest request) {
 		Response response = new Response();
-		try{
+		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
-			if(user == null){
+			if (user == null) {
 				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 			}
 			commentService.deleteComement(commentId, user);
@@ -84,7 +87,8 @@ public class CommentController {
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
 			return response;
-		}catch (Exception e){
+		} catch (Exception e) {
+			log.error("error at DELETE /comment/{commentId} controller");
 			throw e;
 		}
 	}

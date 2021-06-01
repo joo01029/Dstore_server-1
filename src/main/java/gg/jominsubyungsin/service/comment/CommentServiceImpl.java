@@ -8,6 +8,7 @@ import gg.jominsubyungsin.domain.entity.UserEntity;
 import gg.jominsubyungsin.domain.repository.CommentListRepository;
 import gg.jominsubyungsin.domain.repository.CommentRepository;
 import gg.jominsubyungsin.domain.repository.ProjectRepository;
+import gg.jominsubyungsin.lib.Log;
 import gg.jominsubyungsin.service.follow.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,12 +29,12 @@ public class CommentServiceImpl implements CommentService {
 	private final CommentRepository commentRepository;
 	private final CommentListRepository commentListRepository;
 	private final FollowService followService;
+	private final Log log;
 
 	@Override
 	@Transactional
 	public void createComment(String comment, Long id, UserEntity user) {
 		try {
-			System.out.println(user.getId());
 			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
@@ -42,8 +43,10 @@ public class CommentServiceImpl implements CommentService {
 			user.add(commentEntity);
 			commentRepository.save(commentEntity);
 		} catch (HttpClientErrorException e) {
+			log.error("create comment error");
 			throw e;
 		} catch (Exception e) {
+			log.error("create comment error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -57,15 +60,17 @@ public class CommentServiceImpl implements CommentService {
 			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
-			Page<CommentEntity> pageComments = commentListRepository.findByProjectAndOnDelete(project,false, pageable);
+			Page<CommentEntity> pageComments = commentListRepository.findByProjectAndOnDelete(project, false, pageable);
 			for (CommentEntity comment : pageComments) {
 				SelectUserDto userDto = new SelectUserDto(comment.getUser(), followService.followState(comment.getUser(), me));
 				comments.add(new SelectCommentDto(comment, userDto));
 			}
 			return comments;
-		}catch (HttpClientErrorException e) {
+		} catch (HttpClientErrorException e) {
+			log.error("get comment list error");
 			throw e;
 		} catch (Exception e) {
+			log.error("get comment list error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -78,9 +83,11 @@ public class CommentServiceImpl implements CommentService {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
 			return commentRepository.countByProjectAndOnDelete(project, false);
-		}catch (HttpClientErrorException e) {
+		} catch (HttpClientErrorException e) {
+			log.error("count comment number error");
 			throw e;
 		} catch (Exception e) {
+			log.error("count comment number error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
@@ -89,15 +96,17 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	@Transactional
 	public void deleteComement(Long id, UserEntity user) {
-		try{
-			CommentEntity comment = commentRepository.findByIdAndUser(id, user).orElseGet(()->{
+		try {
+			CommentEntity comment = commentRepository.findByIdAndUser(id, user).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 댓글");
 			});
 			comment.setOnDelete(true);
 			commentRepository.save(comment);
-		}catch (HttpClientErrorException e){
+		} catch (HttpClientErrorException e) {
+			log.error("delete comment error");
 			throw e;
-		}catch (Exception e){
+		} catch (Exception e) {
+			log.error("delete comment error");
 			e.printStackTrace();
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
