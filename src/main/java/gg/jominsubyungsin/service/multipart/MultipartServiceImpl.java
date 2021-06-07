@@ -31,7 +31,7 @@ public class MultipartServiceImpl implements MultipartService {
 	파일 한개 업로드
 	 */
 	@Override
-	public FileDto uploadSingle(MultipartFile file) {
+	public FileDto uploadSingle(MultipartFile file) throws IOException {
 		if (file.isEmpty()) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일이 비었음");
 		}
@@ -45,13 +45,8 @@ public class MultipartServiceImpl implements MultipartService {
 			String type = fileName.substring(fileName.lastIndexOf(".") + 1);
 			FileDto fileDto = new FileDto();
 			//파일 타입
-			if (type.equals("jpeg") || type.equals("png") || type.equals("jpg")) {
-				fileDto.setType("image");
-			} else if (type.equals("mp4") || type.equals("AVI")) {
-				fileDto.setType("video");
-			} else {
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
-			}
+			String fileType = checkFileType(type);
+			fileDto.setType(fileType);
 
 			//저장할 파일 위치
 			Path targetLocation = fileStorageLocation.resolve(fileName);
@@ -63,21 +58,28 @@ public class MultipartServiceImpl implements MultipartService {
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
 			fileDto.setFileLocation("Http://" + server + "/file/see/" + fileName);
-			fileDto.setType(type);
+
 			return fileDto;
-		} catch (HttpClientErrorException e) {
+		} catch (Exception e){
 			throw e;
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
 		}
 	}//adsadsad
+
+	private String checkFileType(String type){
+		if (type.equals("jpeg") || type.equals("png") || type.equals("jpg")) {
+			return "image";
+		} else if (type.equals("mp4") || type.equals("AVI")) {
+			return "video";
+		} else {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
+		}
+	}
 
 	/*
 	파일 여러개 업로드
 	 */
 	@Override
-	public List<FileDto> uploadMulti(List<MultipartFile> files) {
+	public List<FileDto> uploadMulti(List<MultipartFile> files) throws IOException {
 		try {
 			for (MultipartFile file : files)
 				if (file.isEmpty())
@@ -97,12 +99,9 @@ public class MultipartServiceImpl implements MultipartService {
 				String type = fileNames.get(i).substring(fileNames.get(i).lastIndexOf(".") + 1);
 				FileDto fileDto = new FileDto();
 
-				if (type.equals("jpeg") || type.equals("png") || type.equals("jpg"))
-					fileDto.setType("image");
-				else if (type.equals("mp4") || type.equals("AVI"))
-					fileDto.setType("video");
-				else
-					throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
+				//파일 타입
+				String fileType = checkFileType(type);
+				fileDto.setType(fileType);
 
 				//파일 저장 위치
 				Path targetLocation = fileStorageLocation.resolve(fileNames.get(i));
@@ -115,22 +114,18 @@ public class MultipartServiceImpl implements MultipartService {
 
 				Files.copy(files.get(i).getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-				fileDto.setType(type);
 				fileNames.set(i, "Http://" + server + "/file/see/" + fileNames.get(i));
 				fileDto.setFileLocation(fileNames.get(i));
 				fileDtos.add(fileDto);
 			}
 			return fileDtos;
-		} catch (HttpClientErrorException e) {
+		} catch (Exception e){
 			throw e;
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
 		}
 	}
 
 	@Override
-	public String uploadBanner(MultipartFile file) {
+	public String uploadBanner(MultipartFile file) throws IOException {
 		if (file.isEmpty()) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "파일이 비었음");
 		}
@@ -144,11 +139,12 @@ public class MultipartServiceImpl implements MultipartService {
 			String type = fileName.substring(fileName.lastIndexOf(".") + 1);
 			FileDto fileDto = new FileDto();
 			//파일 타입
-			if (type.equals("jpeg") || type.equals("png") || type.equals("jpg")) {
-				fileDto.setType("image");
-			} else {
-				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식");
+			//파일 타입
+			String fileType = checkFileType(type);
+			if(fileType.equals("video")){
+				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 타입");
 			}
+			fileDto.setType(fileType);
 
 			//저장할 파일 위치
 			Path targetLocation = bannerStorageLocation.resolve(fileName);
@@ -160,11 +156,8 @@ public class MultipartServiceImpl implements MultipartService {
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
 			return "Http://" + server + "/file/see/" + fileName;
-		} catch (HttpClientErrorException e) {
+		} catch (Exception e) {
 			throw e;
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
 		}
 	}
 }

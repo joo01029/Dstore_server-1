@@ -42,13 +42,8 @@ public class CommentServiceImpl implements CommentService {
 			project.add(commentEntity);
 			user.add(commentEntity);
 			commentRepository.save(commentEntity);
-		} catch (HttpClientErrorException e) {
-			log.error("create comment error");
-			throw e;
 		} catch (Exception e) {
-			log.error("create comment error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -66,13 +61,8 @@ public class CommentServiceImpl implements CommentService {
 				comments.add(new SelectCommentDto(comment, userDto));
 			}
 			return comments;
-		} catch (HttpClientErrorException e) {
-			log.error("get comment list error");
-			throw e;
 		} catch (Exception e) {
-			log.error("get comment list error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -83,13 +73,8 @@ public class CommentServiceImpl implements CommentService {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
 			return commentRepository.countByProjectAndOnDelete(project, false);
-		} catch (HttpClientErrorException e) {
-			log.error("count comment number error");
-			throw e;
 		} catch (Exception e) {
-			log.error("count comment number error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -102,13 +87,8 @@ public class CommentServiceImpl implements CommentService {
 			});
 			comment.setOnDelete(true);
 			commentRepository.save(comment);
-		} catch (HttpClientErrorException e) {
-			log.error("delete comment error");
-			throw e;
 		} catch (Exception e) {
-			log.error("delete comment error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 }

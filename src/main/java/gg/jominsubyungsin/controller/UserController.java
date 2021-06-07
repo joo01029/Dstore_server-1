@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,9 +63,11 @@ public class UserController {
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("자기 소개 변경 성공");
 			return response;
-		} catch (Exception e) {
-			log.error("error at PUT /user/introduce controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -90,9 +93,11 @@ public class UserController {
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("유저 업데이트 성공");
 			return response;
-		} catch (Exception e) {
-			log.error("error at PUT /user/password-and-name controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -110,9 +115,11 @@ public class UserController {
 			response.setMessage("유저 삭제 성공");
 			response.setHttpStatus(HttpStatus.OK);
 			return response;
-		} catch (Exception e) {
-			log.error("error at DELETE /user controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -132,9 +139,11 @@ public class UserController {
 			showUserResponse.setMessage("성공");
 			showUserResponse.setUser(userDto);
 			return showUserResponse;
-		} catch (Exception e) {
-			log.error("error at GET /user/me controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -154,9 +163,11 @@ public class UserController {
 			showUserListResponse.setMessage("성공");
 			showUserListResponse.setUserList(userList);
 			return showUserListResponse;
-		} catch (Exception e) {
-			log.error("error at GET /user controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -179,9 +190,11 @@ public class UserController {
 			response.setUser(userDetailResponseDto);
 			response.setEnd(end);
 			return response;
-		} catch (Exception e) {
-			log.error("error at GET /user/{userId} controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -207,9 +220,11 @@ public class UserController {
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
 			return response;
-		} catch (Exception e) {
-			log.error("error at PUT /user/image controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 }

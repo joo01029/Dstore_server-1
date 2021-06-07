@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 @RequiredArgsConstructor
@@ -25,10 +26,11 @@ public class TemplateController {
 			Boolean isExist = authService.authEmail(code);
 			model.addAttribute("isConfirm", isExist);
 			return "email-auth";
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
+			throw e;
 		} catch (Exception e) {
-			log.error("error at /email-auth controller");
 			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.BAD_REQUEST, "서버 오류");
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 }

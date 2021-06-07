@@ -4,7 +4,9 @@ import gg.jominsubyungsin.domain.dto.project.dataIgnore.SelectProjectDto;
 import gg.jominsubyungsin.domain.dto.user.dataIgnore.SelectUserDto;
 import gg.jominsubyungsin.domain.entity.*;
 import gg.jominsubyungsin.domain.repository.*;
+import gg.jominsubyungsin.service.comment.CommentService;
 import gg.jominsubyungsin.service.follow.FollowService;
+import gg.jominsubyungsin.service.like.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,8 @@ import java.util.List;
 @Service
 public class TagServiceImpl implements TagService {
 	private final FollowService followService;
+	private final LikeService likeService;
+	private final CommentService commentService;
 
 	private final TagRepository tagRepository;
 	private final TagListRepository tagListRepository;
@@ -42,9 +46,8 @@ public class TagServiceImpl implements TagService {
 				tagEntities.add(tagEntity);
 			}
 			return tagEntities;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+		} catch (Exception e){
+			throw e;
 		}
 	}
 
@@ -58,9 +61,8 @@ public class TagServiceImpl implements TagService {
 				tagList.add(tagEntity.getTag());
 			}
 			return tagList;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+		} catch (Exception e){
+			throw e;
 		}
 	}
 
@@ -83,7 +85,13 @@ public class TagServiceImpl implements TagService {
 			List<Long> project_ids = projectListRepository.findProjectTags(pageable, tagEntities, tagEntities.size());
 			List<ProjectEntity> projectEntities = projectRepository.findAllByIdIsInOrderByIdDesc(project_ids);
 			for (ProjectEntity projectEntity : projectEntities) {
+				Long id = projectEntity.getId();
 				List<SelectUserDto> users = new ArrayList<>();
+
+				Long likeNum = likeService.LikeNum(id);
+				LikeEntity likeState = likeService.getLikeState(projectEntity, user);
+				Long commentNum = commentService.commentNum(id);
+
 				for (ProjectUserConnectEntity connectEntity : projectEntity.getUsers()) {
 					users.add(new SelectUserDto(connectEntity.getUser(), followService.followState(connectEntity.getUser(), user)));
 				}
@@ -92,14 +100,11 @@ public class TagServiceImpl implements TagService {
 				for (ProjectTagConnectEntity connectEntity : projectEntity.getTags()) {
 					projectTags.add(connectEntity.getTag().getTag());
 				}
-				projects.add(new SelectProjectDto(projectEntity, users, projectTags));
+				projects.add(new SelectProjectDto(projectEntity, users, projectTags, likeNum, likeState.getState(), commentNum));
 			}
 			return projects;
-		} catch (HttpClientErrorException e) {
+		} catch (Exception e){
 			throw e;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -115,11 +120,8 @@ public class TagServiceImpl implements TagService {
 				tagEntities.add(tagEntity.getId());
 			}
 			return projectRepository.countProjectTags(tagEntities);
-		} catch (HttpClientErrorException e) {
+		} catch (Exception e){
 			throw e;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -131,11 +133,8 @@ public class TagServiceImpl implements TagService {
 				throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "존재하지 않는 테그");
 			});
 			projectTagConnectRepository.removeByProjectAndTag(project, tagEntity);
-		} catch (HttpClientErrorException e) {
+		} catch (Exception e){
 			throw e;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 

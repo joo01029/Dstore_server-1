@@ -12,7 +12,7 @@ public interface AuthService {
 
 	void sendMail(String email);
 
-	LoginJwtDto MakeTokens(String subject);
+	LoginJwtDto makeTokens(String subject);
 
 	void checkEmail(String email);
 

@@ -36,28 +36,28 @@ public class FileServiceImpl implements FileService {
 		boolean thumnail = false;
 		List<FileEntity> fileEntities = new ArrayList<>();
 
-		for (FileDto file : files) {
-			if (!thumnail) {
-				file.setThumnail(true);
-				thumnail = true;
-			} else {
-				file.setThumnail(false);
-			}
+		try {
+			for (FileDto file : files) {
+				if (!thumnail) {
+					file.setThumnail(true);
+					thumnail = true;
+				} else {
+					file.setThumnail(false);
+				}
 
-			file.setFileLocation(file.getFileLocation());
-			file.setType(file.getType());
+				file.setFileLocation(file.getFileLocation());
+				file.setType(file.getType());
 
-			FileEntity fileEntity = file.toEntity();
-			try {
-				fileRepository.save(fileEntity);
-			} catch (Exception e) {
-				log.error("create file error");
-				e.printStackTrace();
-				throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버에러");
+				FileEntity fileEntity = file.toEntity();
+
+					fileRepository.save(fileEntity);
+
+				fileEntities.add(fileEntity);
 			}
-			fileEntities.add(fileEntity);
+			return fileEntities;
+		} catch (Exception e) {
+			throw e;
 		}
-		return fileEntities;
 	}
 
 	@Override
@@ -71,13 +71,11 @@ public class FileServiceImpl implements FileService {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
 
 			return resource;
-		} catch (HttpClientErrorException e) {
-			log.error("load file error");
-			throw e;
 		} catch (MalformedURLException e) {
-			log.error("load file error");
 			e.printStackTrace();
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
+		} catch (Exception e) {
+			throw e;
 		}
 	}
 
@@ -91,13 +89,11 @@ public class FileServiceImpl implements FileService {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
 
 			return resource;
-		} catch (HttpClientErrorException e) {
-			log.error("load banner file error");
-			throw e;
 		} catch (MalformedURLException e) {
-			log.error("load banner file error");
 			e.printStackTrace();
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "없는 파일");
+		} catch (Exception e) {
+			throw e;
 		}
 	}
 
@@ -108,13 +104,8 @@ public class FileServiceImpl implements FileService {
 			return fileRepository.findByIdAndProjectId(id, project).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 파일");
 			});
-		} catch (HttpClientErrorException e) {
-			log.error("find file by id and project error");
-			throw e;
 		} catch (Exception e) {
-			log.error("find file by id and project error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -124,9 +115,7 @@ public class FileServiceImpl implements FileService {
 		try {
 			fileRepository.deleteById(id);
 		} catch (Exception e) {
-			log.error("delete file error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -145,9 +134,7 @@ public class FileServiceImpl implements FileService {
 
 			return project;
 		} catch (Exception e) {
-			log.error("add file error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -157,8 +144,7 @@ public class FileServiceImpl implements FileService {
 		try {
 			return bannerRepository.findAll();
 		} catch (Exception e) {
-			log.error("get banner list error");
-			throw new HttpServerErrorException(HttpStatus.BAD_REQUEST, "서버 에러");
+			throw e;
 		}
 	}
 }

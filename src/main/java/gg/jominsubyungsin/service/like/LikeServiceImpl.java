@@ -46,11 +46,8 @@ public class LikeServiceImpl implements LikeService {
 				likes.add(new SelectUserDto(likeEntity.getUser(), follow));
 			}
 			return likes;
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -74,11 +71,8 @@ public class LikeServiceImpl implements LikeService {
 			user.add(likeEntity);
 
 			likeRepository.save(likeEntity);
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -91,11 +85,8 @@ public class LikeServiceImpl implements LikeService {
 			});
 
 			return likeRepository.countByProjectAndState(project, true);
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -107,14 +98,18 @@ public class LikeServiceImpl implements LikeService {
 					new LikeEntity(project, user, false)
 			);
 		} catch (Exception e) {
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
 	@Override
 	@Transactional
 	public void setLikeFalse(LikeEntity like) {
-		like.setState(false);
-		likeRepository.save(like);
+		try {
+			like.setState(false);
+			likeRepository.save(like);
+		}catch (Exception e){
+			throw e;
+		}
 	}
 }

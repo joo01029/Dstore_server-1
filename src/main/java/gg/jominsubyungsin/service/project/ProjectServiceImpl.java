@@ -32,6 +32,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +59,7 @@ public class ProjectServiceImpl implements ProjectService {
 	 */
 	@Override
 	@Transactional
-	public void saveProject(GetProjectDto projectDto, UserEntity mainUser) {
+	public void saveProject(GetProjectDto projectDto, UserEntity mainUser) throws IOException {
 		if (projectDto.getFiles().isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일은 무조건 1개 이상 보내야 합니다");
 		}
@@ -104,11 +105,8 @@ public class ProjectServiceImpl implements ProjectService {
 				projectTagConnectRepository.save(projectTagConnectEntity);
 			}
 
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -125,29 +123,31 @@ public class ProjectServiceImpl implements ProjectService {
 			List<ProjectEntity> projectEntities = projectEntityPage.getContent();
 
 			for (ProjectEntity projectEntity : projectEntities) {
+				Long id = projectEntity.getId();
 				List<SelectUserDto> userDtos = new ArrayList<>();
 
-				for (ProjectUserConnectEntity connectEntity : projectEntity.getUsers()) {
+				Long likeNum = likeService.LikeNum(id);
+				LikeEntity likeState = likeService.getLikeState(projectEntity, me);
+				Long commentNum = commentService.commentNum(id);
 
+				for (ProjectUserConnectEntity connectEntity : projectEntity.getUsers()) {
 					if (!connectEntity.getGetOut()) {
 						SelectUserDto userDto = new SelectUserDto(connectEntity.getUser(), followService.followState(connectEntity.getUser(), me));
 						userDtos.add(userDto);
 					}
 				}
+
 				List<String> tags = new ArrayList<>();
 				for (ProjectTagConnectEntity connectEntity : projectEntity.getTags()) {
 					tags.add(connectEntity.getTag().getTag());
 				}
 
-				SelectProjectDto selectProjectDto = new SelectProjectDto(projectEntity, userDtos, tags);
+				SelectProjectDto selectProjectDto = new SelectProjectDto(projectEntity, userDtos, tags, likeNum, likeState.getState(), commentNum);
 				projectDtos.add(selectProjectDto);
 			}
 			return projectDtos;
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -168,8 +168,12 @@ public class ProjectServiceImpl implements ProjectService {
 			List<ProjectEntity> projectEntities = projectEntityPage.getContent();
 
 			for (ProjectEntity projectEntity : projectEntities) {
-				System.out.println(projectEntity.getId());
+				Long id = projectEntity.getId();
 				List<SelectUserDto> userDtos = new ArrayList<>();
+
+				Long likeNum = likeService.LikeNum(id);
+				LikeEntity likeState = likeService.getLikeState(projectEntity, me);
+				Long commentNum = commentService.commentNum(id);
 
 				for (ProjectUserConnectEntity connectEntity : projectEntity.getUsers()) {
 					if (!connectEntity.getGetOut()) {
@@ -177,20 +181,18 @@ public class ProjectServiceImpl implements ProjectService {
 						userDtos.add(userDto);
 					}
 				}
+
 				List<String> tags = new ArrayList<>();
 				for (ProjectTagConnectEntity connectEntity : projectEntity.getTags()) {
 					tags.add(connectEntity.getTag().getTag());
 				}
 
-				SelectProjectDto selectProjectDetailDto = new SelectProjectDto(projectEntity, userDtos, tags);
+				SelectProjectDto selectProjectDetailDto = new SelectProjectDto(projectEntity, userDtos, tags, likeNum, likeState.getState(), commentNum);
 				projectDtos.add(selectProjectDetailDto);
 			}
 			return projectDtos;
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -203,8 +205,7 @@ public class ProjectServiceImpl implements ProjectService {
 		try {
 			return projectRepository.countByOnDelete(false);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -217,8 +218,7 @@ public class ProjectServiceImpl implements ProjectService {
 		try {
 			return projectRepository.countByUsersAndOnDelete(user, false);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -246,17 +246,14 @@ public class ProjectServiceImpl implements ProjectService {
 			}
 
 			return new ProjectDto(project, users, likeNum, likeState.getState(), commentNum, tags);
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
 	@Override
 	@Transactional
-	public void projectUpdate(Long id, UserEntity user, PutProjectDto putProjectDto) {
+	public void projectUpdate(Long id, UserEntity user, PutProjectDto putProjectDto) throws IOException {
 		try {
 			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
@@ -335,11 +332,8 @@ public class ProjectServiceImpl implements ProjectService {
 				}
 			}
 
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -374,11 +368,8 @@ public class ProjectServiceImpl implements ProjectService {
 			}
 			project.setOnDelete(true);
 			projectRepository.save(project);
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 

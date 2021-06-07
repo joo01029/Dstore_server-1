@@ -10,7 +10,7 @@ import javax.persistence.GeneratedValue;
 @Setter
 public class LoginJwtDto {
 	private String accessToken;
-	private String accessExpiredTime;
+	private Long accessExpiredTime;
 	private String refreshToken;
-	private String refreshExpiredTime;
+	private Long refreshExpiredTime;
 }

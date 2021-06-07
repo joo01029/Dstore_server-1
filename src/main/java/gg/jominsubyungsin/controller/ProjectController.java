@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -48,9 +49,11 @@ public class ProjectController {
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("프로젝트 저장 성공");
 			return response;
-		} catch (Exception e) {
-			log.error("error at POST /project controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -74,9 +77,11 @@ public class ProjectController {
 			response.setProjectList(projects);
 			response.setEnd(end);
 			return response;
-		} catch (Exception e) {
-			log.error("error at GET /project controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -95,9 +100,11 @@ public class ProjectController {
 			response.setMessage("성공");
 			response.setProject(project);
 			return response;
-		} catch (Exception e) {
-			log.error("error at GET /project/{projectId} controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -115,9 +122,11 @@ public class ProjectController {
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
 			return response;
-		} catch (Exception e) {
-			log.error("error at PUT /project/{projectId} controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -135,9 +144,11 @@ public class ProjectController {
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
 			return response;
-		} catch (Exception e) {
-			log.error("error at DELETE /project/{projectId} controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 

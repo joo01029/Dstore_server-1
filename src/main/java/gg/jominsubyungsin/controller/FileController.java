@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,18 +38,11 @@ public class FileController {
 			return ResponseEntity.ok()
 					.contentType(MediaType.parseMediaType(contentType))
 					.body(resource);
-		} catch (IOException e) {
-			e.printStackTrace();
-			log.error("-------------------------------------------------");
-			log.error("error at GET /file/banner/{filename} controller");
-			log.error("-------------------------------------------------");
-
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
-		} catch (Exception e) {
-			log.error("-------------------------------------------------");
-			log.error("error at /file/banner/{filename} controller");
-			log.error("-------------------------------------------------");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -64,13 +58,11 @@ public class FileController {
 			return ResponseEntity.ok()
 					.contentType(MediaType.parseMediaType(contentType))
 					.body(resource);
-		} catch (IOException e) {
-			e.printStackTrace();
-			log.error("error at GET /file/see/{filename} controller");
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
-		} catch (Exception e) {
-			log.error("error at GET /file/see/{filename} controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 
@@ -85,9 +77,11 @@ public class FileController {
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");
 			return response;
-		} catch (Exception e) {
-			log.error("error at GET /file/locations/banner controller");
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
 			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
 		}
 	}
 }

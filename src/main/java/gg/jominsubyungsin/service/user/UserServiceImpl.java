@@ -56,8 +56,7 @@ public class UserServiceImpl implements UserService {
 						return true;
 					}).orElse(false);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -73,8 +72,7 @@ public class UserServiceImpl implements UserService {
 						return true;
 					}).orElse(false);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -104,19 +102,18 @@ public class UserServiceImpl implements UserService {
 				followService.setFollowFalse(follow);
 			}
 			//좋아요 삭제
-			for (LikeEntity like : findUser.getLikes()){
+			for (LikeEntity like : findUser.getLikes()) {
 				likeService.setLikeFalse(like);
 			}
 
-			for(ProjectUserConnectEntity connect : findUser.getProjects()){
+			for (ProjectUserConnectEntity connect : findUser.getProjects()) {
 				connect.setGetOut(true);
 				projectUserConnectRepository.save(connect);
 			}
 
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -129,8 +126,7 @@ public class UserServiceImpl implements UserService {
 			});
 			return new SelectUserDto(userEntity, followService.followState(userEntity, user));
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -144,8 +140,7 @@ public class UserServiceImpl implements UserService {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
 			});
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -159,8 +154,7 @@ public class UserServiceImpl implements UserService {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
 			});
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -176,8 +170,7 @@ public class UserServiceImpl implements UserService {
 			}
 			return userList;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -194,8 +187,7 @@ public class UserServiceImpl implements UserService {
 			else
 				return false;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -210,25 +202,31 @@ public class UserServiceImpl implements UserService {
 			findUser.setProfileImage(fileUrl);
 			userRepository.save(findUser);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public UserDetailResponseDto getUserDetail(Long id, UserEntity user, Pageable pageable){
-		Boolean myProfile = false;
-		UserEntity profile = findUserById(id);;
-		if(user != null) {
-			myProfile = checkUserSame(user.getEmail(), id);
-		}
+	public UserDetailResponseDto getUserDetail(Long id, UserEntity user, Pageable pageable) {
+		try {
+			Boolean myProfile = false;
+			UserEntity profile = findUserById(id);
+			;
+			if (user != null) {
+				myProfile = checkUserSame(user.getEmail(), id);
+			}
 
-		List<SelectProjectDto> selectProjectDetailDtos = projectService.getProjects(pageable, user, profile);
-		Long follower = followService.countFollower(id);
-		Long following = followService.countFollowing(id);
-		Boolean follow = followService.followState(profile, user);
-		UserDetailResponseDto userDetailResponseDto = new UserDetailResponseDto(profile, myProfile, selectProjectDetailDtos, follower, following, follow);
-		return userDetailResponseDto;
+			List<SelectProjectDto> selectProjectDetailDtos = projectService.getProjects(pageable, user, profile);
+
+			Long follower = followService.countFollower(id);
+			Long following = followService.countFollowing(id);
+			Boolean follow = followService.followState(profile, user);
+
+			UserDetailResponseDto userDetailResponseDto = new UserDetailResponseDto(profile, myProfile, selectProjectDetailDtos, follower, following, follow);
+			return userDetailResponseDto;
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 }

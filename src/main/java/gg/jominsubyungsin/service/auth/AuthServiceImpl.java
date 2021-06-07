@@ -42,24 +42,22 @@ public class AuthServiceImpl implements AuthService {
 			String hashPassword = hash.hashText(userDto.getPassword());
 			userDto.setPassword(hashPassword);
 
-			Optional<UserEntity> findUserByEmail = userRepository.findByEmail(userDto.getEmail());
-			if (findUserByEmail.isPresent()) {
+			Optional<UserEntity> User = userRepository.findByEmail(userDto.getEmail());
+			if (User.isPresent()) {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이미 유저가 존재함");
 			}
+
 			//이메일 인증여부
-			Optional<EmailAuthEntity> findAccess = emailAuthRepository.findByEmailAndAuth(userDto.getEmail(), true);
-			if (findAccess.isEmpty()) {
+			Optional<EmailAuthEntity> EmailAccessed = emailAuthRepository.findByEmailAndAuth(userDto.getEmail(), true);
+			if (EmailAccessed.isEmpty()) {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "이메일 인증이 안됨");
 			}
 
 			UserEntity saveUser = userDto.toEntity();
 			userRepository.save(saveUser);
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
 			log.error("user create error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -68,53 +66,42 @@ public class AuthServiceImpl implements AuthService {
 	public LoginJwtDto login(LoginDto userDto) {
 		//비밀번호 암호화
 		String hashPassword = hash.hashText(userDto.getPassword());
-		userDto.setPassword(hashPassword);
+		String email = userDto.getEmail();
 
-		String password = userDto.getPassword();
-		String Email = userDto.getEmail();
 		try {
-			UserEntity findUserByEmailAndPassword = userRepository.findByEmailAndPasswordAndOnDelete(Email, password, false).orElseGet(() -> {
+			UserEntity findUserByEmailAndPassword = userRepository.findByEmailAndPasswordAndOnDelete(email, hashPassword, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
 			});
 
-			String subject = findUserByEmailAndPassword.getEmail();
-			LoginJwtDto tokens = MakeTokens(subject);
-			return tokens;
-		} catch (HttpClientErrorException e) {
-			throw e;
+			return makeTokens(email);
 		} catch (Exception e) {
-			log.error("login error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
 	@Override
-	public LoginJwtDto MakeTokens(String subject) {
-
-		String accessToken;
-		long accessExpiredTime = 40 * 60 * 1000L;
-		String refreshToken;
-		long refreshExpiredTime = 7 * 24 * 60 * 60 * 1000L;
+	public LoginJwtDto makeTokens(String subject) {
 		//token발행
 		try {
-			accessToken = jwtService.createToken(subject, accessExpiredTime, JwtAuth.ACCESS);
-			refreshToken = jwtService.createToken(subject, refreshExpiredTime, JwtAuth.REFRESH);
+			long accessExpiredTime = 20 * 60 * 1000L;
+			String accessToken = jwtService.createToken(subject, accessExpiredTime, JwtAuth.ACCESS);
+
+			long refreshExpiredTime = 7 * 24 * 60 * 60 * 1000L;
+			String refreshToken = jwtService.createToken(subject, refreshExpiredTime, JwtAuth.REFRESH);
+
+			Date accessTokenTime = new Date(System.currentTimeMillis() + accessExpiredTime);
+
+			Date refreshTokenTime = new Date(System.currentTimeMillis() + refreshExpiredTime);
+
+			LoginJwtDto tokens = new LoginJwtDto();
+			tokens.setAccessToken(accessToken);
+			tokens.setAccessExpiredTime(accessTokenTime.getTime());
+			tokens.setRefreshToken(refreshToken);
+			tokens.setRefreshExpiredTime(refreshTokenTime.getTime());
+			return tokens;
 		} catch (Exception e) {
 			throw e;
 		}
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date accessTokenTime = new Date(System.currentTimeMillis() + accessExpiredTime);
-		String accessTokenExpiredTime = format.format(accessTokenTime);
-		Date refreshTime = new Date(System.currentTimeMillis() + refreshExpiredTime);
-		String refreshTokenExpiredTime = format.format(refreshTime);
-
-		LoginJwtDto tokens = new LoginJwtDto();
-		tokens.setAccessToken(accessToken);
-		tokens.setAccessExpiredTime(accessTokenExpiredTime);
-		tokens.setRefreshToken(refreshToken);
-		tokens.setRefreshExpiredTime(refreshTokenExpiredTime);
-		return tokens;
 	}
 
 	@Override
@@ -124,16 +111,13 @@ public class AuthServiceImpl implements AuthService {
 			if (email == null || email.trim().isEmpty()) {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "메일 비었음");
 			}
+
 			Optional<UserEntity> user = userRepository.findByEmail(email);
 			if (user.isPresent()) {
 				throw new HttpClientErrorException(HttpStatus.CONFLICT, "중복된 이메일");
 			}
-		} catch (HttpClientErrorException e) {
-			throw e;
 		} catch (Exception e) {
-			log.error("check email error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -154,13 +138,8 @@ public class AuthServiceImpl implements AuthService {
 
 			emailAuthRepository.save(emailAuth.get());
 			return true;
-		} catch (HttpClientErrorException e) {
-			log.error("auth email error");
-			throw e;
 		} catch (Exception e) {
-			log.error("auth email error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 
@@ -199,8 +178,7 @@ public class AuthServiceImpl implements AuthService {
 			emailAuthRepository.save(emailAuth);
 		} catch (Exception e) {
 			log.error("send email error");
-			e.printStackTrace();
-			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "서버 에러");
+			throw e;
 		}
 	}
 }
