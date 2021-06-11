@@ -118,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public Boolean authEmail(String code) {
 		try {
 			if (code == null)
