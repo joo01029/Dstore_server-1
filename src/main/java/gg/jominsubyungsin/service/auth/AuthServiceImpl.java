@@ -18,9 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
@@ -69,11 +66,11 @@ public class AuthServiceImpl implements AuthService {
 		String email = userDto.getEmail();
 
 		try {
-			UserEntity findUserByEmailAndPassword = userRepository.findByEmailAndPasswordAndOnDelete(email, hashPassword, false).orElseGet(() -> {
+			UserEntity user = userRepository.findByEmailAndPasswordAndOnDelete(email, hashPassword, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "유저가 존재하지 않음");
 			});
 
-			return makeTokens(email);
+			return makeTokens(user.getEmail());
 		} catch (Exception e) {
 			throw e;
 		}
@@ -90,7 +87,6 @@ public class AuthServiceImpl implements AuthService {
 			String refreshToken = jwtService.createToken(subject, refreshExpiredTime, JwtAuth.REFRESH);
 
 			Date accessTokenTime = new Date(System.currentTimeMillis() + accessExpiredTime);
-
 			Date refreshTokenTime = new Date(System.currentTimeMillis() + refreshExpiredTime);
 
 			LoginJwtDto tokens = new LoginJwtDto();
@@ -158,7 +154,7 @@ public class AuthServiceImpl implements AuthService {
 			Date expireAt = new Date();
 
 			String code = hash.hashText(email + expireAt.toString());
-			String href = serverUrl + "/email-auth?code=" + code;
+			String href = "Http://"+serverUrl + "/email-auth?code=" + code;
 
 			String content = new StringBuffer("<h2>이메일 인증</h2>")
 					.append("<p>디스토어 이메일 인증</p>")
@@ -168,6 +164,8 @@ public class AuthServiceImpl implements AuthService {
 					.append("인증 하기")
 					.append("</div>")
 					.append("</a>").toString();
+
+
 			emailSender.sendMail(email, "이메일 인증", content);
 
 			expireAt.setTime(expireAt.getTime() + 1000 * 60 * 5);

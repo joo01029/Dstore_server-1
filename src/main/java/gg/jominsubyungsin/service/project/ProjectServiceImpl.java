@@ -274,7 +274,7 @@ public class ProjectServiceImpl implements ProjectService {
 			boolean mainPhoto = true;
 			if (rmFileSize != 0) {
 				for (Long fileId : putProjectDto.getRmFiles()) {
-					FileEntity file = fileService.findFileByProject(fileId, project);
+					FileEntity file = fileService.getFileByProject(fileId, project);
 					if (file.getThumnail()) {
 						mainPhoto = false;
 					}

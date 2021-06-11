@@ -61,7 +61,7 @@ public class ProjectController {
 	 *프로젝트 리스트 받기
 	 */
 	@GetMapping
-	public GetProjectResponse projectList(Pageable pageable, HttpServletRequest request) {
+	public GetProjectResponse getProjectList(Pageable pageable, HttpServletRequest request) {
 		GetProjectResponse response = new GetProjectResponse();
 		List<SelectProjectDto> projects;
 		Long projectNumber;
@@ -89,7 +89,7 @@ public class ProjectController {
 	 *프로젝트 상세 페이지
 	 */
 	@GetMapping("/{projectId}")
-	public GetProjectDetailResponse projectDetail(HttpServletRequest request, @PathVariable("projectId") Long id) {
+	public GetProjectDetailResponse getProjectDetail(HttpServletRequest request, @PathVariable("projectId") Long id) {
 		GetProjectDetailResponse response = new GetProjectDetailResponse();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
@@ -109,7 +109,7 @@ public class ProjectController {
 	}
 
 	@PutMapping("{projectId}")
-	public Response projectUpdate(HttpServletRequest request, @ModelAttribute PutProjectDto putProjectDto, @PathVariable("projectId") Long id) {
+	public Response updateProject(HttpServletRequest request, @ModelAttribute PutProjectDto putProjectDto, @PathVariable("projectId") Long id) {
 		Response response = new Response();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");
@@ -131,7 +131,7 @@ public class ProjectController {
 	}
 
 	@DeleteMapping("/{projectId}")
-	public Response projectDelete(HttpServletRequest request, @PathVariable("projectId") Long id) {
+	public Response deleteProject(HttpServletRequest request, @PathVariable("projectId") Long id) {
 		Response response = new Response();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");

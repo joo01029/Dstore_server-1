@@ -5,11 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
 
 import javax.mail.internet.MimeMessage;
 
+@EnableAsync
 @Component
 @RequiredArgsConstructor
 public class EmailSender {
@@ -19,6 +22,7 @@ public class EmailSender {
 	@Value("${spring.mail.username}")
 	private String senderEmail;
 
+	@Async
 	public void sendMail(String email, String title, String content) {
 		try {
 			MimeMessage msg = javaMailSender.createMimeMessage();

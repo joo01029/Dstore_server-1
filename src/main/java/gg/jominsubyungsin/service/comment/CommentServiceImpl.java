@@ -17,8 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +36,9 @@ public class CommentServiceImpl implements CommentService {
 			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
+
 			CommentEntity commentEntity = new CommentEntity(comment);
+
 			project.add(commentEntity);
 			user.add(commentEntity);
 			commentRepository.save(commentEntity);
@@ -55,8 +55,10 @@ public class CommentServiceImpl implements CommentService {
 			ProjectEntity project = projectRepository.findByIdAndOnDelete(id, false).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글");
 			});
-			Page<CommentEntity> pageComments = commentListRepository.findByProjectAndOnDelete(project, false, pageable);
-			for (CommentEntity comment : pageComments) {
+
+			Page<CommentEntity> commentEntities= commentListRepository.findByProjectAndOnDelete(project, false, pageable);
+
+			for (CommentEntity comment : commentEntities) {
 				SelectUserDto userDto = new SelectUserDto(comment.getUser(), followService.followState(comment.getUser(), me));
 				comments.add(new SelectCommentDto(comment, userDto));
 			}
@@ -80,7 +82,7 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	@Transactional
-	public void deleteComement(Long id, UserEntity user) {
+	public void deleteComment(Long id, UserEntity user) {
 		try {
 			CommentEntity comment = commentRepository.findByIdAndUser(id, user).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 댓글");

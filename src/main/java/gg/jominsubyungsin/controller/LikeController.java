@@ -28,7 +28,7 @@ public class LikeController {
 	 *좋아요 누른 사람 리스트
 	 */
 	@GetMapping("/users/{projectId}")
-	public GetLikeListResponse whoClickLikeUserList(Pageable pageable, @PathVariable("projectId") Long id, HttpServletRequest request) {
+	public GetLikeListResponse getLikeUserList(Pageable pageable, @PathVariable("projectId") Long id, HttpServletRequest request) {
 		GetLikeListResponse response = new GetLikeListResponse();
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");

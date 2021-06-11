@@ -46,7 +46,7 @@ public class TagController {
 	}
 
 	@GetMapping("/projects")
-	public GetProjectResponse findByTags(@RequestParam List<String> tags, HttpServletRequest request, Pageable pageable) {
+	public GetProjectResponse findProjectByTags(@RequestParam List<String> tags, HttpServletRequest request, Pageable pageable) {
 		GetProjectResponse response = new GetProjectResponse();
 
 		UserEntity user = (UserEntity) request.getAttribute("user");

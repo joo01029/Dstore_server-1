@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
@@ -71,7 +73,7 @@ public class AuthController {
 	 *토큰 재생성
 	 */
 	@PostMapping("/refresh")
-	public LoginResponse tokenRefresh(@RequestBody RefreshDto refresh) {
+	public LoginResponse refreshToken(@RequestBody RefreshDto refresh) {
 		LoginResponse loginResponse = new LoginResponse();
 		try {
 			log.info(refresh.getRefresh());
@@ -94,7 +96,7 @@ public class AuthController {
 	 *이메일 인증 주소 보내기
 	 */
 	@PostMapping("/email")
-	public Response sendEmail(@RequestBody SendEmailDto sendEmailDto) {
+	public Response sendEmail(@RequestBody @Valid SendEmailDto sendEmailDto) {
 		Response response = new Response();
 		try {
 			authService.sendMail(sendEmailDto.getEmail());

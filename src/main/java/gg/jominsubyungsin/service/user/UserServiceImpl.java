@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
 			//댓글 삭제
 
 			for (CommentEntity comment : findUser.getComments()) {
-				commentService.deleteComement(comment.getId(), findUser);
+				commentService.deleteComment(comment.getId(), findUser);
 			}
 			//팔로워 없애기
 			for (FollowEntity follow : findUser.getFollower()) {

@@ -35,7 +35,6 @@ public class FileServiceImpl implements FileService {
 	public List<FileEntity> createFiles(List<FileDto> files) {
 		boolean thumnail = false;
 		List<FileEntity> fileEntities = new ArrayList<>();
-
 		try {
 			for (FileDto file : files) {
 				if (!thumnail) {
@@ -50,8 +49,7 @@ public class FileServiceImpl implements FileService {
 
 				FileEntity fileEntity = file.toEntity();
 
-					fileRepository.save(fileEntity);
-
+				fileRepository.save(fileEntity);
 				fileEntities.add(fileEntity);
 			}
 			return fileEntities;
@@ -62,7 +60,6 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public UrlResource loadFile(String filename) {
-
 		try {
 			Path file = fileStorageLocation.resolve(filename).normalize();
 			UrlResource resource = new UrlResource(file.toUri());
@@ -99,7 +96,7 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public FileEntity findFileByProject(Long id, ProjectEntity project) {
+	public FileEntity getFileByProject(Long id, ProjectEntity project) {
 		try {
 			return fileRepository.findByIdAndProjectId(id, project).orElseGet(() -> {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "존재하지 않는 파일");

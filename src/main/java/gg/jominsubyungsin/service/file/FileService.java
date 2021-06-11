@@ -15,7 +15,7 @@ public interface FileService {
 
 	UrlResource loadBannerFile(String filename);
 
-	FileEntity findFileByProject(Long id, ProjectEntity project);
+	FileEntity getFileByProject(Long id, ProjectEntity project);
 
 	void rmFile(Long id);
 

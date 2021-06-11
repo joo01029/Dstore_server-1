@@ -13,5 +13,5 @@ public interface CommentService {
 
 	Long commentNum(Long id);
 
-	void deleteComement(Long id, UserEntity user);
+	void deleteComment(Long id, UserEntity user);
 }

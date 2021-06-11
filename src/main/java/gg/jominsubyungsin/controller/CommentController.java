@@ -56,7 +56,7 @@ public class CommentController {
 	 *댓글 리스트
 	 */
 	@GetMapping("/{projectId}")
-	public GetCommentResponse GetCommentList(Pageable pageable, @PathVariable Long projectId, HttpServletRequest request) {
+	public GetCommentResponse getCommentList(Pageable pageable, @PathVariable Long projectId, HttpServletRequest request) {
 		GetCommentResponse response = new GetCommentResponse();
 		try {
 			UserEntity user = (UserEntity) request.getAttribute("user");
@@ -87,7 +87,7 @@ public class CommentController {
 			if (user == null) {
 				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "토큰이 필요함");
 			}
-			commentService.deleteComement(commentId, user);
+			commentService.deleteComment(commentId, user);
 
 			response.setHttpStatus(HttpStatus.OK);
 			response.setMessage("성공");

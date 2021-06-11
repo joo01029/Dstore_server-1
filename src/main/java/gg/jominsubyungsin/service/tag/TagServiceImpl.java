@@ -77,7 +77,7 @@ public class TagServiceImpl implements TagService {
 		try {
 			for (String tag : tags) {
 				TagEntity tagEntity = tagRepository.findByTag(tag).orElseGet(() -> {
-					throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "존재하지 않는 테그");
+					throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "존재하지 않는 테그");
 				});
 				tagEntities.add(tagEntity.getId());
 			}
@@ -115,7 +115,7 @@ public class TagServiceImpl implements TagService {
 		try {
 			for (String tag : tags) {
 				TagEntity tagEntity = tagRepository.findByTag(tag).orElseGet(() -> {
-					throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "존재하지 않는 테그");
+					throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "존재하지 않는 테그");
 				});
 				tagEntities.add(tagEntity.getId());
 			}
@@ -130,7 +130,7 @@ public class TagServiceImpl implements TagService {
 	public void rmProjectTagConnect(String tag, ProjectEntity project) {
 		try {
 			TagEntity tagEntity = tagRepository.findByTag(tag).orElseGet(() -> {
-				throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "존재하지 않는 테그");
+				throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "존재하지 않는 테그");
 			});
 			projectTagConnectRepository.removeByProjectAndTag(project, tagEntity);
 		} catch (Exception e){

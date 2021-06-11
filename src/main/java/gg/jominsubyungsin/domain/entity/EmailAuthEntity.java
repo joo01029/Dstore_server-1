@@ -20,7 +20,7 @@ public class EmailAuthEntity {
 	@Column(nullable = false)
 	private Date expireAt;
 
-	@Column(nullable = true)
+	@Column
 	private String code;
 
 	@Column(nullable = false)

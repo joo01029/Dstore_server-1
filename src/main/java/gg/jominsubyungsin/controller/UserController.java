@@ -76,7 +76,7 @@ public class UserController {
 	 */
 	@PutMapping("/password-and-name")
 	@Transactional
-	public Response userUpdate(@RequestBody UserUpdateDto userUpdateDto) {
+	public Response updateUser(@RequestBody UserUpdateDto userUpdateDto) {
 		Response response = new Response();
 
 		try {
@@ -106,7 +106,7 @@ public class UserController {
 	 */
 	@DeleteMapping
 	@Transactional
-	public Response userDelete(@RequestBody UserDto userDto) {
+	public Response deleteUser(@RequestBody UserDto userDto) {
 		Response response = new Response();
 
 		try {
